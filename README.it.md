@@ -1,6 +1,6 @@
-# Regia
+# Editor-in-Chief
 
-**Una regia editoriale AI per chi gestisce più siti.** Misura SEO, AEO e GEO, decide con te cosa scrivere,
+**Il caporedattore AI per chi gestisce più siti.** Misura SEO, AEO e GEO, decide con te cosa scrivere,
 poi scrive, controlla e pubblica con regole sui fatti, e tiene traccia di tutto.
 
 Gira su Claude: una dashboard pubblicata come artifact con database condiviso, due routine che fanno il
@@ -11,7 +11,7 @@ lavoro, e i tuoi repository GitHub con i workflow di pubblicazione. Nessun serve
 - **Il calendario comanda.** Ogni riga ha uno stato (Idea, Da confermare, Programmato, Scritto, Pubblicato,
   In pausa). Tu cambi lo stato, gli agenti fanno il resto.
 - **Configurazione, non prompt.** Siti, repo, comandi di build, modalità di pubblicazione, lingue, fatti e
-  regole stanno in `regia.config.yaml`. I prompt in `prompts/` lo leggono a ogni giro.
+  regole stanno in `editor-in-chief.yaml`. I prompt in `prompts/` lo leggono a ogni giro.
 - **Bozza o automatico, sito per sito.** `draft` prepara un documento da approvare; `auto` fa commit e lascia
   pubblicare il workflow.
 - **Fonti a moduli.** Basta Search Console per partire. GA4, Cloudflare, visibilità AI e SERP sono opzionali.
@@ -21,7 +21,7 @@ lavoro, e i tuoi repository GitHub con i workflow di pubblicazione. Nessun serve
 ## Come partire
 
 1. Fai un fork del repository.
-2. Copia `regia.config.example.yaml` in `regia.config.yaml`, inserisci i tuoi siti, lancia
+2. Copia `editor-in-chief.example.yaml` in `editor-in-chief.yaml`, inserisci i tuoi siti, lancia
    `python3 scripts/validate_config.py`.
 3. In ogni repo dei siti aggiungi un workflow da `deploy/` e `scripts/check_links.py`. Parti in modalità
    `draft`.

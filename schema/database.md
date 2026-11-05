@@ -2,7 +2,7 @@
 
 The dashboard is a Claude artifact with the `db` capability. Every collection below is a set of
 JSON documents. The page reads them live; the routines write them with the `ArtifactData` tool.
-The dashboard starts empty: the first weekly run creates `progetti/*` from `regia.config.yaml`.
+The dashboard starts empty: the first weekly run creates `progetti/*` from `editor-in-chief.yaml`.
 
 Rules for writers (routines):
 
@@ -25,7 +25,7 @@ One per site, synced from `sites[]` in the config.
 | automazione | string | `Automatica` (publish_mode auto) or `Con il tuo ok` (draft) |
 | ordine | number | position in the config |
 
-## regia/config and regia/stato
+## editor/config and editor/stato
 
 | Doc | Field | Notes |
 | --- | --- | --- |

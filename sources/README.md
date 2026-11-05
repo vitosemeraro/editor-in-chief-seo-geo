@@ -1,7 +1,7 @@
 # Data source modules
 
 Search Console is the only required module. Each other module is switched on in `sources` of
-`regia.config.yaml` and adds fields to the dashboard. If a module is off, the dashboard simply shows
+`editor-in-chief.yaml` and adds fields to the dashboard. If a module is off, the dashboard simply shows
 "—" for its fields.
 
 | Module | Required | Connector in Claude | Fills | Cost |

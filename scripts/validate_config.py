@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate regia.config.yaml (or the example). Usage: python3 validate_config.py [file]"""
+"""Validate editor-in-chief.yaml (or the example). Usage: python3 validate_config.py [file]"""
 import re
 import sys
 
@@ -15,13 +15,13 @@ def need(cond, msg):
 
 
 def main():
-    path = sys.argv[1] if len(sys.argv) > 1 else "regia.config.yaml"
+    path = sys.argv[1] if len(sys.argv) > 1 else "editor-in-chief.yaml"
     cfg = yaml.safe_load(open(path, encoding="utf-8"))
     need(isinstance(cfg, dict), "config must be a mapping")
-    regia = cfg.get("regia", {})
-    need(regia.get("language"), "regia.language is required")
-    days = regia.get("cadence", {}).get("publish_days", [])
-    need(days and set(days) <= DAYS, f"regia.cadence.publish_days must be a subset of {sorted(DAYS)}")
+    editor = cfg.get("editor", {})
+    need(editor.get("language"), "editor.language is required")
+    days = editor.get("cadence", {}).get("publish_days", [])
+    need(days and set(days) <= DAYS, f"editor.cadence.publish_days must be a subset of {sorted(DAYS)}")
     need(isinstance(cfg.get("rules"), list), "rules must be a list")
     need(cfg.get("sources", {}).get("search_console", {}).get("provider") in ("openseo", "ahrefs"),
          "sources.search_console.provider must be openseo or ahrefs")

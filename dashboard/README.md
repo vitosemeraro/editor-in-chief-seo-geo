@@ -22,8 +22,8 @@ routines do the rest.
      buttons still queue the work, and it runs at the next scheduled run.
    - `user`: hides the buttons for people who can only view.
 
-2. Copy the artifact URL into `regia.dashboard_url` and commit the config.
-3. Create the two routines (see `prompts/README.md`), put the id of "run requests" in `regia.trigger_id`.
+2. Copy the artifact URL into `editor.dashboard_url` and commit the config.
+3. Create the two routines (see `prompts/README.md`), put the id of "run requests" in `editor.trigger_id`.
 4. Run the weekly review once by hand: it creates the site cards and fills the first numbers.
 
 The page starts empty and shows "Nessun sito ancora configurato" until step 4.

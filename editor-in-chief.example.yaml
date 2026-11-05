@@ -1,8 +1,8 @@
-# Regia configuration. Copy to regia.config.yaml in YOUR fork and fill it in.
+# Editor-in-Chief configuration. Copy to editor-in-chief.yaml in YOUR fork and fill it in.
 # The routines read this file at every run: nothing about your sites lives in the prompts.
 # Never put API keys, passwords or tokens here. Credentials stay in connectors and GitHub secrets.
 
-regia:
+editor:
   owner_name: "Your Name"            # who the routines report to and ask for approval
   language: it                       # language for dashboard texts, ideas, reports (it, en, ...)
   timezone: Europe/Rome

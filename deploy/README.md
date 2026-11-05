@@ -1,6 +1,6 @@
 # Deploy examples
 
-Regia never deploys by itself: it pushes to your site repo, and a GitHub Action in that repo publishes.
+Editor-in-Chief never deploys by itself: it pushes to your site repo, and a GitHub Action in that repo publishes.
 This keeps credentials in GitHub secrets, out of Claude and out of the dashboard.
 
 | File | Host | Secrets |

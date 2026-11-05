@@ -1,10 +1,10 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>Regia contenuti</title>
+<title>Editor-in-Chief</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-  /* Layout: una plancia di regia. In alto i siti e il pulsante di aggiornamento, poi salute e consigli con le azioni, poi calendario e dettaglio. */
+  /* Layout: una plancia di redazione. In alto i siti e il pulsante di aggiornamento, poi salute e consigli con le azioni, poi calendario e dettaglio. */
   :root {
     --bg: #f5f6f8; --panel: #ffffff; --line: #dfe2e8; --fg: #1b2230; --muted: #5d6679; --accent: #2f5bd3;
     --ok: #1d7a4f; --warn: #a76a06; --bad: #b4372e; --sel: #e8eefc;
@@ -133,7 +133,7 @@
 <div class="wrap">
   <header class="head">
     <div>
-      <h1>Regia contenuti</h1>
+      <h1>Editor-in-Chief</h1>
       <p class="sub">Tutti i tuoi siti in un posto: come vanno su Google (SEO), nelle risposte dirette di Google (AEO) e nelle citazioni dei motori AI (GEO), cosa migliorare e il calendario delle uscite. I pulsanti con stato avviano subito il lavoro.</p>
     </div>
     <div class="head-r">
@@ -165,7 +165,7 @@
     <div class="card-head">
       <div>
         <h2>Calendario uscite</h2>
-        <p>Le uscite seguono i giorni scelti in regia.config.yaml. Cambia data, tema, tipo o stato e si salva da solo. Seleziona più righe, anche di siti diversi, per cambiarle in blocco. Tutto quello che è "Programmato" esce da solo nella sua data (o diventa una bozza da approvare, se il sito è in modalità bozza). Metti "In pausa" solo quello che vuoi fermare.</p>
+        <p>Le uscite seguono i giorni scelti nella configurazione. Cambia data, tema, tipo o stato e si salva da solo. Seleziona più righe, anche di siti diversi, per cambiarle in blocco. Tutto quello che è "Programmato" esce da solo nella sua data (o diventa una bozza da approvare, se il sito è in modalità bozza). Metti "In pausa" solo quello che vuoi fermare.</p>
       </div>
       <span class="status" id="stato-salvataggio" aria-live="polite"></span>
     </div>
@@ -224,7 +224,7 @@
   </section>
 
   <section class="card" id="log">
-    <div class="card-head"><div><h2>Registro interventi</h2><p>Tutto quello che Claude ha fatto sui siti e sulla regia, dal più recente. "Apri la chat" riapre la conversazione che ha fatto il lavoro: lì puoi fare domande o chiedere di continuare.</p></div></div>
+    <div class="card-head"><div><h2>Registro interventi</h2><p>Tutto quello che Claude ha fatto sui siti e sulla dashboard, dal più recente. "Apri la chat" riapre la conversazione che ha fatto il lavoro: lì puoi fare domande o chiedere di continuare.</p></div></div>
     <div class="toolbar"><span id="log-consumo" class="small"></span><label><input type="checkbox" id="log-tutti"> mostra anche annullati e in coda</label></div>
     <div class="scroll"><table>
       <thead><tr><th>Quando</th><th>Sito</th><th>Intervento</th><th>Esito</th><th>Consumo</th><th>Link</th></tr></thead>
@@ -254,16 +254,16 @@
 
 <script>
 (function () {
-  const TRIGGER = () => ((state.regia.find((d) => d.id === 'config') || {}).trigger_id || '');
+  const TRIGGER = () => ((state.editor.find((d) => d.id === 'config') || {}).trigger_id || '');
   const STATI = ['Idea', 'Da confermare', 'Programmato', 'Scritto', 'Pubblicato', 'In pausa'];
   const TIPI = ['SEO', 'AEO', 'GEO'];
   const TIPI_CONS = ['SEO', 'AEO', 'GEO', 'Tecnico', 'Conversioni'];
   const STATO_CLS = { 'Pubblicato': 'ok', 'Scritto': 'ok', 'Programmato': 'warn', 'In pausa': 'bad', 'Idea': 'muted', 'Da confermare': 'muted' };
   const RQ_CLS = { 'In coda': 'muted', 'In lavorazione': 'warn', 'Fatto': 'ok', 'Da approvare': 'warn', 'Da fare a mano': 'warn', 'Da verificare': 'warn', 'Errore': 'bad', 'Annullata': 'muted' };
   const IMP = { 'Alto': 0, 'Medio': 1, 'Basso': 2 };
-  const state = { progetti: [], metriche: [], piano: [], pagine: [], aeo: [], interazioni: [], salute: [], keyword: [], idee: [], consigli: [], richieste: [], regia: [], interventi: [], logTutti: false,
+  const state = { progetti: [], metriche: [], piano: [], pagine: [], aeo: [], interazioni: [], salute: [], keyword: [], idee: [], consigli: [], richieste: [], editor: [], interventi: [], logTutti: false,
     filtro: 'tutti', calTipo: '', calStato: '', calPassate: false, consTipo: '', consFatti: false, sel: new Set(), db: null, mcp: null, canWrite: true };
-  try { state.filtro = localStorage.getItem('regia-filtro') || 'tutti'; } catch (e) {}
+  try { state.filtro = localStorage.getItem('eic-filtro') || 'tutti'; } catch (e) {}
 
   const $ = (id) => document.getElementById(id);
   const el = (tag, props, kids) => { const n = document.createElement(tag); if (props) Object.assign(n, props); (kids || []).forEach((k) => n.append(k)); return n; };
@@ -351,13 +351,13 @@
       b.setAttribute('aria-pressed', String(state.filtro === p.id));
       if (p.id !== 'tutti') b.append(dot(p));
       b.append(p.nome);
-      b.addEventListener('click', () => { state.filtro = p.id; state.sel.clear(); try { localStorage.setItem('regia-filtro', p.id); } catch (e) {} renderAll(); });
+      b.addEventListener('click', () => { state.filtro = p.id; state.sel.clear(); try { localStorage.setItem('eic-filtro', p.id); } catch (e) {} renderAll(); });
       box.append(b);
     }
   }
 
   function renderAggiorna() {
-    const st = state.regia.find((d) => d.id === 'stato') || {};
+    const st = state.editor.find((d) => d.id === 'stato') || {};
     $('agg-quando').replaceChildren('Dati aggiornati: ', el('b', { textContent: quando(st.ultimo_aggiornamento) || '—' }));
     const r = ultima((x) => x.tipo === 'aggiorna_dati');
     const b = $('agg-btn');
@@ -771,7 +771,7 @@
     const sette = Date.now() - 7 * 864e5;
     const ult = rows.filter((r) => r.t && new Date(r.t).getTime() >= sette && (r.usd != null || r.cr != null));
     const sum = (k) => ult.reduce((a, r) => a + (Number(r[k]) || 0), 0);
-    const st = (state.regia.find((d) => d.id === 'stato') || {});
+    const st = (state.editor.find((d) => d.id === 'stato') || {});
     const parti = [];
     if (ult.length) parti.push('Ultimi 7 giorni: ' + ult.length + ' lavori misurati, ' + fmt(sum('cr')) + ' crediti OpenSEO, ' + sum('usd').toLocaleString('it-IT', { maximumFractionDigits: 2 }) + ' $ di Claude (stima a prezzi API), ' + (sum('tok') / 1e6).toLocaleString('it-IT', { maximumFractionDigits: 1 }) + ' M token.');
     else parti.push('Il consumo si misura dai lavori di oggi in poi.');
@@ -879,7 +879,7 @@
     try { const user = await window.claude.use('user'); if (user && user.can) { const c = await user.can('data.write'); if (c === false) state.canWrite = false; } } catch (e) {}
     try { state.mcp = await window.claude.use('mcp'); } catch (e) { state.mcp = null; }
     const sub = (name) => db.collection(name).onSnapshot((snap) => { state[name] = snap.docs.map((d) => Object.assign({ id: d.id }, d.data())); if (name === 'progetti') state.progetti.sort((a, b) => (a.ordine || 0) - (b.ordine || 0)); pianifica(); }, () => say('Connessione ai dati interrotta: ricarica la pagina.'));
-    ['progetti', 'metriche', 'piano', 'pagine', 'aeo', 'interazioni', 'salute', 'keyword', 'idee', 'consigli', 'richieste', 'regia', 'interventi'].forEach(sub);
+    ['progetti', 'metriche', 'piano', 'pagine', 'aeo', 'interazioni', 'salute', 'keyword', 'idee', 'consigli', 'richieste', 'editor', 'interventi'].forEach(sub);
   })();
 })();
 </script>

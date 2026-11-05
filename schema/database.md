@@ -69,10 +69,17 @@ Health card. `periodo`, `clic_28g`, `clic_prev`, `impressioni_28g`, `impressioni
 `stato` is `Buono`, `Attenzione`, `Critico` or `Appena collegato`; `voto` is one line; `note` is a list of
 3-5 sentences with numbers; `aggiornato_il`, `controllato_il`.
 
+## serie/{site_id}
+
+Daily Search Console series for the weekly chart on each site card: `inizio` (YYYY-MM-DD of the first
+day), `clic[]` and `impressioni[]` (one value per day), `aggiornato_il`. Keep at most 400 days. The chart
+also draws `metriche.visite_7g` as dots when Cloudflare is on.
+
 ## pagine/{site_id}-{n}
 
 Top 15 pages by impressions in the last 28 days: `progetto`, `url` (path), `impressioni`, `clic`,
-`posizione`, `periodo`, optional `consiglio`.
+`posizione`, `periodo`, `consiglio` (the move for that page, max 160 chars), `impatto`, `sforzo`,
+`azione` (`auto` or `nessuna`). Rows with an action are sorted by priority and get an "Applica" button.
 
 ## keyword/{site_id}-{n}
 
@@ -92,7 +99,7 @@ Ideas from data: `progetto`, `tema`, `keyword`, `volume`, `perche` (the data poi
 ## consigli/{site_id}-{YYYYMMDD}-{n}
 
 Improvement tips: `progetto`, `titolo` (max 80 chars), `dettaglio`, `tipo` (`SEO`, `AEO`, `GEO`, `Tecnico`,
-`Conversioni`), `impatto` (`Alto`, `Medio`, `Basso`), `come` (`Automatico` or `A mano`), `stato`
+`Conversioni`), `impatto` (`Alto`, `Medio`, `Basso`), `sforzo` (`Basso`, `Medio`, `Alto`), `come` (`Automatico` or `A mano`), `stato`
 (`Da fare`, `Da verificare`, `Da fare a mano`, `Fatto`, `Scartato`), `esito`, `link`, `creato_il`,
 `aggiornato_il`.
 
@@ -115,6 +122,16 @@ the declared db rule in `dashboard/README.md` limits writes to editors.
 | esito, link, sessione | result, public link, link to the Claude session that did the work |
 | creata_il, avviata_il, iniziata_il, finita_il | ISO times |
 | crediti_openseo, costo_usd, token_output, token_totali | optional usage, shown in the log |
+
+## Priority and cost
+
+- **Priority** = impact ÷ effort (Alto 3, Medio 2, Basso 1 for impact; Basso 1, Medio 2, Alto 3 for
+  effort). Score ≥ 3 shows "★ Priorità alta". Tips, pages and the "what we do now" list sort by it.
+- **Estimated cost** on each button: the average `costo_usd` of past jobs of the same type (once there
+  are at least 3), scaled by effort; before that, a prudent default (1.0 / 1.4 / 2.0 $ for low / medium /
+  high effort). Creating a page adds an estimate of data credits.
+- **Real cost** on each finished job and **spend per site** (last 7 days and total) come from
+  `costo_usd`, `crediti_openseo`, `token_totali` in `richieste` and `interventi`.
 
 ## interventi/{YYYYMMDD-HHMM}-{site_id}-{n}
 

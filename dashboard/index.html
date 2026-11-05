@@ -84,6 +84,13 @@
   .status { font-size: 12px; color: var(--muted); min-height: 1.4em; }
   .empty { color: var(--muted); padding: 14px 8px; }
   .spark { display: block; width: 100%; height: 44px; }
+  .chart { display: block; width: 100%; height: auto; overflow: visible; }
+  .chart .ax { font: 10px var(--font-mono, monospace); fill: var(--muted); }
+  .legend { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .legend .sw { display: inline-block; width: 12px; height: 8px; margin-right: 4px; vertical-align: 0; }
+  .legend .sw.bar { background: var(--c); opacity: .25; }
+  .legend .sw.line { height: 2px; background: var(--c); vertical-align: 3px; }
+  .legend .sw.dot { width: 7px; height: 7px; border: 1.5px solid var(--fg); border-radius: 50%; }
   .how { margin: 0; padding-left: 1.2em; color: var(--muted); font-size: 13px; display: grid; gap: 4px; max-width: 85ch; }
 
   .light { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; border: 1px solid var(--line); border-left: 4px solid var(--lc, var(--muted)); border-radius: var(--r); padding: 10px 14px; }
@@ -261,7 +268,37 @@
   const STATO_CLS = { 'Pubblicato': 'ok', 'Scritto': 'ok', 'Programmato': 'warn', 'In pausa': 'bad', 'Idea': 'muted', 'Da confermare': 'muted' };
   const RQ_CLS = { 'In coda': 'muted', 'In lavorazione': 'warn', 'Fatto': 'ok', 'Da approvare': 'warn', 'Da fare a mano': 'warn', 'Da verificare': 'warn', 'Errore': 'bad', 'Annullata': 'muted' };
   const IMP = { 'Alto': 0, 'Medio': 1, 'Basso': 2 };
-  const state = { progetti: [], metriche: [], piano: [], pagine: [], aeo: [], interazioni: [], salute: [], keyword: [], idee: [], consigli: [], richieste: [], editor: [], interventi: [], logTutti: false,
+  /* Priorità = ritorno diviso sforzo: prima alto impatto e poco lavoro. */
+  const VAL = { 'Alto': 3, 'Medio': 2, 'Basso': 1 };
+  const SF = { 'Basso': 1, 'Medio': 2, 'Alto': 3 };
+  const punteggio = (r) => (VAL[r.impatto] || 1) / (SF[r.sforzo] || 2);
+  const PRIO = (r) => { const v = punteggio(r); return v >= 3 ? 'Priorità alta' : v >= 1.5 ? 'Priorità media' : 'Priorità bassa'; };
+  /* Costo stimato di un lavoro: media dei lavori misurati con lo stesso sforzo, altrimenti un valore prudente. */
+  const usdOk = (v) => v != null && isFinite(parseFloat(v));
+  const STIMA_BASE = { 'Basso': 1.0, 'Medio': 1.4, 'Alto': 2.0 };
+  function stima(sforzo, tipo) {
+    const mis = state.richieste.filter((q) => usdOk(q.costo_usd) && (!tipo || q.tipo === tipo));
+    const media = mis.length >= 3 ? mis.reduce((a, q) => a + parseFloat(q.costo_usd), 0) / mis.length : null;
+    const base = STIMA_BASE[sforzo] || 1.4;
+    const usd = media ? media * (base / 1.4) : base;
+    const cr = tipo === 'crea_pagina' ? 5 : 0;
+    return '~' + usd.toLocaleString('it-IT', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' $' + (cr ? ' · ~' + cr + ' cr' : '');
+  }
+  const soldi = (v) => Number(v || 0).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' $';
+  function costoReale(q) {
+    if (!q || !usdOk(q.costo_usd)) return '';
+    return 'Costo: ' + soldi(q.costo_usd) + (q.crediti_openseo ? ' · ' + q.crediti_openseo + ' crediti OpenSEO' : '') + (q.token_totali ? ' · ' + (q.token_totali / 1e6).toLocaleString('it-IT', { maximumFractionDigits: 1 }) + ' M token' : '');
+  }
+  /* Spesa Claude per sito, da richieste e interventi misurati. */
+  function spesaSito(pid, giorni) {
+    const da = giorni ? Date.now() - giorni * 864e5 : 0;
+    const ok = (t) => !giorni || (t && new Date(t).getTime() >= da);
+    let usd = 0, cr = 0, n = 0;
+    for (const q of state.richieste) if (q.progetto === pid && isFinite(parseFloat(q.costo_usd)) && ok(q.finita_il || q.creata_il)) { usd += parseFloat(q.costo_usd); cr += Number(q.crediti_openseo) || 0; n++; }
+    for (const q of state.interventi) if (q.progetto === pid && isFinite(parseFloat(q.costo_usd)) && ok(q.quando)) { usd += parseFloat(q.costo_usd); cr += Number(q.crediti_openseo) || 0; n++; }
+    return { usd, cr, n };
+  }
+  const state = { progetti: [], metriche: [], piano: [], pagine: [], aeo: [], interazioni: [], salute: [], keyword: [], idee: [], consigli: [], richieste: [], editor: [], interventi: [], serie: [], logTutti: false,
     filtro: 'tutti', calTipo: '', calStato: '', calPassate: false, consTipo: '', consFatti: false, sel: new Set(), db: null, mcp: null, canWrite: true };
   try { state.filtro = localStorage.getItem('eic-filtro') || 'tutti'; } catch (e) {}
 
@@ -331,7 +368,7 @@
     const o = opts || {};
     const wrap = el('span', { className: 'act' });
     const r = ultima((x) => x.tipo === tipo && match(x));
-    const b = el('button', { className: 'btn sm' + (o.primary ? ' primary' : ''), type: 'button', textContent: r && !inCorso(r) ? (o.again || 'Rifai') : label, disabled: !state.canWrite || inCorso(r) });
+    const b = el('button', { className: 'btn sm' + (o.primary ? ' primary' : ''), type: 'button', textContent: (r && !inCorso(r) ? (o.again || 'Rifai') : label) + (o.costo ? ' · ' + o.costo : ''), disabled: !state.canWrite || inCorso(r) });
     b.addEventListener('click', async () => {
       b.disabled = true; b.textContent = 'Metto in coda…';
       try { await richiedi(tipo, campi); }
@@ -379,6 +416,50 @@
     return { t, c: good ? 'ok' : 'bad' };
   }
 
+  /* Grafico settimanale: impressioni (barre, scala a destra), clic (linea) e visite (punti), scala a sinistra. */
+  function grafico(pid) {
+    const sr = state.serie.find((x) => x.id === pid);
+    if (!sr || !Array.isArray(sr.clic)) return null;
+    const t0 = new Date(sr.inizio + 'T00:00:00Z').getTime();
+    const sett = new Map();
+    const lun = (t) => { const d = new Date(t); const g = (d.getUTCDay() + 6) % 7; return t - g * 864e5; };
+    sr.clic.forEach((c, i) => { const k = lun(t0 + i * 864e5); const w = sett.get(k) || { clic: 0, impr: 0, giorni: 0 }; w.clic += Number(c) || 0; w.impr += Number((sr.impressioni || [])[i]) || 0; w.giorni++; sett.set(k, w); });
+    const tutte = [...sett.entries()].sort((a, b) => a[0] - b[0]);
+    let weeks = tutte.filter(([, w], i) => w.giorni >= 4 || i === tutte.length - 1).slice(-14);
+    for (const m of state.metriche.filter((x) => x.progetto === pid && x.visite_7g != null)) { const k = new Date(m.settimana + 'T00:00:00Z').getTime() - 7 * 864e5; const w = weeks.find(([t]) => t === k); if (w) w[1].visite = Number(m.visite_7g); }
+    if (weeks.length < 2) return null;
+    const W = 300, H = 130, L = 24, R = 30, T = 8, B = 20, iw = W - L - R, ih = H - T - B;
+    const maxI = Math.max(1, ...weeks.map(([, w]) => w.impr));
+    const maxC = Math.max(1, ...weeks.map(([, w]) => Math.max(w.clic, w.visite || 0)));
+    const bw = iw / weeks.length;
+    const x = (i) => L + i * bw + bw / 2;
+    const yC = (v) => T + ih - (v / maxC) * ih, yI = (v) => T + ih - (v / maxI) * ih;
+    const ns = 'http://www.w3.org/2000/svg';
+    const mk = (tag, at, txt) => { const n = document.createElementNS(ns, tag); for (const k in at) n.setAttribute(k, at[k]); if (txt != null) n.textContent = txt; return n; };
+    const svg = mk('svg', { viewBox: `0 0 ${W} ${H}`, class: 'chart', role: 'img', 'aria-label': 'Andamento settimanale di impressioni, clic e visite' });
+    svg.append(mk('line', { x1: L, x2: W - R, y1: T + ih, y2: T + ih, stroke: 'var(--line)' }));
+    const MESI = ['gen', 'feb', 'mar', 'apr', 'mag', 'giu', 'lug', 'ago', 'set', 'ott', 'nov', 'dic'];
+    let mese = -1;
+    weeks.forEach(([t, w], i) => {
+      const b = mk('rect', { x: L + i * bw + 2, y: yI(w.impr), width: Math.max(1, bw - 4), height: T + ih - yI(w.impr), fill: 'var(--c)', opacity: '0.18', rx: 1 });
+      const d = new Date(t);
+      b.append(mk('title', {}, (w.giorni < 7 ? 'Settimana in corso (' + w.giorni + ' giorni) dal ' : 'Settimana del ') + d.getUTCDate() + ' ' + MESI[d.getUTCMonth()] + ': ' + w.impr + ' impressioni, ' + w.clic + ' clic' + (w.visite != null ? ', ' + w.visite + ' visite' : '')));
+      svg.append(b);
+      const m = new Date(t + 3 * 864e5).getUTCMonth();
+      if (m !== mese) { mese = m; svg.append(mk('text', { x: x(i), y: H - 6, 'text-anchor': 'middle', class: 'ax' }, MESI[m])); }
+    });
+    svg.append(mk('path', { d: weeks.map(([, w], i) => (i ? 'L' : 'M') + x(i) + ',' + yC(w.clic)).join(' '), fill: 'none', stroke: 'var(--c)', 'stroke-width': 2 }));
+    weeks.forEach(([, w], i) => { if (w.visite != null) svg.append(mk('circle', { cx: x(i), cy: yC(w.visite), r: 3.5, fill: 'var(--bg)', stroke: 'var(--fg)', 'stroke-width': 1.5 })); });
+    svg.append(mk('text', { x: L - 4, y: T + 8, 'text-anchor': 'end', class: 'ax' }, String(maxC)));
+    svg.append(mk('text', { x: W - R + 4, y: T + 8, class: 'ax' }, String(maxI)));
+    svg.append(mk('text', { x: L - 4, y: T + ih, 'text-anchor': 'end', class: 'ax' }, '0'));
+    const leg = el('div', { className: 'legend' }, [
+      el('span', {}, [el('i', { className: 'sw bar' }), 'impressioni (scala a destra)']),
+      el('span', {}, [el('i', { className: 'sw line' }), 'clic']),
+      el('span', {}, [el('i', { className: 'sw dot' }), 'visite (Cloudflare)'])
+    ]);
+    return el('div', { className: 'chartbox' }, [svg, leg]);
+  }
   function spark(rows) {
     const vals = rows.map((r) => Number(r.impressioni)).filter((v) => !isNaN(v));
     if (vals.length < 2) return null;
@@ -423,10 +504,12 @@
         k('Articoli usciti', fmt(usciti))
       );
       card.append(kp);
-      const sp = spark(serie); if (sp) card.append(sp);
+      const gr = grafico(p.id); if (gr) card.append(gr); else { const sp = spark(serie); if (sp) card.append(sp); }
       const nx = el('div', { className: 'next' }, [el('div', { className: 'l', textContent: 'Prossima uscita' })]);
       nx.append(prossimo ? el('div', {}, [el('b', { textContent: dataIt(prossimo.data) + ' · ' }), prossimo.tema]) : el('div', { className: 'muted', textContent: 'Niente in calendario' }));
       card.append(nx);
+      const s7 = spesaSito(p.id, 7), st = spesaSito(p.id, 0);
+      card.append(el('div', { className: 'next' }, [el('div', { className: 'l', textContent: 'Spesa Claude' }), el('div', {}, [el('b', { textContent: soldi(s7.usd) }), document.createTextNode(' negli ultimi 7 giorni · ' + soldi(st.usd) + ' in tutto (' + st.n + ' lavori misurati)' + (st.cr ? ' · ' + st.cr + ' crediti OpenSEO' : ''))])]));
       box.append(card);
     }
   }
@@ -467,10 +550,10 @@
         c.append(el('div', { className: 'l small', textContent: 'Cosa dicono i numeri' }));
         c.append(el('ul', { className: 'notes' }, s.note.map((t) => el('li', {}, [el('span', { textContent: t })]))));
       }
-      const top = state.consigli.filter((x) => x.progetto === p.id && !['Fatto', 'Scartato'].includes(x.stato) && x.come !== 'A mano').sort((a, b) => (IMP[a.impatto] ?? 3) - (IMP[b.impatto] ?? 3)).slice(0, 3);
+      const top = state.consigli.filter((x) => x.progetto === p.id && !['Fatto', 'Scartato'].includes(x.stato) && x.come !== 'A mano').sort((a, b) => (punteggio(b) - punteggio(a)) || ((IMP[a.impatto] ?? 3) - (IMP[b.impatto] ?? 3))).slice(0, 3);
       if (top.length) {
         c.append(el('div', { className: 'l small', textContent: 'Cosa facciamo adesso' }));
-        c.append(el('ul', { className: 'notes' }, top.map((x) => el('li', {}, [el('b', { textContent: x.titolo }), azione('Applica ora', 'applica_consiglio', { progetto: x.progetto, rif: 'consigli/' + x.id, testo: x.titolo }, (q) => q.rif === 'consigli/' + x.id, { primary: x.stato !== 'Da fare a mano' }), segnaFatto(x)]))));
+        c.append(el('ul', { className: 'notes' }, top.map((x) => el('li', {}, [el('b', { textContent: x.titolo }), azione('Applica ora', 'applica_consiglio', { progetto: x.progetto, rif: 'consigli/' + x.id, testo: x.titolo }, (q) => q.rif === 'consigli/' + x.id, { primary: x.stato !== 'Da fare a mano', costo: stima(x.sforzo, 'applica_consiglio') }), segnaFatto(x)]))));
       }
       const act = el('div', { className: 'hacts' });
       act.append(azione('Verifica e consiglia', 'controllo_sito', { progetto: p.id }, (x) => x.progetto === p.id, { primary: true, again: 'Verifica di nuovo' }));
@@ -511,9 +594,11 @@
     const recente = (r) => r.stato === 'Fatto' && r.aggiornato_il && (Date.now() - new Date(r.aggiornato_il).getTime()) < DUE_GIORNI;
     const aperti = (r) => !['Fatto', 'Scartato'].includes(r.stato);
     const inLista = (r) => aperti(r) || recente(r);
+    /* In cima solo le verifiche di Claude sui lavori che hai segnato tu; poi i consigli aperti per priorità, poi i fatti di recente. */
+    const verificato = (r) => recente(r) && /^Verificato/.test(r.esito || '');
     const tutti = state.consigli.filter((r) => visibile(r.progetto));
     const rows = tutti.filter((r) => (!state.consTipo || r.tipo === state.consTipo) && (state.consFatti || inLista(r)))
-      .sort((a, b) => (inLista(b) - inLista(a)) || (recente(b) - recente(a)) || (aperti(b) - aperti(a)) || ((IMP[a.impatto] ?? 3) - (IMP[b.impatto] ?? 3)) || ((prog(a.progetto).ordine || 0) - (prog(b.progetto).ordine || 0)));
+      .sort((a, b) => (inLista(b) - inLista(a)) || (verificato(b) - verificato(a)) || (aperti(b) - aperti(a)) || (punteggio(b) - punteggio(a)) || ((IMP[a.impatto] ?? 3) - (IMP[b.impatto] ?? 3)) || ((prog(a.progetto).ordine || 0) - (prog(b.progetto).ordine || 0)));
     const nAperti = tutti.filter(aperti).length;
     $('cons-conta').textContent = nAperti + ' da fare · ' + (tutti.length - nAperti) + ' fatti o scartati';
     if (!rows.length) { box.append(el('p', { className: 'empty', textContent: state.consigli.length ? 'Nessun consiglio con questo filtro.' : 'I consigli arrivano con "Verifica e consiglia".' })); return; }
@@ -521,7 +606,8 @@
       const p = prog(r.progetto);
       const rq = ultima((x) => x.rif === 'consigli/' + r.id);
       const c = el('article', { className: 'tip' + (aperti(r) || recente(r) ? '' : ' done') }); c.style.setProperty('--c', p.colore);
-      const meta = el('div', { className: 'meta' }, [sito(p), tag(r.tipo || 'SEO', true), el('span', { className: 'pill ' + (r.impatto === 'Alto' ? 'bad' : r.impatto === 'Medio' ? 'warn' : 'muted'), textContent: 'impatto ' + (r.impatto || '—').toLowerCase() }), el('span', { textContent: r.come === 'A mano' ? 'a mano' : 'automatico' })]);
+      const meta = el('div', { className: 'meta' }, [sito(p), tag(r.tipo || 'SEO', true), el('span', { className: 'pill ' + (r.impatto === 'Alto' ? 'bad' : r.impatto === 'Medio' ? 'warn' : 'muted'), textContent: 'impatto ' + (r.impatto || '—').toLowerCase() }), el('span', { className: 'pill muted', textContent: 'sforzo ' + (r.sforzo || 'medio').toLowerCase() }), el('span', { textContent: r.come === 'A mano' ? 'a mano' : 'automatico' })]);
+      if (aperti(r) && punteggio(r) >= 3) meta.prepend(el('span', { className: 'pill ok', textContent: '★ Priorità alta' }));
       if (r.stato && r.stato !== 'Da fare') meta.append(el('span', { className: 'pill ' + (RQ_CLS[r.stato] || 'muted'), textContent: r.stato }));
       c.append(meta, el('h3', { textContent: r.titolo }), el('p', { className: 'why', textContent: r.dettaglio || '' }));
       /* Esito ben visibile: cosa ha fatto o verificato Claude l'ultima volta. */
@@ -531,13 +617,14 @@
       else if (r.stato === 'Da fare a mano') { titolo = rq && rq.tipo === 'verifica_manuale' ? '✗ Non ancora completo' : 'Tocca a te'; testo = r.esito || (rq && rq.esito) || ''; col = 'var(--warn)'; }
       else if (r.stato === 'Scartato') { titolo = 'Scartato'; }
       else if (rq && rq.stato === 'Errore') { titolo = 'Non riuscito'; testo = rq.esito || ''; col = 'var(--bad)'; }
-      if (titolo || testo) { const e = el('div', { className: 'esito' }, [titolo ? el('b', { textContent: titolo }) : null, testo ? document.createTextNode(testo) : null].filter(Boolean)); e.style.setProperty('--ec', col); c.append(e); }
+      const cr = rq && !inCorso(rq) ? costoReale(rq) : '';
+      if (titolo || testo) { const e = el('div', { className: 'esito' }, [titolo ? el('b', { textContent: titolo }) : null, testo ? document.createTextNode(testo) : null, cr ? el('div', { className: 'small', textContent: cr }) : null].filter(Boolean)); e.style.setProperty('--ec', col); c.append(e); }
       const acts = el('div', { className: 'acts' });
       if (rq && inCorso(rq)) {
         /* niente pulsanti mentre lavora */
       } else if (aperti(r)) {
         if (r.stato === 'Da fare a mano') acts.append(segnaFatto(r));
-        else acts.append(azione(r.come === 'A mano' ? 'Spiegami come' : 'Applica ora', 'applica_consiglio', { progetto: r.progetto, rif: 'consigli/' + r.id, testo: r.titolo }, (x) => x.rif === 'consigli/' + r.id, { primary: r.come !== 'A mano', statusId: 'cons-stato', noBadge: true }), segnaFatto(r));
+        else acts.append(azione(r.come === 'A mano' ? 'Spiegami come' : 'Applica ora', 'applica_consiglio', { progetto: r.progetto, rif: 'consigli/' + r.id, testo: r.titolo }, (x) => x.rif === 'consigli/' + r.id, { primary: r.come !== 'A mano', statusId: 'cons-stato', noBadge: true, costo: r.come === 'A mano' ? '' : stima(r.sforzo, 'applica_consiglio') }), segnaFatto(r));
         const no = el('button', { className: 'btn sm icon', type: 'button', textContent: 'Scarta', disabled: !state.canWrite });
         no.addEventListener('click', async () => { no.disabled = true; try { await state.db.collection('consigli').doc(r.id).update({ stato: 'Scartato', aggiornato_il: new Date().toISOString() }); } catch (e) { no.disabled = false; $('cons-stato').textContent = 'Non salvato: riprova.'; } });
         acts.append(no);
@@ -713,22 +800,26 @@
 
   function renderPagine() {
     const tb = $('pagine-body'); tb.replaceChildren();
-    const rows = state.pagine.filter((r) => visibile(r.progetto)).sort((a, b) => (b.impressioni || 0) - (a.impressioni || 0));
+    const rows = state.pagine.filter((r) => visibile(r.progetto)).sort((a, b) => ((b.azione !== 'nessuna') - (a.azione !== 'nessuna')) || (punteggio(b) - punteggio(a)) || ((b.impressioni || 0) - (a.impressioni || 0)));
     if (!rows.length) { tb.append(el('tr', {}, [el('td', { colSpan: 6, className: 'empty', textContent: 'Arriva dal primo aggiornamento da Search Console.' })])); return; }
     for (const r of rows) {
-      const p = prog(r.progetto); const c = consiglioPagina(r);
+      const p = prog(r.progetto); const c = r.consiglio || consiglioPagina(r);
       const pos = Number(r.posizione); const cls = isNaN(pos) ? 'muted' : pos <= 10 ? 'ok' : pos <= 30 ? 'warn' : 'bad';
+      const cell = el('td', { className: 'advice' }, [el('div', { textContent: c })]);
+      if (r.azione !== 'nessuna') {
+        const m = el('div', { className: 'small' }, [el('span', { className: 'pill ' + (punteggio(r) >= 3 ? 'ok' : 'muted'), textContent: PRIO(r) }), document.createTextNode(' impatto ' + String(r.impatto || 'medio').toLowerCase() + ' · sforzo ' + String(r.sforzo || 'medio').toLowerCase() + ' ')]);
+        cell.append(m, azione('Applica', 'implementa_nota', { progetto: r.progetto, rif: 'pagine/' + r.id, testo: 'Pagina ' + r.url + ': ' + c }, (x) => x.rif === 'pagine/' + r.id, { costo: stima(r.sforzo, 'implementa_nota') }));
+      } else cell.classList.add('muted');
       tb.append(el('tr', {}, [
         el('td', {}, [sito(p)]),
         el('td', { className: 'url', textContent: r.url || '' }),
         el('td', { className: 'num', textContent: fmt(r.impressioni) }),
         el('td', { className: 'num', textContent: fmt(r.clic) }),
         el('td', { className: 'num' }, [el('span', { className: 'pos ' + cls, textContent: fmtPos(r.posizione) })]),
-        el('td', { className: 'advice' }, [el('div', { textContent: c }), azione('Applica', 'implementa_nota', { progetto: r.progetto, rif: 'pagine/' + r.id, testo: 'Pagina ' + r.url + ': ' + c }, (x) => x.rif === 'pagine/' + r.id)])
+        cell
       ]));
     }
   }
-
   function renderAi() {
     const tb = $('ai-body'); tb.replaceChildren();
     const rows = state.aeo.filter((r) => visibile(r.progetto)).sort((a, b) => (Number(a.citato) || 0) - (Number(b.citato) || 0) || String(a.motore).localeCompare(String(b.motore)));
@@ -737,7 +828,7 @@
       const p = prog(r.progetto); const si = Number(r.citato) > 0;
       const c = r.consiglio || (si ? 'Già citato: tieni aggiornata la pagina citata.' : 'Pubblica una risposta diretta a questa domanda, con dati reali, nella pagina più vicina del sito.');
       const cell = el('td', { className: 'advice' }, [el('div', { textContent: c })]);
-      if (!si) cell.append(azione('Applica', 'implementa_nota', { progetto: r.progetto, rif: 'aeo/' + r.id, testo: 'Domanda AI "' + r.domanda + '": ' + c }, (x) => x.rif === 'aeo/' + r.id));
+      if (!si) cell.append(azione('Applica', 'implementa_nota', { progetto: r.progetto, rif: 'aeo/' + r.id, testo: 'Domanda AI "' + r.domanda + '": ' + c }, (x) => x.rif === 'aeo/' + r.id, { costo: stima('Medio', 'implementa_nota') }));
       tb.append(el('tr', {}, [
         el('td', {}, [sito(p)]),
         el('td', { style: 'white-space:nowrap', textContent: r.motore || '' }),
@@ -756,7 +847,7 @@
   function consumo(r) {
     const p = [];
     if (r.cr != null) p.push(r.cr + ' cr');
-    if (r.usd != null) p.push(Number(r.usd).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' $');
+    if (usdOk(r.usd)) p.push(Number(r.usd).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' $');
     if (r.tok != null) p.push((r.tok / 1e6).toLocaleString('it-IT', { maximumFractionDigits: 1 }) + ' M tok');
     return p.join(' · ') || '—';
   }
@@ -769,7 +860,7 @@
     }
     for (const r of state.interventi) rows.push({ t: r.quando, progetto: r.progetto, titolo: r.titolo || '', stato: r.stato || 'Fatto', esito: r.esito || '', link: r.link, chat: r.sessione, cr: r.crediti_openseo, usd: r.costo_usd, tok: r.token_totali });
     const sette = Date.now() - 7 * 864e5;
-    const ult = rows.filter((r) => r.t && new Date(r.t).getTime() >= sette && (r.usd != null || r.cr != null));
+    const ult = rows.filter((r) => r.t && new Date(r.t).getTime() >= sette && (usdOk(r.usd) || r.cr != null));
     const sum = (k) => ult.reduce((a, r) => a + (Number(r[k]) || 0), 0);
     const st = (state.editor.find((d) => d.id === 'stato') || {});
     const parti = [];
@@ -879,7 +970,7 @@
     try { const user = await window.claude.use('user'); if (user && user.can) { const c = await user.can('data.write'); if (c === false) state.canWrite = false; } } catch (e) {}
     try { state.mcp = await window.claude.use('mcp'); } catch (e) { state.mcp = null; }
     const sub = (name) => db.collection(name).onSnapshot((snap) => { state[name] = snap.docs.map((d) => Object.assign({ id: d.id }, d.data())); if (name === 'progetti') state.progetti.sort((a, b) => (a.ordine || 0) - (b.ordine || 0)); pianifica(); }, () => say('Connessione ai dati interrotta: ricarica la pagina.'));
-    ['progetti', 'metriche', 'piano', 'pagine', 'aeo', 'interazioni', 'salute', 'keyword', 'idee', 'consigli', 'richieste', 'editor', 'interventi'].forEach(sub);
+    ['progetti', 'metriche', 'piano', 'pagine', 'aeo', 'interazioni', 'salute', 'keyword', 'idee', 'consigli', 'richieste', 'editor', 'interventi', 'serie'].forEach(sub);
   })();
 })();
 </script>

@@ -4,3 +4,4 @@ editor-in-chief.local.yaml
 *.pem
 *service-account*.json
 __pycache__/
+demo/index.html

@@ -5,6 +5,8 @@
 It runs on Claude: a dashboard published as a Claude artifact with a shared database, two Claude
 routines that do the work, and your own GitHub repos and deploy workflows. No server to host.
 
+**[Try the live demo](https://vitosemeraro.github.io/editor-in-chief-seo-geo/)** with invented sites and data: the buttons work and simulate the agent.
+
 > Status: early. Built and used daily on 4 real sites (a SaaS, a personal site, two short-term rental
 > sites in Milan). This repository is the generalized version: everything specific to those sites has
 > been moved into a single config file. It was born as "Regia", Italian for *direction*.
@@ -18,6 +20,8 @@ routines that do the work, and your own GitHub repos and deploy workflows. No se
 | Editorial calendar | Rows with date, topic, keyword, languages and a state: Idea, Da confermare, Programmato, Scritto, Pubblicato, In pausa. **The calendar drives the agents**: you set the state, they do the rest |
 | Ideas from data | Topics suggested from Search Console queries in position 5-20, keywords without a page, AI questions where competitors are cited. One click adds them to the calendar |
 | Tips with actions | Concrete fixes per site. "Applica ora" makes the change on the site. Tips that need your access (DNS, Google Business) become "do it by hand" cards; "L'ho fatto" makes the agent verify it with the data |
+| Costs and priorities | Every tip and page fix is ranked by impact ÷ effort. Every button shows an estimated cost, every finished job its real cost (Claude $ and data credits), every site its spend in the last 7 days and in total |
+| Weekly chart | Per site: impressions, clicks and visits week by week |
 | Work log | Every action with result, public link, cost, and a link to the Claude session that did it |
 
 ## How it works
@@ -72,6 +76,8 @@ enabling AI visibility or SERP tracking.
 | `sources/` | data modules: what each reads and fills |
 | `deploy/` | GitHub Actions for Firebase, Netlify, Vercel, FTPS |
 | `scripts/` | link checker, secret scan, config validator |
+| `demo/` | the demo: invented data in memory, built by `scripts/build_demo.py` |
+| `CHANGELOG.md`, `VERSION` | what changed in each version |
 | `docs/ROADMAP.md` | what comes next |
 
 ## Limits

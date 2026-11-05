@@ -35,9 +35,17 @@ id, start from it. For each one:
 
 1. Set it `In lavorazione` (update with if_version): iniziata_il = now, passo = "Inizio", sessione = the
    link of this session (get_session without session_id → `https://claude.ai/code/<session id>`).
+   At the same moment take two starting points for usage:
+   - the session usage from get_session without session_id (`external_metadata.usage`: cost_usd,
+     input_tokens, output_tokens, cache_read_tokens, cache_write_tokens);
+   - the remaining credits of paid data providers, if any (OpenSEO: whoami → creditsRemaining).
 2. Do the work for its type. On long steps update `passo` with a short sentence.
 3. Close it with stato `Fatto`, `Da approvare`, `Da fare a mano` or `Errore`, plus esito (1-2 sentences),
-   link and finita_il. If you can measure usage, add crediti_openseo, costo_usd, token_output, token_totali.
+   link and finita_il. Then write the usage as the difference from the starting points:
+   `costo_usd` (2 decimals), `token_output`, `token_totali` (input + output + cache read + cache write),
+   `crediti_openseo` (0 if none). Update `editor/stato` with `crediti_openseo_residui` and
+   `crediti_letti_il`. The dashboard uses these numbers for the real cost of each job, the estimate on
+   every button and the spend per site.
 4. Update the linked document as described for the type.
 
 If a request fails, move to the next. When done, read the queue again: the owner may have pressed more
@@ -46,10 +54,20 @@ buttons. Stop only when nothing is `In coda`.
 ### Request types
 
 - **aggiorna_dati** (progetto = a site or `tutti`): do step 2 of the weekly review for those sites, then
-  set `editor/stato.ultimo_aggiornamento` = now and `fonti_saltate`.
+  set `editor/stato.ultimo_aggiornamento` = now and `fonti_saltate`. Also:
+  - every `pagine` row gets `consiglio` (the most useful move for THAT page, with its number: position,
+    impressions or clicks; max 160 characters), `impatto`, `sforzo` and `azione` (`auto` if it is a repo
+    change, `nessuna` if the page is already on top, was rewritten less than 3 weeks ago, answers
+    301/410 or has fewer than 5 impressions). Never the same generic tip on several rows;
+  - extend the daily series `serie/<site>` for the chart: Search Console by date from the day after the
+    last one stored; fields `inizio` (YYYY-MM-DD), `clic[]`, `impressioni[]` (one value per day), keep at
+    most 400 days, `aggiornato_il`.
 - **controllo_sito** (progetto): do `aggiorna_dati` for that site, then write 3-6 new tips in `consigli`
   (set, id `<site>-<YYYYMMDD>-<n>`, stato `Da fare`). `come` = `Automatico` if it is a change in the repo,
-  `A mano` if it needs the owner's access. Do not repeat existing tips, including `Fatto` or `Scartato`.
+  `A mano` if it needs the owner's access. Give each tip `impatto` (Alto, Medio, Basso) and `sforzo`:
+  Basso (1-2 files or a few minutes by hand), Medio (a new page or several pages), Alto (a new section or
+  hours of work). The dashboard sorts by impact divided by effort: be honest on both.
+  Do not repeat existing tips, including `Fatto` or `Scartato`.
   Set `salute/<site>.controllato_il` = now.
 - **applica_consiglio** (rif = `consigli/<id>`): apply the tip to the site as in "Where to publish". If it
   is `A mano` or needs access you do not have (DNS, Google Business, GA4 or Search Console settings),
@@ -85,7 +103,8 @@ stato `Pubblicato` (auto) or `Da approvare`/`Scritto` (draft) and `url`.
 ## 4) Log
 
 For work not started by a request (steps 2 and 3), add a document in `interventi`
-(id `<YYYYMMDD-HHMM>-<site>-<n>`) with quando, progetto, titolo, stato, esito, link, sessione.
+(id `<YYYYMMDD-HHMM>-<site>-<n>`) with quando, progetto, titolo, stato, esito, link, sessione and the
+same usage fields as the requests.
 
 ## 5) Close
 

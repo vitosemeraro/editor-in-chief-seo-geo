@@ -41,7 +41,8 @@ For each site, using only the modules enabled in `sources` (see `sources/*.md` f
 - **cloudflare_web_analytics (if enabled and the site has cloudflare_site_tag)**: visits and page
   views of the last 7 days. Do not use the 28-day figure: it is sampled.
 
-Write `metriche/<site>-<monday of this week>` (update, or set if new) and update `salute/<site>` with the
+Extend `serie/<site>` with the daily Search Console clicks and impressions since the last stored day
+(see the schema). Write `metriche/<site>-<monday of this week>` (update, or set if new) and update `salute/<site>` with the
 fields of the schema, a `stato` (Buono, Attenzione, Critico), a one-line `voto` and 3-5 `note` with real
 numbers on what changed and what to do. If a source fails, skip it and add it to
 `editor/stato.fonti_saltate`.

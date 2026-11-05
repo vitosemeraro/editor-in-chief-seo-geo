@@ -20,7 +20,7 @@ it lands here.
 - **Page-level actions:** each top page gets its own tip, impact, effort and an "Applica" button; pages
   that need nothing are marked and sorted last.
 - **Public demo** with invented sites and data (`demo/`), published with GitHub Pages.
-- Release workflow: pushing a `v*` tag creates a GitHub release from this changelog.
+- Release workflow: when `VERSION` changes on main, the tag and the GitHub release are created from this changelog.
 
 ### Changed
 - Routines now record usage at the start and end of every job (`costo_usd`, `token_output`,
@@ -37,5 +37,5 @@ it lands here.
   schema, dashboard that starts empty, modular data sources (Search Console required), deploy examples
   for Firebase, Netlify, Vercel and FTPS, link checker, secret scan and config validator in CI.
 
-[0.2.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.1.0...v0.2.0
-[0.1.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/releases/tag/v0.1.0
+[0.2.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/06ae37c...v0.2.0
+[0.1.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/tree/06ae37c

@@ -1,0 +1,15 @@
+name: Checks
+on:
+  push:
+  pull_request:
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: No secrets in the repo
+        run: bash scripts/check_secrets.sh .
+      - name: Example config is valid
+        run: pip install pyyaml && python3 scripts/validate_config.py regia.config.example.yaml
+      - name: Deploy examples are valid YAML
+        run: for f in deploy/*.yml; do python3 -c "import yaml,sys; yaml.safe_load(open(sys.argv[1]))" "$f"; done

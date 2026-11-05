@@ -1,0 +1,887 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Regia contenuti</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  /* Layout: una plancia di regia. In alto i siti e il pulsante di aggiornamento, poi salute e consigli con le azioni, poi calendario e dettaglio. */
+  :root {
+    --bg: #f5f6f8; --panel: #ffffff; --line: #dfe2e8; --fg: #1b2230; --muted: #5d6679; --accent: #2f5bd3;
+    --ok: #1d7a4f; --warn: #a76a06; --bad: #b4372e; --sel: #e8eefc;
+    --c1: #2f5bd3; --c2: #0f8a7a; --c3: #a04fc4; --c4: #c4572c;
+    --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+    --font-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+    --r: 10px;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+    --bg: #11151c; --panel: #181e27; --line: #2a3240; --fg: #e6e9ef; --muted: #98a2b5; --accent: #7d9cf0;
+    --ok: #4cc28a; --warn: #e0a23a; --bad: #ef7a70; --sel: #1f2a40;
+    --c1: #7d9cf0; --c2: #3cc3b0; --c3: #c98ae6; --c4: #ef8d62; color-scheme: dark } }
+  :root[data-theme="dark"] {
+    --bg: #11151c; --panel: #181e27; --line: #2a3240; --fg: #e6e9ef; --muted: #98a2b5; --accent: #7d9cf0;
+    --ok: #4cc28a; --warn: #e0a23a; --bad: #ef7a70; --sel: #1f2a40;
+    --c1: #7d9cf0; --c2: #3cc3b0; --c3: #c98ae6; --c4: #ef8d62; color-scheme: dark }
+  body { background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 14px; line-height: 1.5; }
+  .wrap { max-width: 1240px; margin: 0 auto; padding-block: 28px 56px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 28px; }
+  h1, h2 { font-family: var(--font-display); font-weight: 700; margin: 0; text-wrap: balance; }
+  h1 { font-size: clamp(26px, 4vw, 36px); letter-spacing: -0.01em; }
+  h2 { font-size: 19px; }
+  .sub { color: var(--muted); margin: 4px 0 0; max-width: 70ch; }
+  .head { display: flex; flex-wrap: wrap; gap: 16px; align-items: end; justify-content: space-between; }
+  .head-r { display: grid; gap: 10px; justify-items: end; }
+  @media (max-width: 700px) { .head-r { justify-items: start; } }
+  .refresh { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; font-size: 13px; color: var(--muted); }
+  .refresh b { color: var(--fg); font-weight: 600; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip { font: 500 13px var(--font-body); border: 1px solid var(--line); background: var(--panel); color: var(--fg); padding: 5px 12px; border-radius: 999px; cursor: pointer; display: inline-flex; gap: 6px; align-items: center; }
+  .chip.sm { font-size: 12px; padding: 3px 10px; }
+  .chip[aria-pressed="true"] { border-color: var(--fg); background: var(--fg); color: var(--bg); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--c, var(--muted)); flex: none; }
+  button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .sites { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 255px), 1fr)); }
+  .site { background: var(--panel); border: 1px solid var(--line); border-top: 3px solid var(--c); border-radius: var(--r); padding: 16px; display: grid; gap: 12px; min-width: 0; align-content: start; }
+  .site-top { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+  .site-name { font-family: var(--font-display); font-weight: 700; font-size: 18px; }
+  .site-url { color: var(--muted); font-size: 12px; overflow-wrap: anywhere; }
+  .kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 12px; }
+  .kpi .l { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+  .kpi .v { font-family: var(--font-mono); font-size: 20px; font-variant-numeric: tabular-nums; }
+  .kpi .d { font-family: var(--font-mono); font-size: 12px; }
+  .next { border-top: 1px dashed var(--line); padding-top: 10px; font-size: 13px; }
+  .next .l { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+  .pill { display: inline-block; font-size: 12px; padding: 1px 9px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; }
+  .ok { color: var(--ok); } .warn { color: var(--warn); } .bad { color: var(--bad); } .muted { color: var(--muted); }
+
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); padding: 18px; display: grid; gap: 12px; min-width: 0; align-content: start; }
+  .card-head { display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; align-items: baseline; }
+  .card-head p { margin: 2px 0 0; color: var(--muted); font-size: 13px; max-width: 80ch; }
+  .scroll { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+  th { text-align: left; font-weight: 600; font-size: 12px; color: var(--muted); padding: 6px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  td { padding: 7px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  td.num, th.num { text-align: right; font-family: var(--font-mono); }
+  td.url { overflow-wrap: anywhere; min-width: 10rem; max-width: 22rem; }
+  td.advice { min-width: 16rem; }
+  tr.week td { background: var(--bg); font-family: var(--font-mono); font-size: 12px; color: var(--muted); padding-top: 10px; }
+  tr.past td:not(.keep) { opacity: .62; }
+  tr.selected td { background: var(--sel); }
+  input[type=date], input[type=text], input[type=number], select { font: 13px var(--font-body); color: var(--fg); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 4px 6px; min-width: 0; }
+  input[type=number] { width: 5em; }
+  input.tema { width: 100%; min-width: 20rem; border-color: transparent; background: transparent; }
+  input.tema:hover, input.tema:focus { border-color: var(--line); background: var(--panel); }
+  .btn { font: 500 13px var(--font-body); border-radius: 6px; padding: 6px 12px; cursor: pointer; border: 1px solid var(--line); background: var(--panel); color: var(--fg); white-space: nowrap; }
+  .btn.sm { font-size: 12px; padding: 3px 9px; }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+  .btn.icon { padding: 3px 8px; color: var(--muted); }
+  .btn.danger { color: var(--bad); border-color: var(--bad); }
+  .btn:disabled { opacity: .55; cursor: default; }
+  .add { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); align-items: end; border-top: 1px dashed var(--line); padding-top: 12px; }
+  .add label { display: grid; gap: 3px; font-size: 12px; color: var(--muted); }
+  .add .wide { grid-column: span 2; }
+  @media (max-width: 520px) { .add .wide { grid-column: auto; } }
+  .status { font-size: 12px; color: var(--muted); min-height: 1.4em; }
+  .empty { color: var(--muted); padding: 14px 8px; }
+  .spark { display: block; width: 100%; height: 44px; }
+  .how { margin: 0; padding-left: 1.2em; color: var(--muted); font-size: 13px; display: grid; gap: 4px; max-width: 85ch; }
+
+  .light { display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; border: 1px solid var(--line); border-left: 4px solid var(--lc, var(--muted)); border-radius: var(--r); padding: 10px 14px; }
+  .light b { font-family: var(--font-display); font-size: 16px; }
+  .health { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); }
+  .hcard { border: 1px solid var(--line); border-left: 3px solid var(--c); border-radius: var(--r); padding: 14px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+  .hcard .site-top b { font-family: var(--font-display); font-size: 16px; }
+  .hcard .voto { font-size: 13px; color: var(--muted); margin-top: -4px; }
+  .hk { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .hk .l { font-size: 10.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); line-height: 1.25; }
+  .hk .v { font-family: var(--font-mono); font-size: 17px; font-variant-numeric: tabular-nums; }
+  .hk .d { font-family: var(--font-mono); font-size: 11px; }
+  .notes { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; font-size: 13px; }
+  .notes li { display: grid; gap: 4px; padding-left: 10px; border-left: 2px solid var(--line); }
+  .hacts { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; border-top: 1px dashed var(--line); padding-top: 10px; font-size: 12px; color: var(--muted); }
+  .act { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .rq { font-size: 12px; display: inline-flex; flex-wrap: wrap; gap: 4px 6px; align-items: center; }
+  .rq a { color: var(--accent); }
+  .per { font-size: 12px; color: var(--muted); }
+
+  .ideas, .tips { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); }
+  .idea, .tip { border: 1px solid var(--line); border-top: 3px solid var(--c); border-radius: var(--r); padding: 14px; display: grid; gap: 8px; align-content: start; min-width: 0; }
+  .idea h3, .tip h3 { margin: 0; font-size: 15px; font-weight: 600; line-height: 1.35; }
+  .idea .meta, .tip .meta { font-size: 12px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; }
+  .idea .why, .tip .why { margin: 0; font-size: 13px; }
+  .idea .clash { font-size: 12px; color: var(--warn); }
+  .idea .acts, .tip .acts { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; border-top: 1px dashed var(--line); padding-top: 10px; }
+  .tip.done { opacity: .7; }
+  .esito { font-size: 13px; border-left: 3px solid var(--ec, var(--muted)); padding: 6px 10px; border-radius: 4px; background: color-mix(in srgb, var(--ec, var(--muted)) 10%, transparent); }
+  .esito b { display: block; color: var(--ec, var(--fg)); margin-bottom: 2px; }
+  .toolbar { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; font-size: 12px; color: var(--muted); }
+  .pos { font-family: var(--font-mono); white-space: nowrap; }
+  .src { display: block; font-size: 11px; color: var(--muted); font-family: var(--font-body); }
+  td.wrap-text { min-width: 14rem; }
+  .top3 { font-size: 12px; color: var(--muted); }
+  .tag { display: inline-block; font: 600 10.5px var(--font-mono); letter-spacing: .06em; border: 1px solid var(--line); color: var(--muted); border-radius: 4px; padding: 1px 5px; margin-right: 6px; vertical-align: 3px; background: transparent; }
+  button.tag { cursor: pointer; margin: 0 3px 0 0; vertical-align: 0; }
+  .tag.on, button.tag[aria-pressed="true"] { color: var(--bg); background: var(--tc, var(--fg)); border-color: var(--tc, var(--fg)); }
+  .t-SEO { --tc: var(--c1); } .t-AEO { --tc: var(--c2); } .t-GEO { --tc: var(--c3); } .t-Tecnico { --tc: var(--muted); } .t-Conversioni { --tc: var(--c4); }
+  .legend { font-size: 12px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 14px; }
+  .bulk { position: sticky; top: 0; z-index: 2; display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; background: var(--sel); border: 1px solid var(--accent); border-radius: var(--r); padding: 10px 12px; font-size: 13px; }
+  .bulk[hidden] { display: none; }
+  .bulk .grp { display: inline-flex; gap: 6px; align-items: center; }
+  .small { font-size: 12px; color: var(--muted); }
+</style>
+
+<div class="wrap">
+  <header class="head">
+    <div>
+      <h1>Regia contenuti</h1>
+      <p class="sub">Tutti i tuoi siti in un posto: come vanno su Google (SEO), nelle risposte dirette di Google (AEO) e nelle citazioni dei motori AI (GEO), cosa migliorare e il calendario delle uscite. I pulsanti con stato avviano subito il lavoro.</p>
+    </div>
+    <div class="head-r">
+      <div class="refresh"><span id="agg-quando">Dati aggiornati: —</span><button class="btn primary" type="button" id="agg-btn">Aggiorna dati</button><span class="rq" id="agg-stato" aria-live="polite"></span></div>
+      <div class="chips" id="filtro" role="group" aria-label="Filtra per sito"></div>
+    </div>
+  </header>
+
+  <section class="sites" id="siti" aria-label="Siti"></section>
+
+  <section class="card" id="salute">
+    <div class="card-head"><div><h2>Stato di salute</h2><p>Visite e pagine viste da Google Analytics, ricerche da Search Console e cosa vogliono dire i numeri. Sotto, le tre azioni più utili per ogni sito: "Applica ora" fa la modifica sul sito. "Verifica e consiglia" rilegge i dati e aggiunge consigli nuovi.</p></div><span class="per" id="salute-per"></span></div>
+    <div class="light" id="semaforo" aria-live="polite"><span class="muted">Controllo lo stato…</span></div>
+    <div class="health" id="salute-box"><p class="empty">Carico lo stato dei siti…</p></div>
+  </section>
+
+  <section class="card" id="consigli">
+    <div class="card-head"><div><h2>Consigli per migliorare</h2><p>Azioni concrete tratte dai dati, dalla più utile. "Applica ora" fa la modifica sul sito: i siti in modalità automatica vengono pubblicati direttamente, gli altri ricevono una bozza da approvare. I consigli "a mano" richiedono un tuo accesso (per esempio Google Business): premi "Spiegami come" per avere i passi.</p></div><span class="status" id="cons-stato" aria-live="polite"></span></div>
+    <div class="toolbar"><div class="chips" id="cons-tipo" role="group" aria-label="Filtra per tipo"></div><label><input type="checkbox" id="cons-fatti"> mostra anche fatti e scartati</label><span id="cons-conta"></span></div>
+    <div class="tips" id="cons-box"><p class="empty">Carico i consigli…</p></div>
+  </section>
+
+  <section class="card" id="idee">
+    <div class="card-head"><div><h2>Idee dai dati</h2><p>Temi nuovi suggeriti da ricerche, posizioni e concorrenti. Scegli la data e aggiungili al calendario: entrano come "Da confermare", poi li metti su "Programmato" quando vuoi che escano.</p></div><span class="status" id="idee-stato" aria-live="polite"></span></div>
+    <div class="ideas" id="idee-box"><p class="empty">Carico le idee…</p></div>
+  </section>
+
+  <section class="card" id="calendario">
+    <div class="card-head">
+      <div>
+        <h2>Calendario uscite</h2>
+        <p>Le uscite seguono i giorni scelti in regia.config.yaml. Cambia data, tema, tipo o stato e si salva da solo. Seleziona più righe, anche di siti diversi, per cambiarle in blocco. Tutto quello che è "Programmato" esce da solo nella sua data (o diventa una bozza da approvare, se il sito è in modalità bozza). Metti "In pausa" solo quello che vuoi fermare.</p>
+      </div>
+      <span class="status" id="stato-salvataggio" aria-live="polite"></span>
+    </div>
+    <div class="toolbar">
+      <div class="chips" id="cal-tipo" role="group" aria-label="Filtra per tipo"></div>
+      <label>Stato <select id="cal-stato"><option value="">tutti</option></select></label>
+      <label><input type="checkbox" id="cal-passate"> mostra le settimane passate</label>
+      <span class="legend"><span><span class="tag t-SEO on">SEO</span>Google</span><span><span class="tag t-AEO on">AEO</span>risposte dirette di Google</span><span><span class="tag t-GEO on">GEO</span>citazioni nei motori AI</span></span>
+    </div>
+    <div class="bulk" id="bulk" hidden>
+      <b id="bulk-n">0 selezionate</b>
+      <span class="grp">Stato <select id="bulk-stato"></select><button class="btn sm" type="button" id="bulk-stato-go">Applica</button></span>
+      <span class="grp">Sposta di <input type="number" id="bulk-giorni" value="7" step="1" aria-label="Giorni"> giorni <button class="btn sm" type="button" id="bulk-sposta-go">Sposta</button></span>
+      <span class="grp">Data <input type="date" id="bulk-data"><button class="btn sm" type="button" id="bulk-data-go">Imposta</button></span>
+      <span class="grp">Tipo <select id="bulk-tipo"><option>SEO</option><option>AEO</option><option>GEO</option></select><button class="btn sm" type="button" id="bulk-tipo-add">Aggiungi</button><button class="btn sm" type="button" id="bulk-tipo-del">Togli</button></span>
+      <button class="btn sm icon" type="button" id="bulk-none">Deseleziona</button>
+    </div>
+    <div class="scroll">
+      <table>
+        <thead><tr><th><input type="checkbox" id="sel-all" aria-label="Seleziona tutte le righe visibili"></th><th>Data</th><th>Sito</th><th>Tema</th><th>Tipo</th><th>Keyword</th><th>Stato</th><th></th></tr></thead>
+        <tbody id="piano-body"><tr><td colspan="8" class="empty">Carico il calendario…</td></tr></tbody>
+      </table>
+    </div>
+    <form class="add" id="add-form">
+      <label>Data<input type="date" id="add-data" required></label>
+      <label>Sito<select id="add-progetto"></select></label>
+      <label class="wide">Tema<input type="text" id="add-tema" required placeholder="Titolo dell'articolo"></label>
+      <label>Keyword<input type="text" id="add-keyword" placeholder="Ricerca principale"></label>
+      <label>Lingue<input type="text" id="add-lingue" placeholder="it, en"></label>
+      <button class="btn primary" type="submit">Aggiungi uscita</button>
+    </form>
+  </section>
+
+  <section class="card" id="mercato">
+    <div class="card-head"><div><h2><span class="tag">SEO</span><span class="tag">AEO</span> Parole chiave e mercato</h2><p>Le ricerche che contano per ogni sito: quante volte si cercano al mese in Italia, dove siamo noi e chi è primo su Google. "Risposta AI" dice se Google mostra una risposta generata o le domande correlate. Dove non abbiamo una pagina, "Crea pagina ora" la scrive e la pubblica subito, senza passare dal calendario.</p></div></div>
+    <div class="scroll"><table>
+      <thead><tr><th>Sito</th><th>Ricerca</th><th class="num">Ricerche/mese</th><th class="num">Noi</th><th>Nostra pagina</th><th>Primo su Google</th><th>Risposta AI</th><th>Cosa notare</th></tr></thead>
+      <tbody id="kw-body"></tbody>
+    </table></div>
+  </section>
+
+  <section class="card" id="pagine">
+    <div class="card-head"><div><h2><span class="tag">SEO</span> Pagine su Google</h2><p>Da Search Console, le pagine con più impressioni negli ultimi 28 giorni, ognuna con la mossa più utile.</p></div></div>
+    <div class="scroll"><table>
+      <thead><tr><th>Sito</th><th>Pagina</th><th class="num">Impr.</th><th class="num">Clic</th><th class="num">Pos.</th><th>Consiglio</th></tr></thead>
+      <tbody id="pagine-body"></tbody>
+    </table></div>
+  </section>
+
+  <section class="card" id="ai">
+    <div class="card-head"><div><h2><span class="tag">GEO</span> Citazioni nei motori AI</h2><p>Le domande del pubblico ripetute su ChatGPT, Perplexity e simili: "sì" vuol dire che il sito viene citato. Accanto, chi citano oggi e cosa fare per entrare. Il controllo gira con la cadenza della routine settimanale.</p></div></div>
+    <div class="scroll"><table>
+      <thead><tr><th>Sito</th><th>Motore</th><th>Domanda</th><th>Citato</th><th>Chi citano</th><th>Consiglio</th></tr></thead>
+      <tbody id="ai-body"></tbody>
+    </table></div>
+  </section>
+
+  <section class="card" id="log">
+    <div class="card-head"><div><h2>Registro interventi</h2><p>Tutto quello che Claude ha fatto sui siti e sulla regia, dal più recente. "Apri la chat" riapre la conversazione che ha fatto il lavoro: lì puoi fare domande o chiedere di continuare.</p></div></div>
+    <div class="toolbar"><span id="log-consumo" class="small"></span><label><input type="checkbox" id="log-tutti"> mostra anche annullati e in coda</label></div>
+    <div class="scroll"><table>
+      <thead><tr><th>Quando</th><th>Sito</th><th>Intervento</th><th>Esito</th><th>Consumo</th><th>Link</th></tr></thead>
+      <tbody id="log-body"></tbody>
+    </table></div>
+  </section>
+
+  <section class="card" id="interazioni">
+    <div class="card-head"><div><h2>Cosa fanno i visitatori</h2><p>Dal contatore anonimo sul sito (nessun cookie, nessun IP): visite alle schede, uso del calendario, preventivi, richieste e clic dagli articoli. Opzionale: si riempie se il sito invia eventi alla collezione "interazioni".</p></div></div>
+    <div class="scroll"><table>
+      <thead><tr><th>Sito</th><th>Pagina o scheda</th><th class="num">Visite</th><th class="num">Letto fino in fondo</th><th class="num">Calendario</th><th class="num">Preventivo</th><th class="num">Richieste</th><th class="num">Clic verso schede</th></tr></thead>
+      <tbody id="inter-body"></tbody>
+    </table></div>
+  </section>
+
+  <section class="card">
+    <h2>Come funziona</h2>
+    <ul class="how">
+      <li>Nei giorni di uscita scelti in configurazione le routine leggono il calendario, scrivono i contenuti "Programmato" del giorno, li pubblicano (o preparano la bozza) e li segnano.</li>
+      <li>I pulsanti (Aggiorna dati, Verifica e consiglia, Applica, Crea pagina ora) mettono il lavoro in coda e lo avviano subito; lo stato accanto al pulsante si aggiorna da solo. Se l'avvio immediato non è disponibile, il lavoro parte al prossimo giro programmato.</li>
+      <li>Ogni sito ha una modalità: "auto" pubblica direttamente, "draft" prepara una bozza da approvare.</li>
+      <li>Per spostare un'uscita cambia la data; per fermarla metti "In pausa". Per cambiarne molte insieme selezionale.</li>
+      <li>Stato di salute, parole chiave e idee si aggiornano dalle fonti dati attive in configurazione (Search Console come base; Analytics, Cloudflare, visibilità AI opzionali). Le idee e i consigli che scarti non tornano.</li>
+    </ul>
+  </section>
+</div>
+
+<script>
+(function () {
+  const TRIGGER = () => ((state.regia.find((d) => d.id === 'config') || {}).trigger_id || '');
+  const STATI = ['Idea', 'Da confermare', 'Programmato', 'Scritto', 'Pubblicato', 'In pausa'];
+  const TIPI = ['SEO', 'AEO', 'GEO'];
+  const TIPI_CONS = ['SEO', 'AEO', 'GEO', 'Tecnico', 'Conversioni'];
+  const STATO_CLS = { 'Pubblicato': 'ok', 'Scritto': 'ok', 'Programmato': 'warn', 'In pausa': 'bad', 'Idea': 'muted', 'Da confermare': 'muted' };
+  const RQ_CLS = { 'In coda': 'muted', 'In lavorazione': 'warn', 'Fatto': 'ok', 'Da approvare': 'warn', 'Da fare a mano': 'warn', 'Da verificare': 'warn', 'Errore': 'bad', 'Annullata': 'muted' };
+  const IMP = { 'Alto': 0, 'Medio': 1, 'Basso': 2 };
+  const state = { progetti: [], metriche: [], piano: [], pagine: [], aeo: [], interazioni: [], salute: [], keyword: [], idee: [], consigli: [], richieste: [], regia: [], interventi: [], logTutti: false,
+    filtro: 'tutti', calTipo: '', calStato: '', calPassate: false, consTipo: '', consFatti: false, sel: new Set(), db: null, mcp: null, canWrite: true };
+  try { state.filtro = localStorage.getItem('regia-filtro') || 'tutti'; } catch (e) {}
+
+  const $ = (id) => document.getElementById(id);
+  const el = (tag, props, kids) => { const n = document.createElement(tag); if (props) Object.assign(n, props); (kids || []).forEach((k) => n.append(k)); return n; };
+  const fmt = (v) => (v == null || v === '' || isNaN(Number(v)) ? '—' : Number(v).toLocaleString('it-IT', { useGrouping: 'always' }));
+  const fmtPos = (v) => (v == null || v === '' ? '—' : Number(v).toLocaleString('it-IT', { maximumFractionDigits: 1 }));
+  const iso = (d) => d.toISOString().slice(0, 10);
+  const oggi = iso(new Date());
+  const dataIt = (d) => { if (!d) return ''; const x = new Date(d + 'T12:00:00'); return x.toLocaleDateString('it-IT', { weekday: 'short', day: 'numeric', month: 'short' }); };
+  const quando = (t) => { if (!t) return ''; const x = new Date(t); if (isNaN(x)) return ''; return x.toLocaleString('it-IT', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }); };
+  const lunedi = (d) => { const x = new Date(d + 'T12:00:00'); const g = (x.getDay() + 6) % 7; x.setDate(x.getDate() - g); return iso(x); };
+  const piuGiorni = (d, n) => { const x = new Date(d + 'T12:00:00'); x.setDate(x.getDate() + n); return iso(x); };
+  const prog = (id) => state.progetti.find((p) => p.id === id) || { id, nome: id, colore: 'var(--muted)' };
+  const visibile = (pid) => state.filtro === 'tutti' || state.filtro === pid;
+  const say = (t) => { $('stato-salvataggio').textContent = t; };
+  const dot = (p) => { const d = el('span', { className: 'dot' }); d.style.setProperty('--c', p.colore); return d; };
+  const sito = (p) => el('span', { style: 'display:inline-flex;gap:6px;align-items:center;white-space:nowrap' }, [dot(p), p.nome]);
+  const tag = (t, on) => el('span', { className: 'tag t-' + t + (on ? ' on' : ''), textContent: t });
+
+  /* ---------- Richieste: il lavoro che parte dai pulsanti ---------- */
+  const ultima = (fn) => state.richieste.filter(fn).sort((a, b) => String(b.creata_il || '').localeCompare(String(a.creata_il || '')))[0];
+  const inCorso = (r) => r && (r.stato === 'In coda' || r.stato === 'In lavorazione');
+
+  async function avvia(id) {
+    const ref = state.db.collection('richieste').doc(id);
+    if (!state.mcp || !TRIGGER()) { try { await ref.update({ passo: 'Partirà con il prossimo giro programmato: avvio immediato non configurato.' }); } catch (e) {} return; }
+    try {
+      await state.mcp.callTool('Claude Code Remote', 'fire_trigger', { trigger_id: TRIGGER() });
+      await ref.update({ avviata_il: new Date().toISOString(), passo: 'Avviata: la sessione parte tra poco' });
+    } catch (e) {
+      const code = e && e.code;
+      const msg = code === 'approval_required' ? 'Serve il tuo permesso per avviare il lavoro: premi "Riprova avvio" e consenti.'
+        : code === 'server_not_connected' ? 'Connettore Claude Code Remote non collegato: partirà con il prossimo giro programmato.'
+        : code === 'not_in_manifest' ? 'Avvio immediato non consentito in questa vista: partirà con il prossimo giro programmato.'
+        : code === 'needs_reauth' ? 'Ricollega Claude Code Remote nelle impostazioni dei connettori: intanto partirà con il prossimo giro programmato.'
+        : 'Avvio immediato non riuscito: partirà con il prossimo giro programmato.';
+      try { await ref.update({ passo: msg, avvio_fallito: code || 'errore' }); } catch (x) {}
+    }
+  }
+
+  async function richiedi(tipo, campi) {
+    if (!state.db) return null;
+    const doc = Object.assign({ tipo, stato: 'In coda', passo: 'In coda', creata_il: new Date().toISOString() }, campi);
+    const ref = await state.db.collection('richieste').add(doc);
+    if (ref && ref.id) avvia(ref.id);
+    return ref && ref.id;
+  }
+
+  function badge(r) {
+    if (!r) return null;
+    const box = el('span', { className: 'rq' });
+    box.append(el('span', { className: 'pill ' + (RQ_CLS[r.stato] || 'muted'), textContent: r.stato }));
+    const txt = inCorso(r) ? (r.passo || '') : (r.esito || r.passo || '');
+    if (txt) box.append(el('span', { className: 'muted', textContent: txt }));
+    if (r.link && /^https?:\/\//.test(r.link)) box.append(el('a', { href: r.link, target: '_blank', rel: 'noopener', textContent: 'apri' }));
+    if (r.stato === 'In coda' && r.avvio_fallito === 'approval_required') {
+      const again = el('button', { className: 'btn sm', type: 'button', textContent: 'Riprova avvio' });
+      again.addEventListener('click', () => { again.disabled = true; avvia(r.id); });
+      box.append(again);
+    }
+    return box;
+  }
+
+  /* Un pulsante d'azione con il suo stato: il lavoro più recente che corrisponde a match. */
+  function azione(label, tipo, campi, match, opts) {
+    const o = opts || {};
+    const wrap = el('span', { className: 'act' });
+    const r = ultima((x) => x.tipo === tipo && match(x));
+    const b = el('button', { className: 'btn sm' + (o.primary ? ' primary' : ''), type: 'button', textContent: r && !inCorso(r) ? (o.again || 'Rifai') : label, disabled: !state.canWrite || inCorso(r) });
+    b.addEventListener('click', async () => {
+      b.disabled = true; b.textContent = 'Metto in coda…';
+      try { await richiedi(tipo, campi); }
+      catch (e) { b.disabled = false; b.textContent = label; const s = $(o.statusId || 'cons-stato'); if (s) s.textContent = e && e.code === 'not_granted' ? 'Solo chi modifica la dashboard può avviare lavori.' : 'Non avviato: riprova tra poco.'; }
+    });
+    wrap.append(b);
+    if (!o.noBadge) { const bd = badge(r); if (bd) wrap.append(bd); }
+    return wrap;
+  }
+
+  /* ---------- Testata ---------- */
+  function renderFiltro() {
+    const box = $('filtro'); box.replaceChildren();
+    const opts = [{ id: 'tutti', nome: 'Tutti' }].concat(state.progetti);
+    for (const p of opts) {
+      const b = el('button', { className: 'chip', type: 'button' });
+      b.setAttribute('aria-pressed', String(state.filtro === p.id));
+      if (p.id !== 'tutti') b.append(dot(p));
+      b.append(p.nome);
+      b.addEventListener('click', () => { state.filtro = p.id; state.sel.clear(); try { localStorage.setItem('regia-filtro', p.id); } catch (e) {} renderAll(); });
+      box.append(b);
+    }
+  }
+
+  function renderAggiorna() {
+    const st = state.regia.find((d) => d.id === 'stato') || {};
+    $('agg-quando').replaceChildren('Dati aggiornati: ', el('b', { textContent: quando(st.ultimo_aggiornamento) || '—' }));
+    const r = ultima((x) => x.tipo === 'aggiorna_dati');
+    const b = $('agg-btn');
+    b.disabled = !state.db || !state.canWrite || inCorso(r);
+    b.textContent = inCorso(r) ? 'Aggiornamento in corso' : 'Aggiorna dati' + (state.filtro !== 'tutti' ? ' di ' + prog(state.filtro).nome : '');
+    const box = $('agg-stato'); box.replaceChildren(); const bd = badge(r); if (bd && (inCorso(r) || r.stato === 'Errore')) box.append(bd);
+  }
+  $('agg-btn').addEventListener('click', async () => {
+    const b = $('agg-btn'); b.disabled = true; b.textContent = 'Metto in coda…';
+    try { await richiedi('aggiorna_dati', { progetto: state.filtro }); }
+    catch (e) { b.disabled = false; $('agg-stato').textContent = e && e.code === 'not_granted' ? 'Solo chi modifica la dashboard può aggiornare.' : 'Non avviato: riprova.'; }
+  });
+
+  function delta(cur, prev, lowerIsBetter) {
+    if (cur == null || prev == null || isNaN(cur) || isNaN(prev)) return null;
+    const d = Number(cur) - Number(prev); if (!d) return { t: '=', c: 'muted' };
+    const good = lowerIsBetter ? d < 0 : d > 0;
+    const t = (d > 0 ? '+' : '') + d.toLocaleString('it-IT', { maximumFractionDigits: 1 });
+    return { t, c: good ? 'ok' : 'bad' };
+  }
+
+  function spark(rows) {
+    const vals = rows.map((r) => Number(r.impressioni)).filter((v) => !isNaN(v));
+    if (vals.length < 2) return null;
+    const w = 240, h = 44, max = Math.max(...vals, 1);
+    const pts = vals.map((v, i) => [i * (w - 8) / (vals.length - 1) + 4, h - 6 - (v / max) * (h - 12)]);
+    const ns = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns, 'svg'); svg.setAttribute('viewBox', `0 0 ${w} ${h}`); svg.setAttribute('class', 'spark'); svg.setAttribute('preserveAspectRatio', 'none');
+    const area = document.createElementNS(ns, 'path');
+    area.setAttribute('d', `M${pts[0][0]},${h - 4} ` + pts.map((p) => `L${p[0]},${p[1]}`).join(' ') + ` L${pts[pts.length - 1][0]},${h - 4} Z`);
+    area.setAttribute('fill', 'var(--c)'); area.setAttribute('opacity', '0.12');
+    const line = document.createElementNS(ns, 'path');
+    line.setAttribute('d', pts.map((p, i) => `${i ? 'L' : 'M'}${p[0]},${p[1]}`).join(' '));
+    line.setAttribute('fill', 'none'); line.setAttribute('stroke', 'var(--c)'); line.setAttribute('stroke-width', '2'); line.setAttribute('vector-effect', 'non-scaling-stroke');
+    const end = document.createElementNS(ns, 'circle'); const last = pts[pts.length - 1];
+    end.setAttribute('cx', last[0]); end.setAttribute('cy', last[1]); end.setAttribute('r', '3'); end.setAttribute('fill', 'var(--c)');
+    svg.append(area, line, end);
+    const t = document.createElementNS(ns, 'title'); t.textContent = 'Impressioni Google per settimana'; svg.prepend(t);
+    return svg;
+  }
+
+  function renderSiti() {
+    const box = $('siti'); box.replaceChildren();
+    if (!state.progetti.length) { box.append(el('p', { className: 'empty', textContent: 'Nessun sito ancora configurato.' })); return; }
+    for (const p of state.progetti) {
+      if (!visibile(p.id)) continue;
+      const serie = state.metriche.filter((m) => m.progetto === p.id).sort((a, b) => String(a.settimana).localeCompare(String(b.settimana)));
+      const cur = serie[serie.length - 1], prev = serie[serie.length - 2];
+      const usciti = state.piano.filter((r) => r.progetto === p.id && r.stato === 'Pubblicato').length;
+      const prossimo = state.piano.filter((r) => r.progetto === p.id && r.data >= oggi && r.stato !== 'Pubblicato' && r.stato !== 'In pausa').sort((a, b) => a.data.localeCompare(b.data))[0];
+      const card = el('article', { className: 'site' }); card.style.setProperty('--c', p.colore);
+      const auto = el('span', { className: 'pill ' + (p.automazione === 'Automatica' ? 'ok' : p.automazione === 'Con il tuo ok' ? 'warn' : 'muted'), textContent: p.automazione || 'Da attivare' });
+      card.append(el('div', { className: 'site-top' }, [el('div', {}, [el('div', { className: 'site-name', textContent: p.nome }), el('div', { className: 'site-url', textContent: p.sito })]), auto]));
+      const kp = el('div', { className: 'kpis' });
+      const k = (label, v, d) => { const n = el('div', { className: 'kpi' }, [el('div', { className: 'l', textContent: label }), el('div', { className: 'v', textContent: v })]); if (d) n.append(el('div', { className: 'd ' + d.c, textContent: d.t + ' vs sett. prima' })); return n; };
+      const sal = state.salute.find((s) => s.id === p.id) || {};
+      kp.append(
+        k('Clic Google 28 gg', fmt(cur ? cur.clic : sal.clic_28g), cur && prev ? delta(cur.clic, prev.clic) : null),
+        k('Impressioni 28 gg', fmt(cur ? cur.impressioni : sal.impressioni_28g), cur && prev ? delta(cur.impressioni, prev.impressioni) : null),
+        k('Posizione media', fmtPos(cur && cur.posizione), cur && prev ? delta(cur.posizione, prev.posizione, true) : null),
+        k('Citazioni AI', cur && cur.domande_ai ? `${fmt(cur.citazioni_ai)}/${fmt(cur.domande_ai)}` : '—'),
+        k('Visite 7 gg', fmt(cur && cur.visite_7g != null ? cur.visite_7g : sal.visite_7g_cloudflare)),
+        k('Articoli usciti', fmt(usciti))
+      );
+      card.append(kp);
+      const sp = spark(serie); if (sp) card.append(sp);
+      const nx = el('div', { className: 'next' }, [el('div', { className: 'l', textContent: 'Prossima uscita' })]);
+      nx.append(prossimo ? el('div', {}, [el('b', { textContent: dataIt(prossimo.data) + ' · ' }), prossimo.tema]) : el('div', { className: 'muted', textContent: 'Niente in calendario' }));
+      card.append(nx);
+      box.append(card);
+    }
+  }
+
+  /* ---------- Stato di salute ---------- */
+  const SAL_CLS = { 'Buono': 'ok', 'Attenzione': 'warn', 'Critico': 'bad' };
+
+  function renderSemaforo() {
+    const box = $('semaforo'); box.replaceChildren();
+    const sal = state.progetti.filter((p) => visibile(p.id)).map((p) => [p, state.salute.find((s) => s.id === p.id)]).filter(([, s]) => s);
+    const daGuardare = sal.filter(([, s]) => s.stato !== 'Buono');
+    const rq = state.richieste.filter((r) => visibile(r.progetto || 'tutti') || r.progetto === 'tutti');
+    const corso = rq.filter(inCorso).length;
+    const errori = rq.filter((r) => r.stato === 'Errore' && (!r.finita_il || Date.now() - new Date(r.finita_il) < 7 * 864e5)).length;
+    const daApprovare = rq.filter((r) => r.stato === 'Da approvare' || r.stato === 'Da fare a mano').length;
+    const tuttoOk = !daGuardare.length && !errori;
+    box.style.setProperty('--lc', tuttoOk ? 'var(--ok)' : daGuardare.some(([, s]) => s.stato === 'Critico') || errori ? 'var(--bad)' : 'var(--warn)');
+    box.append(el('b', { className: tuttoOk ? 'ok' : 'warn', textContent: tuttoOk ? 'Tutto ok' : 'Da guardare' }));
+    if (daGuardare.length) box.append(el('span', { textContent: daGuardare.map(([p, s]) => p.nome + ' (' + (s.stato || '—') + ')').join(' · ') }));
+    box.append(el('span', { className: 'muted', textContent: [corso ? corso + ' lavori in corso' : 'nessun lavoro in corso', errori ? errori + ' con errore' : '', daApprovare ? daApprovare + ' da approvare o da fare a mano' : ''].filter(Boolean).join(' · ') }));
+  }
+
+  function renderSalute() {
+    renderSemaforo();
+    const box = $('salute-box'); box.replaceChildren();
+    const rows = state.progetti.filter((p) => visibile(p.id)).map((p) => [p, state.salute.find((s) => s.id === p.id || s.progetto === p.id)]).filter(([, s]) => s);
+    if (!rows.length) { box.append(el('p', { className: 'empty', textContent: 'Lo stato dei siti arriva al primo aggiornamento.' })); return; }
+    $('salute-per').textContent = rows[0][1].periodo || '';
+    for (const [p, s] of rows) {
+      const c = el('article', { className: 'hcard' }); c.style.setProperty('--c', p.colore);
+      c.append(el('div', { className: 'site-top' }, [el('b', { textContent: p.nome }), el('span', { className: 'pill ' + (SAL_CLS[s.stato] || 'muted'), textContent: s.stato || '—' })]));
+      if (s.voto) c.append(el('div', { className: 'voto', textContent: s.voto }));
+      const hk = el('div', { className: 'hk' });
+      const k = (l, v, prev) => { const n = el('div', {}, [el('div', { className: 'l', textContent: l }), el('div', { className: 'v', textContent: fmt(v) })]); const d = prev != null && v != null ? delta(v, prev) : null; if (d) n.append(el('div', { className: 'd ' + d.c, textContent: d.t })); return n; };
+      hk.append(k('Visite', s.sessioni_28g, s.sessioni_prev), k('Pagine viste', s.pagine_viste_28g), k('Visite da Google', s.sessioni_organiche, s.sessioni_organiche_prev), k('Clic Google', s.clic_28g, s.clic_prev), k('Impressioni', s.impressioni_28g, s.impressioni_prev), k('Visite 7 gg (CF)', s.visite_7g_cloudflare));
+      c.append(hk);
+      if (Array.isArray(s.note) && s.note.length) {
+        c.append(el('div', { className: 'l small', textContent: 'Cosa dicono i numeri' }));
+        c.append(el('ul', { className: 'notes' }, s.note.map((t) => el('li', {}, [el('span', { textContent: t })]))));
+      }
+      const top = state.consigli.filter((x) => x.progetto === p.id && !['Fatto', 'Scartato'].includes(x.stato) && x.come !== 'A mano').sort((a, b) => (IMP[a.impatto] ?? 3) - (IMP[b.impatto] ?? 3)).slice(0, 3);
+      if (top.length) {
+        c.append(el('div', { className: 'l small', textContent: 'Cosa facciamo adesso' }));
+        c.append(el('ul', { className: 'notes' }, top.map((x) => el('li', {}, [el('b', { textContent: x.titolo }), azione('Applica ora', 'applica_consiglio', { progetto: x.progetto, rif: 'consigli/' + x.id, testo: x.titolo }, (q) => q.rif === 'consigli/' + x.id, { primary: x.stato !== 'Da fare a mano' }), segnaFatto(x)]))));
+      }
+      const act = el('div', { className: 'hacts' });
+      act.append(azione('Verifica e consiglia', 'controllo_sito', { progetto: p.id }, (x) => x.progetto === p.id, { primary: true, again: 'Verifica di nuovo' }));
+      act.append(el('span', { textContent: s.controllato_il ? 'Ultimo controllo ' + quando(s.controllato_il) : 'Dati del ' + (quando(s.aggiornato_il) || '—') }));
+      c.append(act);
+      box.append(c);
+    }
+  }
+
+  /* ---------- Consigli ---------- */
+  /* Il proprietario segna un consiglio come fatto a mano: Claude lo verifica e risponde sulla card. */
+  function segnaFatto(x, statusId) {
+    const wrap = el('span', { className: 'act' });
+    if (x.stato === 'Da verificare') { wrap.append(el('span', { className: 'pill warn', textContent: 'In verifica' })); return wrap; }
+    const b = el('button', { className: 'btn sm' + (x.stato === 'Da fare a mano' ? ' primary' : ' icon'), type: 'button', textContent: "L'ho fatto", disabled: !state.canWrite });
+    b.title = 'Claude controlla con i dati che sia fatto davvero e ti risponde qui';
+    b.addEventListener('click', async () => {
+      b.disabled = true; b.textContent = 'Chiedo la verifica…';
+      try {
+        await state.db.collection('consigli').doc(x.id).update({ stato: 'Da verificare', aggiornato_il: new Date().toISOString() });
+        await richiedi('verifica_manuale', { progetto: x.progetto, rif: 'consigli/' + x.id, testo: x.titolo });
+      } catch (e) { b.disabled = false; b.textContent = "L'ho fatto"; const st = $(statusId || 'cons-stato'); if (st) st.textContent = 'Non salvato: riprova.'; }
+    });
+    wrap.append(b);
+    return wrap;
+  }
+
+  function renderConsigli() {
+    const tb = $('cons-tipo'); tb.replaceChildren();
+    for (const t of [''].concat(TIPI_CONS)) {
+      const b = el('button', { className: 'chip sm', type: 'button', textContent: t || 'Tutti' });
+      b.setAttribute('aria-pressed', String(state.consTipo === t));
+      b.addEventListener('click', () => { state.consTipo = t; renderConsigli(); });
+      tb.append(b);
+    }
+    const box = $('cons-box'); box.replaceChildren();
+    const DUE_GIORNI = 2 * 864e5;
+    const recente = (r) => r.stato === 'Fatto' && r.aggiornato_il && (Date.now() - new Date(r.aggiornato_il).getTime()) < DUE_GIORNI;
+    const aperti = (r) => !['Fatto', 'Scartato'].includes(r.stato);
+    const inLista = (r) => aperti(r) || recente(r);
+    const tutti = state.consigli.filter((r) => visibile(r.progetto));
+    const rows = tutti.filter((r) => (!state.consTipo || r.tipo === state.consTipo) && (state.consFatti || inLista(r)))
+      .sort((a, b) => (inLista(b) - inLista(a)) || (recente(b) - recente(a)) || (aperti(b) - aperti(a)) || ((IMP[a.impatto] ?? 3) - (IMP[b.impatto] ?? 3)) || ((prog(a.progetto).ordine || 0) - (prog(b.progetto).ordine || 0)));
+    const nAperti = tutti.filter(aperti).length;
+    $('cons-conta').textContent = nAperti + ' da fare · ' + (tutti.length - nAperti) + ' fatti o scartati';
+    if (!rows.length) { box.append(el('p', { className: 'empty', textContent: state.consigli.length ? 'Nessun consiglio con questo filtro.' : 'I consigli arrivano con "Verifica e consiglia".' })); return; }
+    for (const r of rows) {
+      const p = prog(r.progetto);
+      const rq = ultima((x) => x.rif === 'consigli/' + r.id);
+      const c = el('article', { className: 'tip' + (aperti(r) || recente(r) ? '' : ' done') }); c.style.setProperty('--c', p.colore);
+      const meta = el('div', { className: 'meta' }, [sito(p), tag(r.tipo || 'SEO', true), el('span', { className: 'pill ' + (r.impatto === 'Alto' ? 'bad' : r.impatto === 'Medio' ? 'warn' : 'muted'), textContent: 'impatto ' + (r.impatto || '—').toLowerCase() }), el('span', { textContent: r.come === 'A mano' ? 'a mano' : 'automatico' })]);
+      if (r.stato && r.stato !== 'Da fare') meta.append(el('span', { className: 'pill ' + (RQ_CLS[r.stato] || 'muted'), textContent: r.stato }));
+      c.append(meta, el('h3', { textContent: r.titolo }), el('p', { className: 'why', textContent: r.dettaglio || '' }));
+      /* Esito ben visibile: cosa ha fatto o verificato Claude l'ultima volta. */
+      let titolo = '', testo = r.esito || '', col = 'var(--muted)';
+      if (rq && inCorso(rq)) { titolo = rq.tipo === 'verifica_manuale' ? 'Claude sta verificando…' : 'Claude ci sta lavorando…'; testo = rq.passo && rq.passo !== 'In coda' ? rq.passo : 'Parte entro un paio di minuti.'; col = 'var(--warn)'; }
+      else if (r.stato === 'Fatto') { titolo = rq && rq.tipo === 'verifica_manuale' ? '✓ Verificato da Claude' : '✓ Fatto'; testo = (rq && rq.esito) || r.esito || ''; col = 'var(--ok)'; }
+      else if (r.stato === 'Da fare a mano') { titolo = rq && rq.tipo === 'verifica_manuale' ? '✗ Non ancora completo' : 'Tocca a te'; testo = r.esito || (rq && rq.esito) || ''; col = 'var(--warn)'; }
+      else if (r.stato === 'Scartato') { titolo = 'Scartato'; }
+      else if (rq && rq.stato === 'Errore') { titolo = 'Non riuscito'; testo = rq.esito || ''; col = 'var(--bad)'; }
+      if (titolo || testo) { const e = el('div', { className: 'esito' }, [titolo ? el('b', { textContent: titolo }) : null, testo ? document.createTextNode(testo) : null].filter(Boolean)); e.style.setProperty('--ec', col); c.append(e); }
+      const acts = el('div', { className: 'acts' });
+      if (rq && inCorso(rq)) {
+        /* niente pulsanti mentre lavora */
+      } else if (aperti(r)) {
+        if (r.stato === 'Da fare a mano') acts.append(segnaFatto(r));
+        else acts.append(azione(r.come === 'A mano' ? 'Spiegami come' : 'Applica ora', 'applica_consiglio', { progetto: r.progetto, rif: 'consigli/' + r.id, testo: r.titolo }, (x) => x.rif === 'consigli/' + r.id, { primary: r.come !== 'A mano', statusId: 'cons-stato', noBadge: true }), segnaFatto(r));
+        const no = el('button', { className: 'btn sm icon', type: 'button', textContent: 'Scarta', disabled: !state.canWrite });
+        no.addEventListener('click', async () => { no.disabled = true; try { await state.db.collection('consigli').doc(r.id).update({ stato: 'Scartato', aggiornato_il: new Date().toISOString() }); } catch (e) { no.disabled = false; $('cons-stato').textContent = 'Non salvato: riprova.'; } });
+        acts.append(no);
+      } else {
+        const back = el('button', { className: 'btn sm icon', type: 'button', textContent: 'Riapri', disabled: !state.canWrite });
+        back.addEventListener('click', async () => { back.disabled = true; try { await state.db.collection('consigli').doc(r.id).update({ stato: 'Da fare', aggiornato_il: new Date().toISOString() }); } catch (e) { back.disabled = false; } });
+        acts.append(back);
+      }
+      const lk = (rq && rq.link) || r.link;
+      if (lk && /^https?:\/\//.test(lk)) acts.append(el('a', { href: lk, target: '_blank', rel: 'noopener', textContent: 'vedi' }));
+      if (rq && rq.sessione && /^https:\/\/claude\.ai\//.test(rq.sessione)) acts.append(el('a', { href: rq.sessione, target: '_blank', rel: 'noopener', textContent: 'apri la chat' }));
+      c.append(acts);
+      box.append(c);
+    }
+  }
+  $('cons-fatti').addEventListener('change', (e) => { state.consFatti = e.target.checked; renderConsigli(); });
+
+  /* ---------- Calendario ---------- */
+  async function salva(id, patch) {
+    if (!state.db) return;
+    say('Salvo…');
+    try { await state.db.collection('piano').doc(id).update(Object.assign({}, patch, { aggiornato_il: new Date().toISOString() })); say('Salvato'); }
+    catch (e) { say(e && e.code === 'not_granted' ? 'Non hai i permessi per modificare il calendario.' : 'Non salvato: riprova tra poco.'); }
+  }
+
+  function righeCalendario() {
+    const lun = lunedi(oggi);
+    return state.piano.filter((r) => visibile(r.progetto)
+      && (!state.calTipo || (Array.isArray(r.tipi) ? r.tipi : ['SEO']).includes(state.calTipo))
+      && (!state.calStato || r.stato === state.calStato)
+      && (state.calPassate || !r.data || r.data >= lun))
+      .sort((a, b) => (a.data || '').localeCompare(b.data || '') || String(a.progetto).localeCompare(String(b.progetto)));
+  }
+
+  function renderCalToolbar() {
+    const tb = $('cal-tipo'); tb.replaceChildren();
+    for (const t of [''].concat(TIPI)) {
+      const b = el('button', { className: 'chip sm', type: 'button', textContent: t || 'Tutti i tipi' });
+      b.setAttribute('aria-pressed', String(state.calTipo === t));
+      b.addEventListener('click', () => { state.calTipo = t; renderPiano(); renderCalToolbar(); });
+      tb.append(b);
+    }
+    const ss = $('cal-stato');
+    if (ss.options.length === 1) for (const s of STATI) ss.append(el('option', { value: s, textContent: s }));
+    const bs = $('bulk-stato');
+    if (!bs.options.length) for (const s of STATI) bs.append(el('option', { value: s, textContent: s, selected: s === 'Programmato' }));
+  }
+  $('cal-stato').addEventListener('change', (e) => { state.calStato = e.target.value; renderPiano(); });
+  $('cal-passate').addEventListener('change', (e) => { state.calPassate = e.target.checked; renderPiano(); });
+
+  function renderBulk() {
+    const vis = new Set(righeCalendario().map((r) => r.id));
+    for (const id of [...state.sel]) if (!vis.has(id)) state.sel.delete(id);
+    const n = state.sel.size;
+    $('bulk').hidden = !n;
+    const siti = new Set(state.piano.filter((r) => state.sel.has(r.id)).map((r) => prog(r.progetto).nome));
+    $('bulk-n').textContent = n + (n === 1 ? ' selezionata' : ' selezionate') + (siti.size ? ' (' + [...siti].join(', ') + ')' : '');
+    const all = $('sel-all');
+    all.checked = n > 0 && n === vis.size; all.indeterminate = n > 0 && n < vis.size;
+    all.disabled = !state.canWrite;
+  }
+
+  async function inBlocco(fn, etichetta) {
+    const rows = state.piano.filter((r) => state.sel.has(r.id));
+    if (!rows.length || !state.db) return;
+    let ok = 0, ko = 0;
+    for (const r of rows) {
+      const patch = fn(r); if (!patch) continue;
+      say(etichetta + ' ' + (ok + ko + 1) + ' di ' + rows.length + '…');
+      try { await state.db.collection('piano').doc(r.id).update(Object.assign(patch, { aggiornato_il: new Date().toISOString() })); ok++; } catch (e) { ko++; }
+    }
+    say(ko ? `Fatto su ${ok}, non salvate ${ko}: riprova.` : `Fatto su ${ok} righe.`);
+  }
+  $('bulk-stato-go').addEventListener('click', () => { const s = $('bulk-stato').value; inBlocco(() => ({ stato: s }), 'Cambio stato'); });
+  $('bulk-sposta-go').addEventListener('click', () => { const n = parseInt($('bulk-giorni').value, 10); if (!n) { say('Scrivi di quanti giorni spostare (anche negativo).'); return; } inBlocco((r) => (r.data ? { data: piuGiorni(r.data, n) } : null), 'Sposto'); });
+  $('bulk-data-go').addEventListener('click', () => { const d = $('bulk-data').value; if (!d) { say('Scegli la data.'); return; } inBlocco(() => ({ data: d }), 'Cambio data'); });
+  $('bulk-tipo-add').addEventListener('click', () => { const t = $('bulk-tipo').value; inBlocco((r) => { const cur = Array.isArray(r.tipi) ? r.tipi : ['SEO']; return cur.includes(t) ? null : { tipi: TIPI.filter((x) => cur.includes(x) || x === t) }; }, 'Aggiungo tipo'); });
+  $('bulk-tipo-del').addEventListener('click', () => { const t = $('bulk-tipo').value; inBlocco((r) => { const cur = Array.isArray(r.tipi) ? r.tipi : ['SEO']; return cur.includes(t) ? { tipi: cur.filter((x) => x !== t) } : null; }, 'Tolgo tipo'); });
+  $('bulk-none').addEventListener('click', () => { state.sel.clear(); renderPiano(); });
+  $('sel-all').addEventListener('change', (e) => { const rows = righeCalendario(); if (e.target.checked) rows.forEach((r) => state.sel.add(r.id)); else state.sel.clear(); renderPiano(); });
+
+  function renderPiano() {
+    const tb = $('piano-body'); tb.replaceChildren();
+    const rows = righeCalendario();
+    if (!rows.length) { tb.append(el('tr', {}, [el('td', { colSpan: 8, className: 'empty', textContent: state.piano.length ? 'Nessuna uscita con questi filtri.' : 'Nessuna uscita in calendario. Aggiungi la prima qui sotto.' })])); renderBulk(); return; }
+    let sett = null;
+    for (const r of rows) {
+      const w = r.data ? lunedi(r.data) : '';
+      if (w !== sett) {
+        sett = w;
+        const n = rows.filter((x) => x.data && lunedi(x.data) === w).length;
+        tb.append(el('tr', { className: 'week' }, [el('td', { colSpan: 8, textContent: w ? 'Settimana del ' + new Date(w + 'T12:00:00').toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' }) + ' · ' + n + (n === 1 ? ' uscita' : ' uscite') : 'Senza data' })]));
+      }
+      const p = prog(r.progetto);
+      const tr = el('tr'); if (r.data && r.data < oggi) tr.className = 'past';
+      if (state.sel.has(r.id)) tr.classList.add('selected');
+      const cb = el('input', { type: 'checkbox', checked: state.sel.has(r.id), disabled: !state.canWrite }); cb.setAttribute('aria-label', 'Seleziona ' + (r.tema || 'riga'));
+      cb.addEventListener('change', () => { if (cb.checked) state.sel.add(r.id); else state.sel.delete(r.id); tr.classList.toggle('selected', cb.checked); renderBulk(); });
+      const dIn = el('input', { type: 'date', value: r.data || '', disabled: !state.canWrite }); dIn.setAttribute('aria-label', 'Data di uscita');
+      dIn.addEventListener('change', () => { if (dIn.value) { r.data = dIn.value; salva(r.id, { data: dIn.value }); renderAll(); } });
+      const tIn = el('input', { type: 'text', value: r.tema || '', className: 'tema', disabled: !state.canWrite }); tIn.setAttribute('aria-label', 'Tema');
+      tIn.addEventListener('change', () => { const v = tIn.value.trim(); if (v && v !== r.tema) { r.tema = v; salva(r.id, { tema: v }); } });
+      const temaTd = el('td', { className: 'keep' }, [tIn]);
+      const sub = [r.lingue, r.origine === 'seconda uscita' ? 'seconda uscita' : r.origine === 'crea_pagina' ? 'pagina creata subito' : ''].filter(Boolean).join(' · ');
+      if (sub) temaTd.append(el('span', { className: 'src', textContent: sub }));
+      if (r.url) temaTd.append(el('span', { className: 'src', textContent: r.url }));
+      const tipiTd = el('td', { className: 'keep', style: 'white-space:nowrap' });
+      const cur = Array.isArray(r.tipi) ? r.tipi : ['SEO'];
+      for (const t of TIPI) {
+        const b = el('button', { className: 'tag t-' + t, type: 'button', textContent: t, disabled: !state.canWrite, title: cur.includes(t) ? 'Togli ' + t : 'Aggiungi ' + t });
+        b.setAttribute('aria-pressed', String(cur.includes(t)));
+        b.addEventListener('click', () => { const now = cur.includes(t) ? cur.filter((x) => x !== t) : TIPI.filter((x) => cur.includes(x) || x === t); r.tipi = now; salva(r.id, { tipi: now }); renderPiano(); });
+        tipiTd.append(b);
+      }
+      const sSel = el('select', { disabled: !state.canWrite }); sSel.setAttribute('aria-label', 'Stato');
+      for (const s of STATI) sSel.append(el('option', { value: s, textContent: s, selected: s === r.stato }));
+      sSel.className = STATO_CLS[r.stato] || '';
+      sSel.addEventListener('change', () => { r.stato = sSel.value; sSel.className = STATO_CLS[r.stato] || ''; salva(r.id, { stato: sSel.value }); renderSiti(); });
+      const del = el('button', { className: 'btn icon', type: 'button', textContent: 'Elimina', disabled: !state.canWrite });
+      const act = el('td', { className: 'keep' }, [del]);
+      del.addEventListener('click', () => {
+        act.replaceChildren();
+        const yes = el('button', { className: 'btn danger', type: 'button', textContent: 'Conferma' });
+        const no = el('button', { className: 'btn icon', type: 'button', textContent: 'Annulla' });
+        yes.addEventListener('click', async () => { say('Elimino…'); try { await state.db.collection('piano').doc(r.id).delete(); state.sel.delete(r.id); say('Eliminato'); } catch (e) { say('Non eliminato: riprova.'); } });
+        no.addEventListener('click', () => act.replaceChildren(del));
+        act.append(yes, ' ', no);
+      });
+      tr.append(el('td', { className: 'keep' }, [cb]), el('td', { className: 'keep' }, [dIn]), el('td', {}, [sito(p)]), temaTd, tipiTd, el('td', { textContent: r.keyword || '' }), el('td', { className: 'keep' }, [sSel]), act);
+      tb.append(tr);
+    }
+    renderBulk();
+  }
+
+  /* ---------- Parole chiave ---------- */
+  function renderKeyword() {
+    const tb = $('kw-body'); tb.replaceChildren();
+    const ord = (id) => (prog(id).ordine || 0);
+    const rows = state.keyword.filter((r) => visibile(r.progetto)).sort((a, b) => ord(a.progetto) - ord(b.progetto) || (b.volume || 0) - (a.volume || 0));
+    if (!rows.length) { tb.append(el('tr', {}, [el('td', { colSpan: 8, className: 'empty', textContent: 'Le parole chiave arrivano al primo aggiornamento.' })])); return; }
+    for (const r of rows) {
+      const p = prog(r.progetto);
+      const pos = r.nostra_posizione;
+      const cls = pos == null ? 'muted' : pos <= 10 ? 'ok' : pos <= 30 ? 'warn' : 'bad';
+      const posTd = el('td', { className: 'num' }, [el('span', { className: 'pos ' + cls, textContent: pos == null ? '—' : fmtPos(pos) }), el('span', { className: 'src', textContent: r.fonte_posizione || '' })]);
+      const lead = el('td', {}, [el('div', { textContent: r.leader || r.leader_dominio || '—' })]);
+      if (Array.isArray(r.top3) && r.top3.length) lead.append(el('div', { className: 'top3', textContent: 'Top 3: ' + r.top3.join(', ') }));
+      const pag = el('td', { className: 'url' });
+      if (r.nostra_pagina) pag.append(r.nostra_pagina);
+      else { pag.append(el('div', { className: 'muted', textContent: 'nessuna' }), azione('Crea pagina ora', 'crea_pagina', { progetto: r.progetto, rif: 'keyword/' + r.id, testo: r.keyword }, (x) => x.rif === 'keyword/' + r.id, { primary: true })); }
+      const nota = el('td', { className: 'wrap-text' }, [el('div', { textContent: r.nota || '' })]);
+      if (r.nota) nota.append(azione('Implementa', 'implementa_nota', { progetto: r.progetto, rif: 'keyword/' + r.id, testo: r.nota + ' (ricerca: ' + r.keyword + ')' }, (x) => x.rif === 'keyword/' + r.id && x.tipo === 'implementa_nota'));
+      tb.append(el('tr', {}, [
+        el('td', {}, [sito(p)]),
+        el('td', { textContent: r.keyword }),
+        el('td', { className: 'num', textContent: fmt(r.volume) }),
+        posTd, pag, lead,
+        el('td', { className: r.ai_overview ? 'warn' : 'muted', style: 'white-space:nowrap', textContent: r.ai_overview == null ? '—' : (r.ai_overview ? 'AI Overview' : 'no') + (r.domande_correlate ? ' + domande' : '') }),
+        nota
+      ]));
+    }
+  }
+
+  /* ---------- Pagine e citazioni AI ---------- */
+  function consiglioPagina(r) {
+    if (r.consiglio) return r.consiglio;
+    const pos = Number(r.posizione) || 99, imp = Number(r.impressioni) || 0;
+    if (pos <= 3) return 'Già in cima: aggiungi FAQ e link verso le pagine che vuoi spingere.';
+    if (pos <= 10) return imp >= 10 ? 'In prima pagina ma pochi clic: riscrivi title e description con un prezzo o un beneficio concreto.' : 'In prima pagina con poche ricerche: allarga il testo alle domande vicine.';
+    if (pos <= 20) return 'A un passo dalla prima pagina: risposta diretta in apertura, una tabella e 3 link interni.';
+    return 'Rinforza: aggiorna al 2026, aggiungi dati reali e link interni dagli articoli.';
+  }
+
+  function renderPagine() {
+    const tb = $('pagine-body'); tb.replaceChildren();
+    const rows = state.pagine.filter((r) => visibile(r.progetto)).sort((a, b) => (b.impressioni || 0) - (a.impressioni || 0));
+    if (!rows.length) { tb.append(el('tr', {}, [el('td', { colSpan: 6, className: 'empty', textContent: 'Arriva dal primo aggiornamento da Search Console.' })])); return; }
+    for (const r of rows) {
+      const p = prog(r.progetto); const c = consiglioPagina(r);
+      const pos = Number(r.posizione); const cls = isNaN(pos) ? 'muted' : pos <= 10 ? 'ok' : pos <= 30 ? 'warn' : 'bad';
+      tb.append(el('tr', {}, [
+        el('td', {}, [sito(p)]),
+        el('td', { className: 'url', textContent: r.url || '' }),
+        el('td', { className: 'num', textContent: fmt(r.impressioni) }),
+        el('td', { className: 'num', textContent: fmt(r.clic) }),
+        el('td', { className: 'num' }, [el('span', { className: 'pos ' + cls, textContent: fmtPos(r.posizione) })]),
+        el('td', { className: 'advice' }, [el('div', { textContent: c }), azione('Applica', 'implementa_nota', { progetto: r.progetto, rif: 'pagine/' + r.id, testo: 'Pagina ' + r.url + ': ' + c }, (x) => x.rif === 'pagine/' + r.id)])
+      ]));
+    }
+  }
+
+  function renderAi() {
+    const tb = $('ai-body'); tb.replaceChildren();
+    const rows = state.aeo.filter((r) => visibile(r.progetto)).sort((a, b) => (Number(a.citato) || 0) - (Number(b.citato) || 0) || String(a.motore).localeCompare(String(b.motore)));
+    if (!rows.length) { tb.append(el('tr', {}, [el('td', { colSpan: 6, className: 'empty', textContent: 'Arriva dal primo controllo delle risposte AI, se il modulo ai_visibility è attivo.' })])); return; }
+    for (const r of rows) {
+      const p = prog(r.progetto); const si = Number(r.citato) > 0;
+      const c = r.consiglio || (si ? 'Già citato: tieni aggiornata la pagina citata.' : 'Pubblica una risposta diretta a questa domanda, con dati reali, nella pagina più vicina del sito.');
+      const cell = el('td', { className: 'advice' }, [el('div', { textContent: c })]);
+      if (!si) cell.append(azione('Applica', 'implementa_nota', { progetto: r.progetto, rif: 'aeo/' + r.id, testo: 'Domanda AI "' + r.domanda + '": ' + c }, (x) => x.rif === 'aeo/' + r.id));
+      tb.append(el('tr', {}, [
+        el('td', {}, [sito(p)]),
+        el('td', { style: 'white-space:nowrap', textContent: r.motore || '' }),
+        el('td', { className: 'wrap-text', textContent: r.domanda || '' }),
+        el('td', { className: si ? 'ok' : 'bad', textContent: si ? 'sì' : 'no' }),
+        el('td', { className: 'small', textContent: r.citati || '' }),
+        cell
+      ]));
+    }
+  }
+
+  /* ---------- Registro interventi ---------- */
+  const TIPO_NOME = { aggiorna_dati: 'Aggiorna dati', controllo_sito: 'Verifica e consiglia', applica_consiglio: 'Applica consiglio', implementa_nota: 'Implementa nota', crea_pagina: 'Crea pagina', verifica_manuale: 'Verifica lavoro fatto a mano' };
+  function quandoLog(iso) { if (!iso) return ''; const d = new Date(iso); if (isNaN(d)) return iso; return d.toLocaleString('it-IT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }); }
+  function linkChat(u) { return u && /^https:\/\/claude\.ai\//.test(u) ? el('a', { href: u, target: '_blank', rel: 'noopener', textContent: 'Apri la chat' }) : null; }
+  function consumo(r) {
+    const p = [];
+    if (r.cr != null) p.push(r.cr + ' cr');
+    if (r.usd != null) p.push(Number(r.usd).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' $');
+    if (r.tok != null) p.push((r.tok / 1e6).toLocaleString('it-IT', { maximumFractionDigits: 1 }) + ' M tok');
+    return p.join(' · ') || '—';
+  }
+  function renderLog() {
+    const tb = $('log-body'); tb.replaceChildren();
+    const rows = [];
+    for (const r of state.richieste) {
+      if (!state.logTutti && (r.stato === 'Annullata' || r.stato === 'In coda')) continue;
+      rows.push({ t: r.finita_il || r.iniziata_il || r.avviata_il || r.creata_il, progetto: r.progetto, titolo: (TIPO_NOME[r.tipo] || r.tipo) + (r.testo ? ': ' + r.testo : ''), stato: r.stato, esito: inCorso(r) ? (r.passo || '') : (r.esito || ''), link: r.link, chat: r.sessione, cr: r.crediti_openseo, usd: r.costo_usd, tok: r.token_totali });
+    }
+    for (const r of state.interventi) rows.push({ t: r.quando, progetto: r.progetto, titolo: r.titolo || '', stato: r.stato || 'Fatto', esito: r.esito || '', link: r.link, chat: r.sessione, cr: r.crediti_openseo, usd: r.costo_usd, tok: r.token_totali });
+    const sette = Date.now() - 7 * 864e5;
+    const ult = rows.filter((r) => r.t && new Date(r.t).getTime() >= sette && (r.usd != null || r.cr != null));
+    const sum = (k) => ult.reduce((a, r) => a + (Number(r[k]) || 0), 0);
+    const st = (state.regia.find((d) => d.id === 'stato') || {});
+    const parti = [];
+    if (ult.length) parti.push('Ultimi 7 giorni: ' + ult.length + ' lavori misurati, ' + fmt(sum('cr')) + ' crediti OpenSEO, ' + sum('usd').toLocaleString('it-IT', { maximumFractionDigits: 2 }) + ' $ di Claude (stima a prezzi API), ' + (sum('tok') / 1e6).toLocaleString('it-IT', { maximumFractionDigits: 1 }) + ' M token.');
+    else parti.push('Il consumo si misura dai lavori di oggi in poi.');
+    if (st.crediti_openseo_residui != null) parti.push('Crediti OpenSEO rimasti: ' + fmt(st.crediti_openseo_residui) + '.');
+    $('log-consumo').textContent = parti.join(' ');
+    const vis = rows.filter((r) => !r.progetto || r.progetto === 'tutti' || visibile(r.progetto)).sort((a, b) => String(b.t || '').localeCompare(String(a.t || '')));
+    if (!vis.length) { tb.append(el('tr', {}, [el('td', { colSpan: 6, className: 'empty', textContent: 'Nessun intervento registrato.' })])); return; }
+    for (const r of vis.slice(0, 200)) {
+      const p = r.progetto && r.progetto !== 'tutti' ? prog(r.progetto) : null;
+      const links = el('td', {}, []);
+      if (r.link && /^https?:\/\//.test(r.link)) links.append(el('a', { href: r.link, target: '_blank', rel: 'noopener', textContent: 'Risultato' }));
+      const c = linkChat(r.chat); if (c) { if (links.childNodes.length) links.append(document.createTextNode(' · ')); links.append(c); }
+      tb.append(el('tr', {}, [
+        el('td', { style: 'white-space:nowrap', textContent: quandoLog(r.t) }),
+        el('td', {}, [p ? sito(p) : el('span', { className: 'muted', textContent: 'Tutti' })]),
+        el('td', { textContent: r.titolo }),
+        el('td', {}, [el('span', { className: 'pill ' + (RQ_CLS[r.stato] || 'muted'), textContent: r.stato }), document.createTextNode(' ' + r.esito)]),
+        el('td', { className: 'small', style: 'white-space:nowrap', textContent: consumo(r) }),
+        links
+      ]));
+    }
+  }
+
+  function renderInterazioni() {
+    const tb = $('inter-body'); tb.replaceChildren();
+    const rows = state.interazioni.filter((r) => visibile(r.progetto)).sort((a, b) => (b.visite || 0) - (a.visite || 0));
+    if (!rows.length) { tb.append(el('tr', {}, [el('td', { colSpan: 8, className: 'empty', textContent: 'Nessuna interazione registrata: questa sezione si riempie solo se un sito scrive eventi nella collezione "interazioni".' })])); return; }
+    for (const r of rows) tb.append(el('tr', {}, [el('td', {}, [sito(prog(r.progetto))]), el('td', { className: 'url', textContent: r.pagina || '' })].concat(['visite', 'letture', 'calendario', 'preventivo', 'richieste', 'clic_schede'].map((f) => el('td', { className: 'num', textContent: fmt(r[f]) })))));
+  }
+
+  /* ---------- Idee ---------- */
+  function renderIdee() {
+    const box = $('idee-box'); box.replaceChildren();
+    const nuove = state.idee.filter((r) => visibile(r.progetto) && (r.stato || 'Nuova') === 'Nuova').sort((a, b) => String(a.data_suggerita).localeCompare(String(b.data_suggerita)));
+    const fatte = state.idee.filter((r) => visibile(r.progetto) && r.stato === 'Aggiunta').length;
+    if (!nuove.length) { box.append(el('p', { className: 'empty', textContent: fatte ? `Tutte le idee sono state valutate (${fatte} aggiunte al calendario). Le prossime arrivano con l'aggiornamento del lunedì o con "Verifica e consiglia".` : 'Nessuna idea nuova per ora.' })); return; }
+    for (const r of nuove) {
+      const p = prog(r.progetto);
+      const c = el('article', { className: 'idea' }); c.style.setProperty('--c', p.colore);
+      const meta = el('div', { className: 'meta' }, [sito(p)]);
+      if (r.keyword) meta.append(el('span', { textContent: '“' + r.keyword + '”' }));
+      if (r.volume) meta.append(el('span', { textContent: fmt(r.volume) + ' ricerche/mese' }));
+      if (r.lingue) meta.append(el('span', { textContent: r.lingue }));
+      c.append(meta, el('h3', { textContent: r.tema }), el('p', { className: 'why', textContent: r.perche || '' }));
+      const clash = el('div', { className: 'clash', 'aria-live': 'polite' });
+      const dIn = el('input', { type: 'date', value: r.data_suggerita || '', disabled: !state.canWrite }); dIn.setAttribute('aria-label', 'Data di uscita');
+      const check = () => {
+        const w = dIn.value ? lunedi(dIn.value) : '';
+        const stesse = state.piano.filter((x) => x.progetto === r.progetto && x.data && lunedi(x.data) === w);
+        clash.textContent = stesse.length >= 2 ? 'In quella settimana ci sono già 2 uscite: ' + stesse.map((x) => x.tema).join('; ') : '';
+      };
+      dIn.addEventListener('change', check); check();
+      const add = el('button', { className: 'btn primary', type: 'button', textContent: 'Aggiungi al calendario', disabled: !state.canWrite });
+      const no = el('button', { className: 'btn icon', type: 'button', textContent: 'Scarta', disabled: !state.canWrite });
+      const st = (t) => { $('idee-stato').textContent = t; };
+      add.addEventListener('click', async () => {
+        if (!state.db || !dIn.value) { st('Scegli una data.'); return; }
+        add.disabled = true; st('Aggiungo…');
+        try {
+          const ref = await state.db.collection('piano').add({ progetto: r.progetto, data: dIn.value, tema: r.tema, keyword: r.keyword || '', lingue: r.lingue || '', tipi: r.tipi || ['SEO', 'AEO'], stato: 'Da confermare', origine: 'idea', aggiornato_il: new Date().toISOString() });
+          await state.db.collection('idee').doc(r.id).update({ stato: 'Aggiunta', piano_id: ref && ref.id ? ref.id : '', data_scelta: dIn.value, aggiornato_il: new Date().toISOString() });
+          st('Aggiunta al calendario come "Da confermare".');
+        } catch (e) { add.disabled = false; st(e && e.code === 'not_granted' ? 'Non hai i permessi per modificare il calendario.' : 'Non aggiunta: riprova tra poco.'); }
+      });
+      no.addEventListener('click', async () => {
+        no.disabled = true;
+        try { await state.db.collection('idee').doc(r.id).update({ stato: 'Scartata', aggiornato_il: new Date().toISOString() }); st('Idea scartata.'); }
+        catch (e) { no.disabled = false; st('Non salvato: riprova.'); }
+      });
+      c.append(el('div', { className: 'acts' }, [dIn, add, no]), clash);
+      box.append(c);
+    }
+  }
+
+  function renderAll() {
+    renderFiltro(); renderAggiorna(); renderSiti(); renderSalute(); renderConsigli(); renderIdee(); renderCalToolbar(); renderPiano(); renderKeyword(); renderPagine(); renderAi(); renderLog(); renderInterazioni();
+    const sel = $('add-progetto');
+    if (sel.options.length !== state.progetti.length) { sel.replaceChildren(); for (const p of state.progetti) sel.append(el('option', { value: p.id, textContent: p.nome })); }
+    if (state.filtro !== 'tutti') sel.value = state.filtro;
+  }
+
+  $('log-tutti').addEventListener('change', (e) => { state.logTutti = e.target.checked; renderLog(); });
+  $('add-form').addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    if (!state.db) { say('Il calendario non è raggiungibile in questa vista.'); return; }
+    const data = $('add-data').value, tema = $('add-tema').value.trim();
+    if (!data || !tema) { say('Servono data e tema.'); return; }
+    say('Aggiungo…');
+    try {
+      await state.db.collection('piano').add({ progetto: $('add-progetto').value, data, tema, keyword: $('add-keyword').value.trim(), lingue: $('add-lingue').value.trim(), tipi: ['SEO', 'AEO'], stato: 'Da confermare', aggiornato_il: new Date().toISOString() });
+      $('add-tema').value = ''; $('add-keyword').value = ''; $('add-lingue').value = '';
+      say('Aggiunta. Mettila su "Programmato" quando vuoi che esca.');
+    } catch (e) { say(e && e.code === 'not_granted' ? 'Non hai i permessi per aggiungere uscite.' : 'Non aggiunta: riprova tra poco.'); }
+  });
+
+  renderAll();
+
+  let timer = null;
+  const pianifica = () => { if (timer) return; timer = requestAnimationFrame(() => { timer = null; renderAll(); }); };
+
+  (async () => {
+    const db = window.claude && window.claude.use ? await window.claude.use('db') : null;
+    if (!db) { $('piano-body').replaceChildren(el('tr', {}, [el('td', { colSpan: 8, className: 'empty', textContent: 'Accedi a claude.ai per vedere e modificare il calendario.' })])); $('agg-btn').disabled = true; return; }
+    state.db = db;
+    try { const user = await window.claude.use('user'); if (user && user.can) { const c = await user.can('data.write'); if (c === false) state.canWrite = false; } } catch (e) {}
+    try { state.mcp = await window.claude.use('mcp'); } catch (e) { state.mcp = null; }
+    const sub = (name) => db.collection(name).onSnapshot((snap) => { state[name] = snap.docs.map((d) => Object.assign({ id: d.id }, d.data())); if (name === 'progetti') state.progetti.sort((a, b) => (a.ordine || 0) - (b.ordine || 0)); pianifica(); }, () => say('Connessione ai dati interrotta: ricarica la pagina.'));
+    ['progetti', 'metriche', 'piano', 'pagine', 'aeo', 'interazioni', 'salute', 'keyword', 'idee', 'consigli', 'richieste', 'regia', 'interventi'].forEach(sub);
+  })();
+})();
+</script>
+
+</body></html>

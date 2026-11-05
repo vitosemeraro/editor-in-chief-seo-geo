@@ -1,0 +1,6 @@
+# Your real config may contain ids you prefer to keep private: commit it only in your own fork.
+regia.config.local.yaml
+.env
+*.pem
+*service-account*.json
+__pycache__/

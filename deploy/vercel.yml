@@ -1,0 +1,18 @@
+# Vercel: publish on every push to main.
+# Secrets: VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID.
+# (If the repo is connected to Vercel's Git integration, pushes already deploy and you do not need this.)
+name: Deploy to Vercel
+on:
+  push:
+    branches: [main]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: npx --yes vercel@37 pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+      - run: npx --yes vercel@37 build --prod --token=${{ secrets.VERCEL_TOKEN }}
+      - run: npx --yes vercel@37 deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}

@@ -1,0 +1,20 @@
+# Netlify: publish on every push to main.
+# Secrets: NETLIFY_AUTH_TOKEN, NETLIFY_SITE_ID. Set PUBLISH_DIR to your output folder.
+# (If your site is already linked to Netlify via its Git integration, you do not need this file.)
+name: Deploy to Netlify
+on:
+  push:
+    branches: [main]
+env:
+  PUBLISH_DIR: public
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check internal links
+        run: python3 scripts/check_links.py "$PUBLISH_DIR"
+      - run: npx --yes netlify-cli@17 deploy --prod --dir "$PUBLISH_DIR"
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}

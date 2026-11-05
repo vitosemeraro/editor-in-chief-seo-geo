@@ -1,0 +1,25 @@
+# Classic hosting via FTPS (cPanel and similar): publish on every push to main.
+# Secrets: FTP_HOST, FTP_USERNAME, FTP_PASSWORD. Use the host name covered by the server's
+# TLS certificate (often the server name, not ftp.yourdomain).
+name: Publish via FTPS
+on:
+  push:
+    branches: [main]
+env:
+  LOCAL_DIR: public/
+  SERVER_DIR: public_html/
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check internal links
+        run: python3 scripts/check_links.py "$LOCAL_DIR"
+      - uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          local-dir: ${{ env.LOCAL_DIR }}
+          server-dir: ${{ env.SERVER_DIR }}

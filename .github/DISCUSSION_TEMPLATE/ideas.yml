@@ -1,0 +1,29 @@
+title: "[Feedback] "
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking a look! Three quick questions, two minutes tops. Italian is fine too.
+  - type: dropdown
+    id: use
+    attributes:
+      label: Would you use Editor-in-Chief?
+      options:
+        - "Yes, I'd set it up now"
+        - "Maybe, if something changed (tell us below)"
+        - "No, not for me"
+    validations:
+      required: true
+  - type: input
+    id: who
+    attributes:
+      label: Who are you and how many sites do you manage?
+      placeholder: "e.g. freelance SEO consultant, 8 client sites"
+  - type: textarea
+    id: missing
+    attributes:
+      label: What's missing or what would stop you?
+      placeholder: "Setup time, a data source you use, a CMS, pricing of the APIs..."
+    validations:
+      required: true

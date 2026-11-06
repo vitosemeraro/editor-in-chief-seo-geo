@@ -7,6 +7,11 @@ change to the database schema bumps the minor version, a fix bumps the patch.
 Every change comes from the private dashboard the author uses daily on 4 real sites, generalized before
 it lands here.
 
+## [0.3.1] - 2026-11-06
+
+### Added
+- Feedback form in GitHub Discussions (3 questions), linked from both READMEs.
+
 ## [0.3.0] - 2026-11-05
 
 ### Added

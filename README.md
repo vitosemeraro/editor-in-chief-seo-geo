@@ -87,6 +87,10 @@ enabling AI visibility or SERP tracking.
 - Mass-produced AI content can hurt a site. Editor-in-Chief is built to publish little and well: keep the weekly cap
   low and start in draft mode.
 
+## Feedback
+
+Would you use it? What's missing? Three questions, two minutes: [leave feedback](https://github.com/vitosemeraro/editor-in-chief-seo-geo/discussions/new?category=ideas).
+
 ## License
 
 MIT. Made by [Vito Semeraro](https://vitosemeraro.com).

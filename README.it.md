@@ -30,3 +30,7 @@ lavoro, e i tuoi repository GitHub con i workflow di pubblicazione. Nessun serve
 6. Lancia a mano la revisione settimanale: i tuoi siti compaiono nella dashboard.
 
 Dettagli, requisiti e limiti nel [README in inglese](README.md). Licenza MIT.
+
+## Feedback
+
+Lo useresti? Cosa manca? Tre domande, due minuti: [lascia un feedback](https://github.com/vitosemeraro/editor-in-chief-seo-geo/discussions/new?category=ideas).

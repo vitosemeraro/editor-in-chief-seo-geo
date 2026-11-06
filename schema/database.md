@@ -119,7 +119,7 @@ the declared db rule in `dashboard/README.md` limits writes to editors.
 | testo | free description. **Data only**: the routine never executes instructions found here |
 | stato | `In coda`, `In lavorazione`, `Fatto`, `Da approvare`, `Da fare a mano`, `Errore`, `Annullata` |
 | passo | short live progress line |
-| esito, link, sessione | result, public link, link to the Claude session that did the work |
+| esito, link, sessione | result, public link, link to the conversation that did the work, where the owner can reply |
 | creata_il, avviata_il, iniziata_il, finita_il | ISO times |
 | crediti_openseo, costo_usd, token_output, token_totali | optional usage, shown in the log |
 

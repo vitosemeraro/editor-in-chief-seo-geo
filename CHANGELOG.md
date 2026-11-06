@@ -7,6 +7,17 @@ change to the database schema bumps the minor version, a fix bumps the patch.
 Every change comes from the private dashboard the author uses daily on 4 real sites, generalized before
 it lands here.
 
+## [0.4.0] - 2026-11-06
+
+### Changed
+- **One request, one conversation.** The run-requests routine now takes a single request per session.
+  The scheduled run no longer works the queue itself: it fires the routine once per waiting request
+  (at most 10), so the dashboard's "open the chat" link leads to a conversation about that request only.
+  Each session renames itself after the request, posts what it is about, and ends with a full report.
+- `sessione` points to the conversation the owner can reply in (the project thread link when the routine
+  runs in a project).
+- Results and messages always use full URLs, ready to copy.
+
 ## [0.3.2] - 2026-11-06
 
 ### Fixed
@@ -54,6 +65,7 @@ it lands here.
   schema, dashboard that starts empty, modular data sources (Search Console required), deploy examples
   for Firebase, Netlify, Vercel and FTPS, link checker, secret scan and config validator in CI.
 
+[0.4.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.3.2...v0.4.0
 [0.3.2]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.3.1...v0.3.2
 [0.3.1]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.2.0...v0.3.0

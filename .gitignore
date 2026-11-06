@@ -5,3 +5,4 @@ editor-in-chief.local.yaml
 *service-account*.json
 __pycache__/
 demo/index.html
+demo/*/index.html

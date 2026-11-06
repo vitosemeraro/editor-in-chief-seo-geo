@@ -16,7 +16,8 @@
 - [ ] 3-minute video and a cost table per site per month
 - [x] Public demo with sample data (v0.2.0)
 - [ ] State mirrored to files in the config repo, so the dashboard is a view and not the only copy
-- [ ] English dashboard UI
+- [x] Demo in English, Italian, Spanish, French (v0.3.0)
+- [ ] Same languages for the installable dashboard (setting in the config)
 
 ## Phase 3: launch
 

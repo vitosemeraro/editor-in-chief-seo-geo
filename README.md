@@ -5,7 +5,7 @@
 It runs on Claude: a dashboard published as a Claude artifact with a shared database, two Claude
 routines that do the work, and your own GitHub repos and deploy workflows. No server to host.
 
-**[Try the live demo](https://vitosemeraro.github.io/editor-in-chief-seo-geo/)** with invented sites and data: the buttons work and simulate the agent.
+**Try the live demo** with invented sites and data, in [English](https://vitosemeraro.github.io/editor-in-chief-seo-geo/), [Italiano](https://vitosemeraro.github.io/editor-in-chief-seo-geo/it/), [Español](https://vitosemeraro.github.io/editor-in-chief-seo-geo/es/) and [Français](https://vitosemeraro.github.io/editor-in-chief-seo-geo/fr/): the buttons work and simulate the agent.
 
 > Status: early. Built and used daily on 4 real sites (a SaaS, a personal site, two short-term rental
 > sites in Milan). This repository is the generalized version: everything specific to those sites has
@@ -76,7 +76,7 @@ enabling AI visibility or SERP tracking.
 | `sources/` | data modules: what each reads and fills |
 | `deploy/` | GitHub Actions for Firebase, Netlify, Vercel, FTPS |
 | `scripts/` | link checker, secret scan, config validator |
-| `demo/` | the demo: invented data in memory, built by `scripts/build_demo.py` |
+| `demo/` | the demo: invented data in memory, built in 4 languages by `scripts/build_demo.py` (translations in `scripts/demo_i18n.py`) |
 | `CHANGELOG.md`, `VERSION` | what changed in each version |
 | `docs/ROADMAP.md` | what comes next |
 

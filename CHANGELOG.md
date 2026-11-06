@@ -7,6 +7,13 @@ change to the database schema bumps the minor version, a fix bumps the patch.
 Every change comes from the private dashboard the author uses daily on 4 real sites, generalized before
 it lands here.
 
+## [0.3.0] - 2026-11-05
+
+### Added
+- **Demo in four languages:** English (default), Italian, Spanish and French, with a language switcher.
+  Interface, statuses and demo data are all translated; dates and numbers follow the language's locale.
+- `scripts/demo_i18n.py`: the translation table. `build_demo.py` lists any string left untranslated.
+
 ## [0.2.0] - 2026-11-05
 
 ### Added
@@ -37,5 +44,6 @@ it lands here.
   schema, dashboard that starts empty, modular data sources (Search Console required), deploy examples
   for Firebase, Netlify, Vercel and FTPS, link checker, secret scan and config validator in CI.
 
+[0.3.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/06ae37c...v0.2.0
 [0.1.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/tree/06ae37c

@@ -593,7 +593,8 @@
     const DUE_GIORNI = 2 * 864e5;
     const recente = (r) => r.stato === 'Fatto' && r.aggiornato_il && (Date.now() - new Date(r.aggiornato_il).getTime()) < DUE_GIORNI;
     const aperti = (r) => !['Fatto', 'Scartato'].includes(r.stato);
-    const inLista = (r) => aperti(r) || recente(r);
+    /* Without the checkbox only open tips are shown: done ones disappear right away. */
+    const inLista = (r) => aperti(r);
     /* In cima solo le verifiche di Claude sui lavori che hai segnato tu; poi i consigli aperti per priorità, poi i fatti di recente. */
     const verificato = (r) => recente(r) && /^Verificato/.test(r.esito || '');
     const tutti = state.consigli.filter((r) => visibile(r.progetto));

@@ -7,6 +7,11 @@ change to the database schema bumps the minor version, a fix bumps the patch.
 Every change comes from the private dashboard the author uses daily on 4 real sites, generalized before
 it lands here.
 
+## [0.3.2] - 2026-11-06
+
+### Fixed
+- Tips: with "show done and dismissed" unchecked, tips marked Done are hidden immediately instead of staying for 48 hours.
+
 ## [0.3.1] - 2026-11-06
 
 ### Added
@@ -49,6 +54,8 @@ it lands here.
   schema, dashboard that starts empty, modular data sources (Search Console required), deploy examples
   for Firebase, Netlify, Vercel and FTPS, link checker, secret scan and config validator in CI.
 
+[0.3.2]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.3.1...v0.3.2
+[0.3.1]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/06ae37c...v0.2.0
 [0.1.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/tree/06ae37c

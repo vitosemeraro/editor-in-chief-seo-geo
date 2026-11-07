@@ -7,6 +7,21 @@ change to the database schema bumps the minor version, a fix bumps the patch.
 Every change comes from the private dashboard the author uses daily on 4 real sites, generalized before
 it lands here.
 
+## [0.5.0] - 2026-11-07
+
+### Added
+- **Costs view.** A "Costs" switch next to the site filter opens a dedicated view: spend per site over
+  time (by day, week or month) as a stacked chart and a table with running total, plus totals per site,
+  last 30 days and data credits. Measured Claude jobs (`costo_usd` on `richieste` and `interventi`) come
+  in on their own; finished jobs without a measured cost are counted and flagged, not guessed.
+- Expenses added by hand (subscriptions, domains, hosting, ads): once, every month or every year, in € or $,
+  per site or shared. Totals in € or $ with an editable exchange rate.
+- "Open the chat" on each tip: opens a conversation about that tip only (request type `chat_consiglio`,
+  now documented in the run-requests routine together with `spiega_consiglio`).
+
+### Schema
+- New collection `costi/{auto id}`; new document `editor/costi` (`usd_eur`).
+
 ## [0.4.0] - 2026-11-06
 
 ### Changed
@@ -65,6 +80,7 @@ it lands here.
   schema, dashboard that starts empty, modular data sources (Search Console required), deploy examples
   for Firebase, Netlify, Vercel and FTPS, link checker, secret scan and config validator in CI.
 
+[0.5.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.3.2...v0.4.0
 [0.3.2]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.3.1...v0.3.2
 [0.3.1]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.3.0...v0.3.1

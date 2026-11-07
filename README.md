@@ -21,6 +21,7 @@ routines that do the work, and your own GitHub repos and deploy workflows. No se
 | Ideas from data | Topics suggested from Search Console queries in position 5-20, keywords without a page, AI questions where competitors are cited. One click adds them to the calendar |
 | Tips with actions | Concrete fixes per site. "Applica ora" makes the change on the site. Tips that need your access (DNS, Google Business) become "do it by hand" cards; "L'ho fatto" makes the agent verify it with the data |
 | Costs and priorities | Every tip and page fix is ranked by impact ÷ effort. Every button shows an estimated cost, every finished job its real cost (Claude $ and data credits), every site its spend in the last 7 days and in total |
+| Costs view | A dedicated "Costs" view: spend per site over time (day, week or month, stacked chart and table with running total) and totals per site. Measured Claude jobs and data credits come in on their own; you add subscriptions, domains, hosting or ads, once, monthly or yearly, in € or $ |
 | Weekly chart | Per site: impressions, clicks and visits week by week |
 | Work log | Every action with result, public link, cost, and a link to the Claude session that did it |
 

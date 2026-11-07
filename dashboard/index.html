@@ -135,6 +135,20 @@
   .bulk[hidden] { display: none; }
   .bulk .grp { display: inline-flex; gap: 6px; align-items: center; }
   .small { font-size: 12px; color: var(--muted); }
+  /* Vista dedicata ai costi: con la vista "Costi" restano solo la testata e la sezione costi. */
+  body.v-costi .wrap > section:not(#costi) { display: none; }
+  body:not(.v-costi) #costi { display: none; }
+  .ctiles { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 150px), 1fr)); }
+  #costi td.num, #costi th.num { white-space: nowrap; }
+  @media (max-width: 520px) { .ctile .v { font-size: 18px; } .ctile { padding: 8px 10px; } }
+  .ctile { border: 1px solid var(--line); border-top: 3px solid var(--c, var(--fg)); border-radius: var(--r); padding: 10px 12px; display: grid; gap: 2px; min-width: 0; }
+  .ctile .l { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); display: flex; gap: 6px; align-items: center; }
+  .ctile .v { font-family: var(--font-mono); font-size: 22px; font-variant-numeric: tabular-nums; }
+  .ctile .d { font-size: 12px; color: var(--muted); }
+  .cchart { display: block; width: 100%; height: auto; }
+  .cchart .ax { font: 10px var(--font-mono, monospace); fill: var(--muted); }
+  #costi h3 { margin: 6px 0 0; font-size: 15px; font-family: var(--font-display); }
+  tr.tot td { font-weight: 600; border-top: 2px solid var(--line); }
 </style>
 
 <div class="wrap">
@@ -145,11 +159,42 @@
     </div>
     <div class="head-r">
       <div class="refresh"><span id="agg-quando">Dati aggiornati: —</span><button class="btn primary" type="button" id="agg-btn">Aggiorna dati</button><span class="rq" id="agg-stato" aria-live="polite"></span></div>
+      <div class="chips" id="vista" role="group" aria-label="Vista"></div>
       <div class="chips" id="filtro" role="group" aria-label="Filtra per sito"></div>
     </div>
   </header>
 
   <section class="sites" id="siti" aria-label="Siti"></section>
+
+  <section class="card" id="costi">
+    <div class="card-head"><div><h2>Costi sostenuti</h2><p>Quanto è costato ogni sito nel tempo e in totale. Entrano da soli i lavori di Claude misurati (stima a prezzi API, da quando la routine li misura) e i crediti OpenSEO; le altre spese (abbonamenti, domini, hosting, pubblicità) le aggiungi qui sotto. Le spese "ogni mese" si ripetono da sole fino a oggi. Il filtro per sito in alto vale anche qui.</p></div><span class="status" id="costi-stato" aria-live="polite"></span></div>
+    <div class="toolbar">
+      <div class="chips" id="costi-passo" role="group" aria-label="Raggruppa per"></div>
+      <div class="chips" id="costi-valuta" role="group" aria-label="Valuta"></div>
+      <label>1 $ = <input type="number" id="costi-cambio" step="0.01" min="0.1" max="5" style="width:5.5em"> €</label>
+      <span id="costi-nota"></span>
+    </div>
+    <div class="ctiles" id="costi-tot"></div>
+    <div id="costi-chart"></div>
+    <div class="scroll"><table>
+      <thead id="costi-head"></thead>
+      <tbody id="costi-body"></tbody>
+    </table></div>
+    <h3>Spese aggiunte a mano</h3>
+    <div class="scroll"><table>
+      <thead><tr><th>Dal</th><th>Sito</th><th>Voce</th><th class="num">Importo</th><th>Ricorrenza</th><th></th></tr></thead>
+      <tbody id="costi-man"></tbody>
+    </table></div>
+    <form class="add" id="costi-form">
+      <label>Data<input type="date" id="cf-data" required></label>
+      <label>Sito<select id="cf-progetto"></select></label>
+      <label class="wide">Voce<input type="text" id="cf-voce" required placeholder="Es. dominio, hosting, abbonamento OpenSEO"></label>
+      <label>Importo<input type="number" id="cf-importo" step="0.01" min="0" required style="width:100%"></label>
+      <label>Valuta<select id="cf-valuta"><option value="EUR">€</option><option value="USD">$</option></select></label>
+      <label>Ricorrenza<select id="cf-ric"><option value="una">una volta</option><option value="mensile">ogni mese</option><option value="annuale">ogni anno</option></select></label>
+      <button class="btn primary" type="submit">Aggiungi spesa</button>
+    </form>
+  </section>
 
   <section class="card" id="salute">
     <div class="card-head"><div><h2>Stato di salute</h2><p>Visite e pagine viste da Google Analytics, ricerche da Search Console e cosa vogliono dire i numeri. Sotto, le tre azioni più utili per ogni sito: "Applica ora" fa la modifica sul sito. "Verifica e consiglia" rilegge i dati e aggiunge consigli nuovi.</p></div><span class="per" id="salute-per"></span></div>
@@ -158,7 +203,7 @@
   </section>
 
   <section class="card" id="consigli">
-    <div class="card-head"><div><h2>Consigli per migliorare</h2><p>Azioni concrete tratte dai dati, dalla più utile. "Applica ora" fa la modifica sul sito: i siti in modalità automatica vengono pubblicati direttamente, gli altri ricevono una bozza da approvare. I consigli "a mano" richiedono un tuo accesso (per esempio Google Business): premi "Spiegami come" per avere i passi.</p></div><span class="status" id="cons-stato" aria-live="polite"></span></div>
+    <div class="card-head"><div><h2>Consigli per migliorare</h2><p>Azioni concrete tratte dai dati, dalla più utile. "Applica ora" fa la modifica sul sito: i siti in modalità automatica vengono pubblicati direttamente, gli altri ricevono una bozza da approvare. I consigli "a mano" richiedono un tuo accesso (per esempio Google Business). Su ogni consiglio: "Spiegami come" scrive qui i passi, "Apri la chat" apre una conversazione solo su quel consiglio, "L'ho fatto" chiede a Claude di verificarlo.</p></div><span class="status" id="cons-stato" aria-live="polite"></span></div>
     <div class="toolbar"><div class="chips" id="cons-tipo" role="group" aria-label="Filtra per tipo"></div><label><input type="checkbox" id="cons-fatti"> mostra anche fatti e scartati</label><span id="cons-conta"></span></div>
     <div class="tips" id="cons-box"><p class="empty">Carico i consigli…</p></div>
   </section>
@@ -298,9 +343,12 @@
     for (const q of state.interventi) if (q.progetto === pid && isFinite(parseFloat(q.costo_usd)) && ok(q.quando)) { usd += parseFloat(q.costo_usd); cr += Number(q.crediti_openseo) || 0; n++; }
     return { usd, cr, n };
   }
-  const state = { progetti: [], metriche: [], piano: [], pagine: [], aeo: [], interazioni: [], salute: [], keyword: [], idee: [], consigli: [], richieste: [], editor: [], interventi: [], serie: [], logTutti: false,
+  const state = { progetti: [], metriche: [], piano: [], pagine: [], aeo: [], interazioni: [], salute: [], keyword: [], idee: [], consigli: [], richieste: [], editor: [], interventi: [], serie: [], costi: [], logTutti: false,
+    vista: 'main', costiPasso: 'settimana', costiValuta: 'EUR',
     filtro: 'tutti', calTipo: '', calStato: '', calPassate: false, consTipo: '', consFatti: false, sel: new Set(), db: null, mcp: null, canWrite: true };
   try { state.filtro = localStorage.getItem('eic-filtro') || 'tutti'; } catch (e) {}
+  try { state.vista = localStorage.getItem('eic-vista') || 'main'; state.costiPasso = localStorage.getItem('eic-costi-passo') || 'settimana'; state.costiValuta = localStorage.getItem('eic-costi-valuta') || 'EUR'; } catch (e) {}
+  if (/costi/.test(location.hash)) state.vista = 'costi';
 
   const $ = (id) => document.getElementById(id);
   const el = (tag, props, kids) => { const n = document.createElement(tag); if (props) Object.assign(n, props); (kids || []).forEach((k) => n.append(k)); return n; };
@@ -581,6 +629,22 @@
     return wrap;
   }
 
+  /* La chat di un consiglio: il thread più recente che ci ha lavorato. Se non c'è, il pulsante ne apre uno nuovo con il consiglio già scritto. */
+  const chatOk = (u) => u && /^https:\/\/claude\.ai\//.test(u);
+  const chatDi = (r) => ultima((x) => x.rif === 'consigli/' + r.id && chatOk(x.sessione));
+  function apriChat(r, campi) {
+    const ch = chatDi(r);
+    if (ch) return el('a', { className: 'btn sm', href: ch.sessione, target: '_blank', rel: 'noopener', textContent: 'Apri la chat' });
+    const pend = ultima((x) => x.rif === 'consigli/' + r.id && x.tipo === 'chat_consiglio');
+    const b = el('button', { className: 'btn sm', type: 'button', textContent: pend && inCorso(pend) ? 'Preparo la chat…' : 'Apri la chat', disabled: !state.canWrite || (pend && inCorso(pend)) });
+    b.title = 'Apre una chat su questo consiglio, con il testo già scritto: il link compare qui tra un paio di minuti';
+    b.addEventListener('click', async () => {
+      b.disabled = true; b.textContent = 'Preparo la chat…';
+      try { await richiedi('chat_consiglio', campi); } catch (e) { b.disabled = false; b.textContent = 'Apri la chat'; $('cons-stato').textContent = 'Non avviato: riprova tra poco.'; }
+    });
+    return b;
+  }
+
   function renderConsigli() {
     const tb = $('cons-tipo'); tb.replaceChildren();
     for (const t of [''].concat(TIPI_CONS)) {
@@ -593,7 +657,7 @@
     const DUE_GIORNI = 2 * 864e5;
     const recente = (r) => r.stato === 'Fatto' && r.aggiornato_il && (Date.now() - new Date(r.aggiornato_il).getTime()) < DUE_GIORNI;
     const aperti = (r) => !['Fatto', 'Scartato'].includes(r.stato);
-    /* Without the checkbox only open tips are shown: done ones disappear right away. */
+    /* Senza la spunta si vedono solo i consigli aperti: i fatti spariscono subito. */
     const inLista = (r) => aperti(r);
     /* In cima solo le verifiche di Claude sui lavori che hai segnato tu; poi i consigli aperti per priorità, poi i fatti di recente. */
     const verificato = (r) => recente(r) && /^Verificato/.test(r.esito || '');
@@ -624,8 +688,13 @@
       if (rq && inCorso(rq)) {
         /* niente pulsanti mentre lavora */
       } else if (aperti(r)) {
-        if (r.stato === 'Da fare a mano') acts.append(segnaFatto(r));
-        else acts.append(azione(r.come === 'A mano' ? 'Spiegami come' : 'Applica ora', 'applica_consiglio', { progetto: r.progetto, rif: 'consigli/' + r.id, testo: r.titolo }, (x) => x.rif === 'consigli/' + r.id, { primary: r.come !== 'A mano', statusId: 'cons-stato', noBadge: true, costo: r.come === 'A mano' ? '' : stima(r.sforzo, 'applica_consiglio') }), segnaFatto(r));
+        /* Sempre gli stessi pulsanti: Applica (se si fa da repository), L'ho fatto, Apri la chat, Spiegami come, Scarta. */
+        const campi = { progetto: r.progetto, rif: 'consigli/' + r.id, testo: r.titolo };
+        const mio = (x) => x.rif === 'consigli/' + r.id;
+        if (r.come !== 'A mano' && r.stato !== 'Da fare a mano') acts.append(azione('Applica ora', 'applica_consiglio', campi, mio, { primary: true, statusId: 'cons-stato', noBadge: true, costo: stima(r.sforzo, 'applica_consiglio') }));
+        acts.append(segnaFatto(r));
+        acts.append(apriChat(r, campi));
+        acts.append(azione('Spiegami come', 'spiega_consiglio', campi, mio, { statusId: 'cons-stato', noBadge: true, again: 'Spiegami di nuovo' }));
         const no = el('button', { className: 'btn sm icon', type: 'button', textContent: 'Scarta', disabled: !state.canWrite });
         no.addEventListener('click', async () => { no.disabled = true; try { await state.db.collection('consigli').doc(r.id).update({ stato: 'Scartato', aggiornato_il: new Date().toISOString() }); } catch (e) { no.disabled = false; $('cons-stato').textContent = 'Non salvato: riprova.'; } });
         acts.append(no);
@@ -636,7 +705,7 @@
       }
       const lk = (rq && rq.link) || r.link;
       if (lk && /^https?:\/\//.test(lk)) acts.append(el('a', { href: lk, target: '_blank', rel: 'noopener', textContent: 'vedi' }));
-      if (rq && rq.sessione && /^https:\/\/claude\.ai\//.test(rq.sessione)) acts.append(el('a', { href: rq.sessione, target: '_blank', rel: 'noopener', textContent: 'apri la chat' }));
+      if (!aperti(r) || (rq && inCorso(rq))) { const ch = chatDi(r); if (ch) acts.append(el('a', { href: ch.sessione, target: '_blank', rel: 'noopener', textContent: 'apri la chat' })); }
       c.append(acts);
       box.append(c);
     }
@@ -842,7 +911,7 @@
   }
 
   /* ---------- Registro interventi ---------- */
-  const TIPO_NOME = { aggiorna_dati: 'Aggiorna dati', controllo_sito: 'Verifica e consiglia', applica_consiglio: 'Applica consiglio', implementa_nota: 'Implementa nota', crea_pagina: 'Crea pagina', verifica_manuale: 'Verifica lavoro fatto a mano' };
+  const TIPO_NOME = { aggiorna_dati: 'Aggiorna dati', controllo_sito: 'Verifica e consiglia', applica_consiglio: 'Applica consiglio', implementa_nota: 'Implementa nota', crea_pagina: 'Crea pagina', verifica_manuale: 'Verifica lavoro fatto a mano', spiega_consiglio: 'Spiegami come', chat_consiglio: 'Chat sul consiglio' };
   function quandoLog(iso) { if (!iso) return ''; const d = new Date(iso); if (isNaN(d)) return iso; return d.toLocaleString('it-IT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }); }
   function linkChat(u) { return u && /^https:\/\/claude\.ai\//.test(u) ? el('a', { href: u, target: '_blank', rel: 'noopener', textContent: 'Apri la chat' }) : null; }
   function consumo(r) {
@@ -938,8 +1007,182 @@
     }
   }
 
+
+  /* ---------- Costi sostenuti ---------- */
+  const VISTE = [['main', 'Redazione'], ['costi', 'Costi sostenuti']];
+  function renderVista() {
+    document.body.classList.toggle('v-costi', state.vista === 'costi');
+    const box = $('vista'); box.replaceChildren();
+    for (const [id, nome] of VISTE) {
+      const b = el('button', { className: 'chip', type: 'button', textContent: nome });
+      b.setAttribute('aria-pressed', String(state.vista === id));
+      b.addEventListener('click', () => { state.vista = id; try { localStorage.setItem('eic-vista', id); } catch (e) {} renderVista(); if (id === 'costi') renderCosti(); window.scrollTo(0, 0); });
+      box.append(b);
+    }
+  }
+  const CAMBIO_BASE = 0.86;
+  const cambio = () => { const c = parseFloat((state.editor.find((d) => d.id === 'costi') || {}).usd_eur); return c > 0 ? c : CAMBIO_BASE; };
+  /* Tutte le voci di costo, ciascuna con data, sito e importo in dollari ed euro. */
+  function vociCosto() {
+    const k = cambio(), out = [];
+    const push = (data, progetto, usd, eur, fonte, voce, cr) => { if (!data) return; out.push({ data: String(data).slice(0, 10), progetto: progetto || 'tutti', usd, eur, fonte, voce, cr: Number(cr) || 0 }); };
+    for (const q of state.richieste) if (usdOk(q.costo_usd)) { const u = parseFloat(q.costo_usd); push(q.finita_il || q.creata_il, q.progetto, u, u * k, 'Claude', TIPO_NOME[q.tipo] || q.tipo, q.crediti_openseo); }
+    for (const q of state.interventi) if (usdOk(q.costo_usd)) { const u = parseFloat(q.costo_usd); push(q.quando, q.progetto, u, u * k, 'Claude', q.titolo, q.crediti_openseo); }
+    for (const c of state.costi) {
+      const imp = parseFloat(c.importo); if (!(imp >= 0) || !c.data) continue;
+      const usd = c.valuta === 'USD' ? imp : imp / k, eur = c.valuta === 'USD' ? imp * k : imp;
+      const fine = c.fino_al && c.fino_al < oggi ? c.fino_al : oggi;
+      if (c.ricorrenza === 'mensile' || c.ricorrenza === 'annuale') {
+        const passo = c.ricorrenza === 'mensile' ? 1 : 12;
+        const [y, m, g] = c.data.split('-').map(Number);
+        for (let i = 0; i < 600; i += passo) {
+          const d = new Date(Date.UTC(y, m - 1 + i, 1)); const ult = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 0)).getUTCDate();
+          d.setUTCDate(Math.min(g, ult)); const ds = iso(d); if (ds > fine) break;
+          push(ds, c.progetto, usd, eur, 'Spesa', c.voce, 0);
+        }
+      } else if (c.data <= oggi) push(c.data, c.progetto, usd, eur, 'Spesa', c.voce, 0);
+    }
+    return out;
+  }
+  const MESI = ['gen', 'feb', 'mar', 'apr', 'mag', 'giu', 'lug', 'ago', 'set', 'ott', 'nov', 'dic'];
+  function chiavePeriodo(d) { return state.costiPasso === 'mese' ? d.slice(0, 7) : state.costiPasso === 'giorno' ? d : lunedi(d); }
+  function etichettaPeriodo(k, breve) {
+    if (state.costiPasso === 'mese') { const [y, m] = k.split('-').map(Number); return MESI[m - 1] + (breve ? '' : ' ' + y); }
+    const x = new Date(k + 'T12:00:00');
+    return (state.costiPasso === 'settimana' && !breve ? 'sett. ' : '') + x.getDate() + ' ' + MESI[x.getMonth()];
+  }
+  function periodoSucc(k) {
+    if (state.costiPasso === 'mese') { const [y, m] = k.split('-').map(Number); const d = new Date(Date.UTC(y, m, 1)); return iso(d).slice(0, 7); }
+    return piuGiorni(k, state.costiPasso === 'giorno' ? 1 : 7);
+  }
+  function soldiV(v) {
+    const n = Number(v || 0);
+    return state.costiValuta === 'USD' ? n.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' $' : n.toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+  }
+  function renderCosti() {
+    if (state.vista !== 'costi') return;
+    const val = (v) => (state.costiValuta === 'USD' ? v.usd : v.eur);
+    /* Barra strumenti */
+    const pb = $('costi-passo'); pb.replaceChildren();
+    for (const [id, nome] of [['giorno', 'Giorno'], ['settimana', 'Settimana'], ['mese', 'Mese']]) {
+      const b = el('button', { className: 'chip sm', type: 'button', textContent: nome }); b.setAttribute('aria-pressed', String(state.costiPasso === id));
+      b.addEventListener('click', () => { state.costiPasso = id; try { localStorage.setItem('eic-costi-passo', id); } catch (e) {} renderCosti(); });
+      pb.append(b);
+    }
+    const vb = $('costi-valuta'); vb.replaceChildren();
+    for (const [id, nome] of [['EUR', '€'], ['USD', '$']]) {
+      const b = el('button', { className: 'chip sm', type: 'button', textContent: nome }); b.setAttribute('aria-pressed', String(state.costiValuta === id));
+      b.addEventListener('click', () => { state.costiValuta = id; try { localStorage.setItem('eic-costi-valuta', id); } catch (e) {} renderCosti(); });
+      vb.append(b);
+    }
+    const ci = $('costi-cambio'); if (document.activeElement !== ci) ci.value = String(cambio()); ci.disabled = !state.canWrite;
+    const sel = $('cf-progetto');
+    if (sel.options.length !== state.progetti.length + 1) { sel.replaceChildren(el('option', { value: 'tutti', textContent: 'Tutti (spesa comune)' })); for (const p of state.progetti) sel.append(el('option', { value: p.id, textContent: p.nome })); }
+    if (!$('cf-data').value) $('cf-data').value = oggi;
+
+    const tutte = vociCosto();
+    const voci = tutte.filter((v) => v.progetto === 'tutti' || visibile(v.progetto));
+    const cols = state.progetti.filter((p) => visibile(p.id)).map((p) => ({ id: p.id, nome: p.nome, colore: p.colore }));
+    if (voci.some((v) => v.progetto === 'tutti')) cols.push({ id: 'tutti', nome: 'Comuni', colore: 'var(--muted)' });
+    const nonMisurati = state.richieste.filter((q) => visibile(q.progetto || 'tutti') && ['Fatto', 'Da fare a mano', 'Errore', 'Da verificare'].includes(q.stato) && !usdOk(q.costo_usd)).length;
+    $('costi-nota').textContent = nonMisurati ? nonMisurati + ' lavori finiti senza costo misurato non sono contati.' : '';
+
+    /* Totali */
+    const tb = $('costi-tot'); tb.replaceChildren();
+    const trenta = piuGiorni(oggi, -30);
+    const tile = (nome, colore, vs) => {
+      const tot = vs.reduce((a, v) => a + val(v), 0), m30 = vs.filter((v) => v.data >= trenta).reduce((a, v) => a + val(v), 0), cr = vs.reduce((a, v) => a + v.cr, 0);
+      const t = el('div', { className: 'ctile' }); t.style.setProperty('--c', colore);
+      const l = el('div', { className: 'l' }); if (colore !== 'var(--fg)') l.append(el('span', { className: 'dot', style: '--c:' + colore })); l.append(nome);
+      t.append(l, el('div', { className: 'v', textContent: soldiV(tot) }), el('div', { className: 'd', textContent: soldiV(m30) + ' negli ultimi 30 giorni' + (cr ? ' · ' + fmt(cr) + ' crediti OpenSEO' : '') }));
+      return t;
+    };
+    tb.append(tile('Totale', 'var(--fg)', voci));
+    for (const c of cols) tb.append(tile(c.nome, c.colore, voci.filter((v) => v.progetto === c.id)));
+
+    /* Periodi: dal primo costo a oggi, anche quelli vuoti. */
+    const head = $('costi-head'), body = $('costi-body'), box = $('costi-chart');
+    head.replaceChildren(); body.replaceChildren(); box.replaceChildren();
+    if (!voci.length) { box.append(el('p', { className: 'empty', textContent: 'Ancora nessun costo: arrivano con i lavori misurati o aggiungendo una spesa qui sotto.' })); }
+    else {
+      const prime = voci.map((v) => v.data).sort()[0];
+      const keys = []; let k = chiavePeriodo(prime); const fineK = chiavePeriodo(oggi);
+      while (k <= fineK && keys.length < 400) { keys.push(k); k = periodoSucc(k); }
+      const per = new Map(keys.map((x) => [x, {}]));
+      for (const v of voci) { const r = per.get(chiavePeriodo(v.data)); if (r) r[v.progetto] = (r[v.progetto] || 0) + val(v); }
+      /* Grafico a barre impilate, ultimi 26 periodi. */
+      const cw = box.clientWidth || 760, stretto = cw < 600;
+      const vis = keys.slice(stretto ? -10 : -26);
+      const W = Math.max(320, Math.min(1200, cw)), H = stretto ? 200 : 240, L = 60, R = 10, T = 12, B = 24, iw = W - L - R, ih = H - T - B;
+      const tot = (x) => cols.reduce((a, c) => a + (per.get(x)[c.id] || 0), 0);
+      const max = Math.max(0.01, ...vis.map(tot));
+      const bw = iw / vis.length;
+      const ns = 'http://www.w3.org/2000/svg';
+      const mk = (tag, at, txt) => { const n = document.createElementNS(ns, tag); for (const a in at) n.setAttribute(a, at[a]); if (txt != null) n.textContent = txt; return n; };
+      const svg = mk('svg', { viewBox: `0 0 ${W} ${H}`, class: 'cchart', role: 'img', 'aria-label': 'Costi per periodo e per sito' });
+      for (const f of [0, 0.5, 1]) { const y = T + ih - f * ih; svg.append(mk('line', { x1: L, x2: W - R, y1: y, y2: y, stroke: 'var(--line)', 'stroke-dasharray': f ? '3 3' : '' })); svg.append(mk('text', { x: L - 6, y: y + 3, 'text-anchor': 'end', class: 'ax' }, soldiV(max * f).replace(',00', ''))); }
+      const ogni = Math.ceil(vis.length / 9);
+      vis.forEach((x, i) => {
+        let y = T + ih; const r = per.get(x);
+        const g = mk('g', {});
+        g.append(mk('title', {}, etichettaPeriodo(x) + ': ' + soldiV(tot(x)) + cols.filter((c) => r[c.id]).map((c) => '\n' + c.nome + ' ' + soldiV(r[c.id])).join('')));
+        for (const c of cols) { const v = r[c.id] || 0; if (!v) continue; const h = (v / max) * ih; y -= h; g.append(mk('rect', { x: L + i * bw + 2, y, width: Math.max(1, bw - 4), height: Math.max(0.5, h), fill: c.colore, rx: 1 })); }
+        g.append(mk('rect', { x: L + i * bw, y: T, width: bw, height: ih, fill: 'transparent' }));
+        svg.append(g);
+        if (i % ogni === 0) svg.append(mk('text', { x: L + i * bw + bw / 2, y: H - 6, 'text-anchor': 'middle', class: 'ax' }, etichettaPeriodo(x, true)));
+      });
+      box.append(svg, el('div', { className: 'legend' }, cols.map((c) => el('span', {}, [el('i', { className: 'sw', style: 'background:' + c.colore }), c.nome]))));
+      /* Tabella: periodo per riga, più recente in alto, con il cumulato. */
+      head.append(el('tr', {}, [el('th', { textContent: state.costiPasso === 'mese' ? 'Mese' : state.costiPasso === 'giorno' ? 'Giorno' : 'Settimana' })].concat(cols.map((c) => el('th', { className: 'num' }, [sito(c)])), [el('th', { className: 'num', textContent: 'Totale' }), el('th', { className: 'num', textContent: 'Cumulato' })])));
+      let cum = 0; const righe = keys.map((x) => { cum += tot(x); return [x, cum]; }).reverse();
+      for (const [x, c] of righe) {
+        const r = per.get(x); if (!tot(x) && state.costiPasso === 'giorno') continue;
+        body.append(el('tr', {}, [el('td', { style: 'white-space:nowrap', textContent: etichettaPeriodo(x) })].concat(cols.map((cc) => el('td', { className: 'num' + (r[cc.id] ? '' : ' muted'), textContent: r[cc.id] ? soldiV(r[cc.id]) : '—' })), [el('td', { className: 'num', textContent: soldiV(tot(x)) }), el('td', { className: 'num muted', textContent: soldiV(c) })])));
+      }
+      const all = (id) => voci.filter((v) => v.progetto === id).reduce((a, v) => a + val(v), 0);
+      body.append(el('tr', { className: 'tot' }, [el('td', { textContent: 'Totale' })].concat(cols.map((c) => el('td', { className: 'num', textContent: soldiV(all(c.id)) })), [el('td', { className: 'num', textContent: soldiV(voci.reduce((a, v) => a + val(v), 0)) }), el('td', {})])));
+    }
+
+    /* Spese a mano */
+    const mb = $('costi-man'); mb.replaceChildren();
+    const man = state.costi.filter((c) => c.progetto === 'tutti' || visibile(c.progetto)).sort((a, b) => String(b.data).localeCompare(String(a.data)));
+    if (!man.length) mb.append(el('tr', {}, [el('td', { colSpan: 6, className: 'empty', textContent: 'Nessuna spesa aggiunta. Inserisci qui sotto abbonamenti, domini, hosting o altro.' })]));
+    for (const c of man) {
+      const del = el('button', { className: 'btn icon sm', type: 'button', textContent: 'Elimina', disabled: !state.canWrite });
+      const act = el('td', {}, [del]);
+      del.addEventListener('click', () => {
+        const yes = el('button', { className: 'btn danger sm', type: 'button', textContent: 'Conferma' }), no = el('button', { className: 'btn icon sm', type: 'button', textContent: 'Annulla' });
+        yes.addEventListener('click', async () => { try { await state.db.collection('costi').doc(c.id).delete(); } catch (e) { $('costi-stato').textContent = 'Non eliminata: riprova.'; } });
+        no.addEventListener('click', () => act.replaceChildren(del));
+        act.replaceChildren(yes, ' ', no);
+      });
+      const fino = c.fino_al ? ' fino al ' + c.fino_al : '';
+      mb.append(el('tr', {}, [el('td', { style: 'white-space:nowrap', textContent: c.data || '' }), el('td', {}, [c.progetto === 'tutti' ? el('span', { className: 'muted', textContent: 'Tutti' }) : sito(prog(c.progetto))]), el('td', { textContent: c.voce || '' }),
+        el('td', { className: 'num', textContent: Number(c.importo || 0).toLocaleString('it-IT', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + (c.valuta === 'USD' ? ' $' : ' €') }),
+        el('td', { textContent: (c.ricorrenza === 'mensile' ? 'ogni mese' : c.ricorrenza === 'annuale' ? 'ogni anno' : 'una volta') + fino }), act]));
+    }
+  }
+  let costiW = 0; window.addEventListener('resize', () => { const w = $('costi-chart').clientWidth; if (state.vista === 'costi' && Math.abs(w - costiW) > 40) { costiW = w; renderCosti(); } });
+  $('costi-cambio').addEventListener('change', async (e) => {
+    const v = parseFloat(e.target.value); if (!(v > 0) || !state.db) return;
+    try { const { id, ...prima } = state.editor.find((d) => d.id === 'costi') || {}; await state.db.collection('editor').doc('costi').set(Object.assign(prima, { usd_eur: v, aggiornato_il: new Date().toISOString() })); $('costi-stato').textContent = 'Cambio salvato.'; }
+    catch (x) { $('costi-stato').textContent = 'Cambio non salvato: riprova.'; }
+  });
+  $('costi-form').addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    if (!state.db) return;
+    const data = $('cf-data').value, voce = $('cf-voce').value.trim(), importo = parseFloat($('cf-importo').value);
+    if (!data || !voce || !(importo >= 0)) { $('costi-stato').textContent = 'Servono data, voce e importo.'; return; }
+    $('costi-stato').textContent = 'Aggiungo…';
+    try {
+      await state.db.collection('costi').add({ data, progetto: $('cf-progetto').value, voce, importo, valuta: $('cf-valuta').value, ricorrenza: $('cf-ric').value, creata_il: new Date().toISOString() });
+      $('cf-voce').value = ''; $('cf-importo').value = '';
+      $('costi-stato').textContent = 'Spesa aggiunta.';
+    } catch (e) { $('costi-stato').textContent = e && e.code === 'not_granted' ? 'Solo chi modifica la dashboard può aggiungere spese.' : 'Non aggiunta: riprova tra poco.'; }
+  });
+
   function renderAll() {
-    renderFiltro(); renderAggiorna(); renderSiti(); renderSalute(); renderConsigli(); renderIdee(); renderCalToolbar(); renderPiano(); renderKeyword(); renderPagine(); renderAi(); renderLog(); renderInterazioni();
+    renderVista(); renderCosti(); renderFiltro(); renderAggiorna(); renderSiti(); renderSalute(); renderConsigli(); renderIdee(); renderCalToolbar(); renderPiano(); renderKeyword(); renderPagine(); renderAi(); renderLog(); renderInterazioni();
     const sel = $('add-progetto');
     if (sel.options.length !== state.progetti.length) { sel.replaceChildren(); for (const p of state.progetti) sel.append(el('option', { value: p.id, textContent: p.nome })); }
     if (state.filtro !== 'tutti') sel.value = state.filtro;
@@ -971,7 +1214,7 @@
     try { const user = await window.claude.use('user'); if (user && user.can) { const c = await user.can('data.write'); if (c === false) state.canWrite = false; } } catch (e) {}
     try { state.mcp = await window.claude.use('mcp'); } catch (e) { state.mcp = null; }
     const sub = (name) => db.collection(name).onSnapshot((snap) => { state[name] = snap.docs.map((d) => Object.assign({ id: d.id }, d.data())); if (name === 'progetti') state.progetti.sort((a, b) => (a.ordine || 0) - (b.ordine || 0)); pianifica(); }, () => say('Connessione ai dati interrotta: ricarica la pagina.'));
-    ['progetti', 'metriche', 'piano', 'pagine', 'aeo', 'interazioni', 'salute', 'keyword', 'idee', 'consigli', 'richieste', 'editor', 'interventi', 'serie'].forEach(sub);
+    ['progetti', 'metriche', 'piano', 'pagine', 'aeo', 'interazioni', 'salute', 'keyword', 'idee', 'consigli', 'richieste', 'editor', 'interventi', 'serie', 'costi'].forEach(sub);
   })();
 })();
 </script>

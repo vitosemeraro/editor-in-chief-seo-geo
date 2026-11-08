@@ -1,6 +1,6 @@
 # Routines
 
-Editor-in-Chief runs on two Claude routines, plus an optional third (scheduled cloud sessions on claude.ai/code). Both read
+Editor-in-Chief runs on two Claude routines, plus an optional third (scheduled cloud sessions on claude.ai/code). All of them read
 `editor-in-chief.yaml` from your config repo at every run, so you never edit the prompts to add a site.
 
 | Routine | Prompt | Schedule | Needs |

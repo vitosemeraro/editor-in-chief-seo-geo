@@ -129,6 +129,10 @@
     [120, 'saas', 'Pubblicata: Fattura elettronica, errori comuni', 1.35, 0],
   ];
   log.forEach(([h, p, titolo, usd, cr], i) => put('interventi', 'demo-' + i, { quando: new Date(now - h * 36e5).toISOString(), progetto: p, titolo, stato: 'Fatto', esito: 'Build e controllo link ok, pubblicata.', link: '#', costo_usd: usd, crediti_openseo: cr, token_totali: Math.round(usd * 1.6e6) }));
+  // Expenses added by hand in the Costs view (invented): a shared monthly tool, a yearly domain, a one-off.
+  put('costi', 'demo-1', { data: plus(-75), progetto: 'tutti', voce: 'SEO data tool', importo: 29, valuta: 'USD', ricorrenza: 'mensile' });
+  put('costi', 'demo-2', { data: plus(-60), progetto: 'bakery', voce: 'Domain', importo: 14, valuta: 'EUR', ricorrenza: 'annuale' });
+  put('costi', 'demo-3', { data: plus(-20), progetto: 'saas', voce: 'Stock photos', importo: 18, valuta: 'EUR' });
 
   // ----- minimal Firestore-like API used by the dashboard -----
   const listeners = {};
@@ -137,7 +141,7 @@
   let n = 0;
   const collection = (col) => ({
     onSnapshot(fn) { (listeners[col] = listeners[col] || []).push(fn); setTimeout(() => fn(snap(col)), 0); return () => {}; },
-    doc(id) { return { id, async update(patch) { put(col, id, Object.assign({}, (db[col] || new Map()).get(id), patch)); emit(col); } }; },
+    doc(id) { return { id, async update(patch) { put(col, id, Object.assign({}, (db[col] || new Map()).get(id), patch)); emit(col); }, async set(doc) { put(col, id, Object.assign({}, doc)); emit(col); }, async delete() { (db[col] || new Map()).delete(id); emit(col); } }; },
     async add(doc) { const id = 'demo-new-' + (++n); put(col, id, doc); emit(col); if (col === 'richieste') simulate(id); return { id }; },
   });
 

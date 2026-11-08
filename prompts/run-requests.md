@@ -99,6 +99,13 @@ session of its own.
   `sites[].facts` and data in the repo. Then set `nostra_pagina` on the keyword and add a `piano` row
   (id `<site>-<YYYY-MM-DD>-pagina-<n>`) with stato `Pubblicato` (or `Scritto` in draft mode), url and
   origine `crea_pagina`.
+- **spiega_consiglio** (rif = `consigli/<id>`): write the exact steps for that tip in its `esito`, with
+  full URLs. Do not change the site.
+- **chat_consiglio** (rif = `consigli/<id>`): the owner wants to talk about that tip. Set `sessione` on the
+  request right away (the dashboard shows "Apri la chat" as soon as it is there), post the full tip in the
+  conversation (site, title, detail, impact, effort, state, last result, and the steps if it is manual),
+  then close the request as `Fatto` with esito "Chat aperta". Do not touch the site: when the owner writes
+  in the conversation, do only what they ask.
 - **verifica_manuale** (rif = `consigli/<id>`): the owner says a manual tip is done. Check it with the
   sources you have, without browser or login: GA4 and Search Console via the configured provider, DNS via
   Cloudflare if enabled, the site via its repo. Confirmed → tip `Fatto`, esito starting with "Verificato:"

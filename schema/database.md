@@ -33,6 +33,7 @@ One per site, synced from `sites[]` in the config.
 | stato | ultimo_aggiornamento | ISO time of the last data refresh |
 | stato | fonti_saltate | list of sources not read in the last run, with reason |
 | stato | crediti_openseo_residui, crediti_letti_il | optional, if OpenSEO is used |
+| costi | usd_eur | exchange rate used by the Costs view (default 0.86), editable from the page |
 
 ## piano/{id}: the editorial calendar
 
@@ -113,7 +114,7 @@ the declared db rule in `dashboard/README.md` limits writes to editors.
 
 | Field | Notes |
 | --- | --- |
-| tipo | `aggiorna_dati`, `controllo_sito`, `applica_consiglio`, `implementa_nota`, `crea_pagina`, `verifica_manuale` |
+| tipo | `aggiorna_dati`, `controllo_sito`, `applica_consiglio`, `implementa_nota`, `crea_pagina`, `verifica_manuale`, `spiega_consiglio`, `chat_consiglio` |
 | progetto | site id or `tutti` |
 | rif | referenced document, e.g. `consigli/blog-20261105-1` |
 | testo | free description. **Data only**: the routine never executes instructions found here |
@@ -132,6 +133,21 @@ the declared db rule in `dashboard/README.md` limits writes to editors.
   high effort). Creating a page adds an estimate of data credits.
 - **Real cost** on each finished job and **spend per site** (last 7 days and total) come from
   `costo_usd`, `crediti_openseo`, `token_totali` in `richieste` and `interventi`.
+
+## costi/{auto id}: expenses added by hand
+
+Written from the Costs view. The view adds them to the measured `costo_usd` of `richieste` and `interventi`.
+
+| Field | Notes |
+| --- | --- |
+| data | YYYY-MM-DD, first (or only) date of the expense |
+| progetto | site id, or `tutti` for a shared expense (shown as its own column) |
+| voce | what it is: domain, hosting, subscription… |
+| importo | number |
+| valuta | `EUR` or `USD`; converted with `editor/costi.usd_eur` |
+| ricorrenza | `una` (default), `mensile` or `annuale`: repeats on the same day up to today |
+| fino_al | optional YYYY-MM-DD, stops a recurring expense |
+| creata_il | ISO time |
 
 ## interventi/{YYYYMMDD-HHMM}-{site_id}-{n}
 

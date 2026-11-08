@@ -1,12 +1,13 @@
 # Routines
 
-Editor-in-Chief runs on two Claude routines (scheduled cloud sessions on claude.ai/code). Both read
+Editor-in-Chief runs on two Claude routines, plus an optional third (scheduled cloud sessions on claude.ai/code). All of them read
 `editor-in-chief.yaml` from your config repo at every run, so you never edit the prompts to add a site.
 
 | Routine | Prompt | Schedule | Needs |
 | --- | --- | --- | --- |
 | Weekly review | `weekly-review.md` | once a week, e.g. Monday 08:00 | config repo (read), data connectors, dashboard |
 | Run requests | `run-requests.md` | every morning, e.g. 07:00, and on demand from the buttons | config repo, site repos (write), data connectors, dashboard |
+| Spare capacity (optional) | `spare-capacity.md` | every night, e.g. 02:40 | config repo, dashboard, the "Run requests" id |
 
 Setup:
 

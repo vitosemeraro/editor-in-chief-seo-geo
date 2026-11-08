@@ -33,6 +33,8 @@ One per site, synced from `sites[]` in the config.
 | stato | ultimo_aggiornamento | ISO time of the last data refresh |
 | stato | fonti_saltate | list of sources not read in the last run, with reason |
 | stato | crediti_openseo_residui, crediti_letti_il | optional, if OpenSEO is used |
+| quota | attiva, max_notte, max_settimana | spare-capacity switch and caps, editable by the owner |
+| quota | settimana, usate_settimana, pausa_fino_al, ultima_notte, note | written by the spare-capacity routine |
 | costi | usd_eur | exchange rate used by the Costs view (default 0.86), editable from the page |
 
 ## piano/{id}: the editorial calendar
@@ -123,6 +125,7 @@ the declared db rule in `dashboard/README.md` limits writes to editors.
 | esito, link, sessione | result, public link, link to the conversation that did the work, where the owner can reply |
 | creata_il, avviata_il, iniziata_il, finita_il | ISO times |
 | crediti_openseo, costo_usd, token_output, token_totali | optional usage, shown in the log |
+| origine | optional: `quota avanzata` when created by the spare-capacity routine |
 
 ## Priority and cost
 

@@ -12,6 +12,9 @@ editor:
     publish_days: [mon, thu]         # days when scheduled content goes out
     weeks_ahead: 8                   # how far ahead the routine fills empty slots with ideas
     max_posts_per_site_per_week: 2   # hard cap, protects you from mass-produced content
+  spare_capacity:                    # optional nightly routine (prompts/spare-capacity.md)
+    max_per_night: 3                 # automatic tips applied per night; the nightly caps are your reserve
+    max_per_week: 15                 # weekly cap across all sites
   autofill_calendar: false           # true = every morning, "Da confermare" rows become "Programmato"
                                      # and empty slots get the best new idea. false = you confirm.
 

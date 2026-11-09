@@ -7,6 +7,13 @@ change to the database schema bumps the minor version, a fix bumps the patch.
 Every change comes from the private dashboard the author uses daily on 4 real sites, generalized before
 it lands here.
 
+## [0.6.1] - 2026-11-09
+
+### Fixed
+- Spare capacity: a request stuck for more than 3 hours (an interrupted session) no longer blocks every
+  following night. Only requests updated in the last 3 hours count as the owner working; stuck ones are
+  listed in the Monday report.
+
 ## [0.6.0] - 2026-11-08
 
 ### Added
@@ -94,6 +101,7 @@ it lands here.
   schema, dashboard that starts empty, modular data sources (Search Console required), deploy examples
   for Firebase, Netlify, Vercel and FTPS, link checker, secret scan and config validator in CI.
 
+[0.6.1]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.3.2...v0.4.0

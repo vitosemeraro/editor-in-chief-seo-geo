@@ -44,8 +44,10 @@ usage on them), and stop. Tell the owner in one line, at most once a week.
 
 n = min(`max_notte`, `max_settimana` − `usate_settimana`). n ≤ 0 → stop. Never exceed the caps.
 
-Skip the night if `richieste` has anything `In coda` or `In lavorazione` not created by this routine:
-the owner is working and the usage is theirs.
+Skip the night if `richieste` has anything `In coda` or `In lavorazione` not created by this routine
+and updated in the last 3 hours: the owner is working and the usage is theirs. Requests stuck for more
+than 3 hours are interrupted sessions, not work in progress: they do not block the night (list them in
+the Monday report).
 
 ## 4) Pick the tips
 
@@ -71,5 +73,6 @@ Update `editor/quota`: `usate_settimana` += requests fired, `ultima_notte = { da
 ## 6) Report
 
 Only on Mondays: 2-3 lines to the owner about the week just closed — tips applied by spare capacity, how
-many failed, whether a usage-limit pause happened, how many automatic tips are left. No message on other
+many failed, whether a usage-limit pause happened, how many automatic tips are left, and any
+requests stuck for more than 3 hours. No message on other
 days: results are in each request's conversation and in the work log.

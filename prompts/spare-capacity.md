@@ -52,7 +52,10 @@ the Monday report).
 ## 4) Pick the tips
 
 From `consigli` take `stato = "Da fare"` and `come = "Automatico"`. Leave out:
-- tips that already have a request with `rif = "consigli/<id>"` in any state other than `Errore`;
+- tips that already have a request with `rif = "consigli/<id>"` in any state other than `Errore`.
+  Exception: if that request has been `In coda` or `In lavorazione` for more than 24 hours, it is an
+  interrupted session: set it to `Errore` with esito "Interrupted session: resumed by spare capacity in
+  request <new doc_id>", and the tip can be picked again;
 - tips whose request failed in the last 7 days for a reason other than the usage limit.
 
 Sort by impact ÷ effort as the dashboard does (impact Alto 3, Medio 2, Basso 1; effort Basso 1, Medio 2,

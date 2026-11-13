@@ -7,6 +7,13 @@ change to the database schema bumps the minor version, a fix bumps the patch.
 Every change comes from the private dashboard the author uses daily on 4 real sites, generalized before
 it lands here.
 
+## [0.13.1] - 2026-11-13
+
+### Fixed
+- `prompts/run-requests.md`: requests stuck `In coda` or `In lavorazione` for more than 24 hours are now
+  resumed at the start of every run (closed if the work already landed, requeued otherwise), so they no
+  longer sit forever in the "Rolling" banner.
+
 ## [0.13.0] - 2026-11-13
 
 ### Added
@@ -205,6 +212,7 @@ it lands here.
   schema, dashboard that starts empty, modular data sources (Search Console required), deploy examples
   for Firebase, Netlify, Vercel and FTPS, link checker, secret scan and config validator in CI.
 
+[0.13.1]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.13.0...v0.13.1
 [0.13.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.12.0...v0.13.0
 [0.12.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.11.0...v0.12.0
 [0.11.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.10.0...v0.11.0

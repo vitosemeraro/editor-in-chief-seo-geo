@@ -80,6 +80,10 @@ Then work on that request only:
    `Fatto` on its linked requests (rif = "consigli/<id>") still `Da fare a mano` or `Da approvare`. When you
    close the last request of an advice as `Fatto` and the work is complete, close the advice too. At the
    start of every run, close the `Da fare a mano` requests whose advice is already `Fatto` or `Scartato`.
+7. Interrupted sessions. At the start of every run, find requests `In coda` or `In lavorazione` unchanged for
+   more than 24 hours (iniziata_il, avviata_il or creata_il). Check whether the work actually landed (commit,
+   live page, link): if yes close it `Fatto` with esito "Resumed: the work was already published"; if not,
+   put it back `In coda` with passo "Resumed after interruption". The dashboard shows them as "maybe stuck".
 
 When your request is closed, stop: do not take others in this session. Every button already starts a
 session of its own.

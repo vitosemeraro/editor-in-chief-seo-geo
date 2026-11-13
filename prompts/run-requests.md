@@ -66,6 +66,20 @@ Then work on that request only:
    `crediti_letti_il`. The dashboard uses these numbers for the real cost of each job, the estimate on
    every button and the spend per site.
 4. Update the linked document as described for the type.
+5. Who unblocks a job left to the owner. Whenever you close a request or an advice with `Da fare a mano` or
+   `Da approvare`, also write `blocco` on it and on the linked advice. The dashboard slate counts it:
+   - `desk`: needs the owner's computer on, i.e. a browser already signed in (analytics, Search Console,
+     business profiles, DNS, hosting panels). If your setup can drive that browser, do it yourself as soon
+     as the computer is on.
+   - `decisione`: needs an owner's choice (a name, a structure, a price, a text in their own voice).
+   - `esterno`: depends on others or on time (search engine indexing, a site outside any repository, a
+     third-party service).
+   Never leave `Da fare a mano` on a job with nothing to do (an observation, work already done, code that is
+   already there): close it `Fatto` and put the note in esito.
+6. Requests and advice move together. When an advice becomes `Fatto` or `Scartato`, for any reason, set
+   `Fatto` on its linked requests (rif = "consigli/<id>") still `Da fare a mano` or `Da approvare`. When you
+   close the last request of an advice as `Fatto` and the work is complete, close the advice too. At the
+   start of every run, close the `Da fare a mano` requests whose advice is already `Fatto` or `Scartato`.
 
 When your request is closed, stop: do not take others in this session. Every button already starts a
 session of its own.

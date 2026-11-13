@@ -3,6 +3,18 @@
 # Status values are translated consistently in code and data, so the demo keeps working in every language.
 
 T = {
+    # ---------- manual requests (0.12.0) ----------
+    "richieste lasciate a mano": ("requests left to you", "solicitudes que te quedan", "demandes laissées à vous"),
+    "Chi le sblocca: quelle che Claude può chiudere da solo, quelle che aspettano il tuo PC acceso, quelle che aspettano una tua decisione e quelle ferme per un blocco esterno.": ("Who unblocks them: the ones Claude can close on its own, the ones waiting for your computer to be on, the ones waiting for your decision and the ones stuck on an external block.", "Quién las desbloquea: las que Claude puede cerrar solo, las que esperan tu ordenador encendido, las que esperan tu decisión y las paradas por un bloqueo externo.", "Qui les débloque : celles que Claude peut clore seul, celles qui attendent votre ordinateur allumé, celles qui attendent votre décision et celles bloquées de l'extérieur."),
+    "Le chiude Claude": ("Claude closes them", "Las cierra Claude", "Claude les clôt"),
+    "già fatte o senza nulla da fare: Claude le segna chiuse": ("already done or nothing to do: Claude marks them closed", "ya hechas o sin nada que hacer: Claude las marca como cerradas", "déjà faites ou rien à faire : Claude les marque closes"),
+    "servono i tuoi accessi dal browser del tuo PC": ("need your sign-ins from the browser on your computer", "necesitan tus accesos desde el navegador de tu ordenador", "demandent vos accès depuis le navigateur de votre ordinateur"),
+    "Tua decisione": ("Your decision", "Tu decisión", "Votre décision"),
+    "serve una tua scelta prima di andare avanti": ("needs your choice before going on", "necesita tu elección para seguir", "demande votre choix pour avancer"),
+    "Blocco esterno": ("External block", "Bloqueo externo", "Blocage externe"),
+    "dipendono da altri (Google, tempi di indicizzazione, siti fuori repository)": ("depend on others (Google, indexing time, sites outside any repository)", "dependen de otros (Google, tiempos de indexación, sitios fuera de repositorio)", "dépendent d'autres (Google, délais d'indexation, sites hors dépôt)"),
+    "Vedi le richieste una per una": ("See the requests one by one", "Ver las solicitudes una a una", "Voir les demandes une par une"),
+    "Richieste lasciate a mano, per chi le sblocca": ("Requests left to you, by who unblocks them", "Solicitudes que te quedan, por quién las desbloquea", "Demandes laissées à vous, par qui les débloque"),
     # ---------- slate counters (0.11.0) ----------
     " uscite pubblicate": (" releases published", " publicaciones publicadas", " sorties publiées"),
     "La lavagna": ("The slate", "La pizarra", "L'ardoise"),

@@ -7,6 +7,22 @@ change to the database schema bumps the minor version, a fix bumps the patch.
 Every change comes from the private dashboard the author uses daily on 4 real sites, generalized before
 it lands here.
 
+## [0.12.0] - 2026-11-13
+
+### Added
+- **Requests left to you**, now the headline of the slate: every request still `Da fare a mano` or
+  `Da approvare`, counted one by one, split by who unblocks it. Claude closes them (the linked advice is
+  already done or dismissed, or there is nothing to do), your computer must be on, your decision, external
+  block. A big film strip, four large counters and the list with a link to each chat.
+
+### Changed
+- `prompts/run-requests.md`: the agent writes `blocco` whenever it leaves a job to the owner, never leaves
+  `Da fare a mano` on a job with nothing to do, and keeps requests and advice in sync (closing an advice
+  closes its pending requests; every run first closes stale manual requests).
+
+### Schema
+- `blocco` also accepts `claude`.
+
 ## [0.11.0] - 2026-11-13
 
 ### Added
@@ -174,6 +190,7 @@ it lands here.
   schema, dashboard that starts empty, modular data sources (Search Console required), deploy examples
   for Firebase, Netlify, Vercel and FTPS, link checker, secret scan and config validator in CI.
 
+[0.12.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.11.0...v0.12.0
 [0.11.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.10.0...v0.11.0
 [0.10.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.8.0...v0.9.0

@@ -219,7 +219,7 @@
   .lav-cell { padding: 10px 12px 12px; border-right: 1px dashed color-mix(in srgb, var(--paper) 16%, transparent); border-bottom: 1px dashed color-mix(in srgb, var(--paper) 16%, transparent); display: grid; gap: 2px; align-content: start; min-width: 0; }
   .lav-cell .v { font: 800 40px/1 var(--font-display); font-variant-numeric: tabular-nums; }
   .lav-cell .l { font-size: 12px; line-height: 1.25; opacity: .78; }
-  .lavagna { --k-todo: #d8cfbf; --k-run: #7fb7ff; --k-desk: #ffb84d; --k-dec: #f59bd5; --k-ext: #ff6b57; --k-rej: #8c8475; --k-done: #5fd49a;
+  .lavagna { --k-claude: #9fd8ff; --k-todo: #d8cfbf; --k-run: #7fb7ff; --k-desk: #ffb84d; --k-dec: #f59bd5; --k-ext: #ff6b57; --k-rej: #8c8475; --k-done: #5fd49a;
     --k-new: #d8cfbf; --k-sched: #7fb7ff; --k-err: #ff6b57; --k-pub: #5fd49a; }
   .lav-cell { border-top: 3px solid var(--kc, transparent); }
   .lav-cell .v { color: var(--kc, var(--paper)); }
@@ -232,6 +232,21 @@
   .film i { display: block; height: 100%; background: var(--kc); border-right: 2px solid #000; min-width: 3px; }
   .film i:last-child { border-right: 0; }
   .film-cap { margin: 2px 12px 8px; font: 500 10.5px var(--font-mono); letter-spacing: .06em; opacity: .65; }
+  /* Il dato principale: le richieste lasciate a mano, divise per chi le sblocca. */
+  .mano { border: 2px solid var(--k-desk); border-radius: 8px; padding: 14px 14px 12px; display: grid; gap: 10px; background: color-mix(in srgb, var(--k-desk) 6%, transparent); }
+  .mano-top { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; }
+  .mano-top .tot { font: 800 64px/0.9 var(--font-display); color: var(--k-desk); }
+  .mano-top .tl { font: 800 22px/1.05 var(--font-display); text-transform: uppercase; letter-spacing: .03em; }
+  .mano-top .ts { font-size: 13px; opacity: .8; flex-basis: 100%; }
+  .mano .film { margin: 0; height: 46px; }
+  .mano-cells { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+  @media (max-width: 760px) { .mano-cells { grid-template-columns: repeat(2, minmax(0, 1fr)); } .mano-top .tot { font-size: 52px; } }
+  .mano-c { border-top: 4px solid var(--kc); padding-top: 6px; display: grid; gap: 2px; align-content: start; min-width: 0; }
+  .mano-c .v { font: 800 48px/1 var(--font-display); color: var(--kc); }
+  .mano-c.zero .v { opacity: .35; }
+  .mano-c .l { font: 600 14px/1.2 var(--font-display); text-transform: uppercase; letter-spacing: .04em; }
+  .mano-c .d { font-size: 12px; opacity: .72; line-height: 1.3; }
+  .mano details ul li .k { color: var(--kc, #ffb84d); }
   .lav-row { display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
   @media (max-width: 760px) { .lav-row { grid-template-columns: minmax(0, 1fr); } }
   .lav-box { border: 1px solid color-mix(in srgb, var(--paper) 22%, transparent); border-radius: 6px; padding: 10px 12px 12px; min-width: 0; }
@@ -311,6 +326,12 @@
     <div class="lav-in">
       <div class="lav-top"><h2 id="lav-h">La lavagna</h2><span class="verdetto go" id="lav-verdetto" aria-live="polite">—</span></div>
       <p class="lav-why" id="lav-why">Tutto il lavoro in un colpo d'occhio: quanto aspetta Claude, quanto aspetta te, quanto è uscito.</p>
+      <div class="mano" id="mano">
+        <div class="mano-top"><span class="tot" id="mano-tot">0</span><span class="tl">richieste lasciate a mano</span><span class="ts">Chi le sblocca: quelle che Claude può chiudere da solo, quelle che aspettano il tuo PC acceso, quelle che aspettano una tua decisione e quelle ferme per un blocco esterno.</span></div>
+        <div class="film" id="mano-film" role="img"></div>
+        <div class="mano-cells" id="mano-cells"></div>
+        <details id="mano-det"><summary>Vedi le richieste una per una</summary><ul id="mano-lista"></ul></details>
+      </div>
       <div class="lav-grid">
         <div class="lav-col"><b>Lavori</b><div class="film" id="lav-film-l" role="img"></div><div class="film-cap" id="lav-cap-l"></div><div class="lav-cells" id="lav-lavori"></div></div>
         <div class="lav-col"><b>Uscite</b><div class="film" id="lav-film-u" role="img"></div><div class="film-cap" id="lav-cap-u"></div><div class="lav-cells" id="lav-uscite"></div></div>
@@ -809,6 +830,43 @@
     if (st === 'Da fare a mano' || st === 'Da approvare') return bloccoDi(x);
     return 'ext';
   }
+  /* Richieste "Da fare a mano" o "Da approvare", una per una (non deduplicate): chi le sblocca.
+     claude = Claude le chiude da solo: il consiglio collegato è già fatto o scartato, oppure l esito dice che non serve nulla. */
+  const RX_CLAUDE = /nessuna modifica|non serv|non c.e? (niente|nulla) da|(è|e.) un.osservazione|già nel|il codice c.è già|è già|sono già|già fatto|già online|non serve modificare/i;
+  function chiSblocca(q) {
+    const b = String(q.blocco || '').toLowerCase();
+    if (/^claude/.test(b)) return 'claude';
+    if (/^desk/.test(b)) return 'desk';
+    if (/^dec/.test(b)) return 'dec';
+    if (/^est/.test(b)) return 'ext';
+    const m = /^consigli\/(.+)$/.exec(q.rif || '');
+    const c = m ? state.consigli.find((x) => x.id === m[1]) : null;
+    if (c && (c.stato === 'Fatto' || c.stato === 'Scartato')) return 'claude';
+    if (RX_CLAUDE.test(q.esito || '')) return 'claude';
+    return bloccoDi(q);
+  }
+  function renderMano() {
+    const rows = state.richieste.filter((q) => (q.stato === 'Da fare a mano' || q.stato === 'Da approvare') && (!q.progetto || q.progetto === 'tutti' || visibile(q.progetto)))
+      .map((q) => ({ q, k: chiSblocca(q) }));
+    const KM = [['claude', 'Le chiude Claude', 'già fatte o senza nulla da fare: Claude le segna chiuse'], ['desk', 'PC acceso', 'servono i tuoi accessi dal browser del tuo PC'], ['dec', 'Tua decisione', 'serve una tua scelta prima di andare avanti'], ['ext', 'Blocco esterno', 'dipendono da altri (Google, tempi di indicizzazione, siti fuori repository)']];
+    const n = {}; for (const r of rows) n[r.k] = (n[r.k] || 0) + 1;
+    $('mano-tot').textContent = String(rows.length);
+    const fb = $('mano-film'); fb.replaceChildren(); fb.setAttribute('aria-label', 'Richieste lasciate a mano, per chi le sblocca');
+    for (const [k, l] of KM) { if (!n[k]) continue; const f = el('i', { title: l + ': ' + n[k] }); f.style.flex = String(n[k]); f.style.setProperty('--kc', 'var(--k-' + k + ')'); fb.append(f); }
+    $('mano-cells').replaceChildren(...KM.map(([k, l, d]) => { const c = el('div', { className: 'mano-c' + (n[k] ? '' : ' zero') }, [el('div', { className: 'v', textContent: String(n[k] || 0) }), el('div', { className: 'l', textContent: l }), el('div', { className: 'd', textContent: d })]); c.style.setProperty('--kc', 'var(--k-' + k + ')'); return c; }));
+    const ul = $('mano-lista'); ul.replaceChildren();
+    $('mano-det').hidden = !rows.length;
+    const ord = { desk: 0, dec: 1, ext: 2, claude: 3 };
+    for (const { q, k } of rows.sort((a, b) => ord[a.k] - ord[b.k])) {
+      const lab = (KM.find((x) => x[0] === k) || [])[1] || '';
+      const tag = el('span', { className: 'k', textContent: lab }); tag.style.setProperty('--kc', 'var(--k-' + k + ')'); tag.style.color = 'var(--k-' + k + ')';
+      const li = el('li', {}, [tag]);
+      if (q.progetto && q.progetto !== 'tutti') li.append(sito(prog(q.progetto)));
+      li.append(el('span', { textContent: (TIPO_NOME[q.tipo] || q.tipo) + (q.testo ? ': ' + q.testo : '') }));
+      if (q.sessione && /^https:\/\/claude\.ai\//.test(q.sessione)) li.append(el('a', { href: q.sessione, target: '_blank', rel: 'noopener', textContent: 'apri la chat' }));
+      ul.append(li);
+    }
+  }
   function lavori() {
     const per = new Map();
     for (const q of state.richieste) {
@@ -913,6 +971,7 @@
     if (!perSito.length) ps.append(el('span', { className: 'l', textContent: 'Nessun sito.' }));
     $('lav-leg').replaceChildren(...aperti.map(([k, , l]) => { const i = el('i'); i.style.setProperty('--kc', 'var(--k-' + k + ')'); return el('span', {}, [i, l]); }));
     renderRitmo();
+    renderMano();
     const te = (n.desk || 0) + (n.dec || 0), ko = (n.ext || 0) + u.err;
     const v = $('lav-verdetto');
     let cls = 'go', txt = 'Avanti tutta', why = 'Poco o niente aspetta te: Claude può continuare da solo.';

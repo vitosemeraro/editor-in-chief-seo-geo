@@ -7,6 +7,15 @@ change to the database schema bumps the minor version, a fix bumps the patch.
 Every change comes from the private dashboard the author uses daily on 4 real sites, generalized before
 it lands here.
 
+## [0.9.0] - 2026-11-13
+
+### Added
+- **`consent/consent.js`**, one cookie banner for all your sites: a large "Accept all", a "Settings" panel
+  with categories, and a × that closes with technical cookies only. Google Consent Mode v2 with every
+  signal denied by default; GA4, GTM and Clarity load only after consent. Texts in 6 languages, keeps the
+  choice saved by the banner it replaces (`data-legacy`), reopens from any `data-cc-open` link.
+  See `consent/README.md`.
+
 ## [0.8.0] - 2026-11-13
 
 ### Added

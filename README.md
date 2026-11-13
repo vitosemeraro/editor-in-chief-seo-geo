@@ -77,6 +77,7 @@ enabling AI visibility or SERP tracking.
 | `schema/database.md` | every collection and field the dashboard and routines share |
 | `sources/` | data modules: what each reads and fills |
 | `deploy/` | GitHub Actions for Firebase, Netlify, Vercel, FTPS |
+| `consent/` | `consent.js`, the same cookie banner for every site (Consent Mode v2, 6 languages) |
 | `scripts/` | link checker, secret scan, config validator |
 | `demo/` | the demo: invented data in memory, built in 4 languages by `scripts/build_demo.py` (translations in `scripts/demo_i18n.py`) |
 | `CHANGELOG.md`, `VERSION` | what changed in each version |

@@ -7,6 +7,22 @@ change to the database schema bumps the minor version, a fix bumps the patch.
 Every change comes from the private dashboard the author uses daily on 4 real sites, generalized before
 it lands here.
 
+## [0.11.0] - 2026-11-13
+
+### Added
+- **The slate** (SC.02), one dark board with every counter, so you can tell at a glance whether to keep
+  going or stop and close things yourself. Jobs: to do, in progress, waiting for your computer to be on,
+  waiting for your decision, external block or unclassified, rejected by you, closed. Releases: new, scheduled,
+  failed (date passed and not out), published. Each group has a film-strip bar in proportion, then open jobs
+  by site, a pace chart for the last 8 weeks (jobs opened vs closed, releases published), a verdict (Full
+  speed ahead / Slow down / Stop, close things) and the list of what waits on you with a link to its chat.
+  A job is counted once: an advice or item with its latest request, or a request on its own.
+- Menu entry "Slate"; scene numbers shift by one.
+
+### Schema
+- New optional field `blocco` (`desk` | `decisione` | `esterno`) on `richieste` and `consigli`. Without it
+  the dashboard infers who a manual job waits on from the `esito` text.
+
 ## [0.10.0] - 2026-11-13
 
 ### Added
@@ -158,6 +174,7 @@ it lands here.
   schema, dashboard that starts empty, modular data sources (Search Console required), deploy examples
   for Firebase, Netlify, Vercel and FTPS, link checker, secret scan and config validator in CI.
 
+[0.11.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.10.0...v0.11.0
 [0.10.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.7.0...v0.8.0

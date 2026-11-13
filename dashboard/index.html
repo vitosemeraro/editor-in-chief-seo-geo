@@ -199,11 +199,67 @@
     .menu a[aria-current="true"] { background: transparent; color: var(--paper); box-shadow: inset 4px 0 0 var(--accent); padding-left: 14px; }
   }
   @media (max-width: 1360px) { .brand small { display: none; } }
+  @media (min-width: 901px) and (max-width: 1400px) { .menu a .n { display: none; } }
+
+  /* Lavagna: tutti i contatori in un solo ciak. Parte alta a strisce, sotto la lavagna con lavori e uscite. */
+  .lavagna { background: var(--ink); color: var(--paper); border-radius: var(--r); overflow: hidden; box-shadow: 0 1px 0 var(--line); }
+  .lavagna::before { content: ""; display: block; height: 16px; background: repeating-linear-gradient(-45deg, var(--paper) 0 16px, var(--ink) 16px 32px); }
+  .lav-in { padding: 16px 18px 18px; display: grid; gap: 14px; }
+  .lav-top { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: baseline; justify-content: space-between; }
+  .lav-top h2 { font-size: 30px; color: var(--paper); }
+  .lav-top h2::before { content: "SC.02"; display: block; font: 500 11px var(--font-mono); letter-spacing: .12em; color: var(--accent); margin-bottom: 4px; }
+  .verdetto { font: 800 22px/1.1 var(--font-display); text-transform: uppercase; letter-spacing: .03em; padding: 6px 12px; border: 2px solid currentColor; border-radius: 6px; }
+  .verdetto.go { color: #5fd49a; } .verdetto.slow { color: #ffb84d; } .verdetto.stop { color: #ff6b57; }
+  .lav-why { margin: 0; font-size: 13px; opacity: .8; max-width: 90ch; }
+  .lav-grid { display: grid; gap: 0; grid-template-columns: minmax(0, 7fr) minmax(0, 4fr); border: 1px solid color-mix(in srgb, var(--paper) 22%, transparent); border-radius: 6px; }
+  .lav-col { min-width: 0; }
+  .lav-col + .lav-col { border-left: 1px solid color-mix(in srgb, var(--paper) 22%, transparent); }
+  .lav-col > b { display: block; font: 500 11px var(--font-mono); letter-spacing: .12em; text-transform: uppercase; padding: 8px 12px; border-bottom: 1px solid color-mix(in srgb, var(--paper) 22%, transparent); opacity: .75; }
+  .lav-cells { display: grid; grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); }
+  .lav-cell { padding: 10px 12px 12px; border-right: 1px dashed color-mix(in srgb, var(--paper) 16%, transparent); border-bottom: 1px dashed color-mix(in srgb, var(--paper) 16%, transparent); display: grid; gap: 2px; align-content: start; min-width: 0; }
+  .lav-cell .v { font: 800 40px/1 var(--font-display); font-variant-numeric: tabular-nums; }
+  .lav-cell .l { font-size: 12px; line-height: 1.25; opacity: .78; }
+  .lavagna { --k-todo: #d8cfbf; --k-run: #7fb7ff; --k-desk: #ffb84d; --k-dec: #f59bd5; --k-ext: #ff6b57; --k-rej: #8c8475; --k-done: #5fd49a;
+    --k-new: #d8cfbf; --k-sched: #7fb7ff; --k-err: #ff6b57; --k-pub: #5fd49a; }
+  .lav-cell { border-top: 3px solid var(--kc, transparent); }
+  .lav-cell .v { color: var(--kc, var(--paper)); }
+  .lav-cell.te { background: color-mix(in srgb, var(--kc) 9%, transparent); }
+  .lav-cell.zero .v { opacity: .35; }
+  /* Pellicola: una striscia per colonna, ogni fotogramma e' una categoria in proporzione. */
+  .film { margin: 10px 12px 2px; height: 34px; border-radius: 3px; background: #000; padding: 7px 0; position: relative; display: flex; overflow: hidden; }
+  .film::before, .film::after { content: ""; position: absolute; left: 0; right: 0; height: 4px; background: repeating-linear-gradient(90deg, transparent 0 5px, color-mix(in srgb, var(--paper) 55%, transparent) 5px 10px); }
+  .film::before { top: 1.5px; } .film::after { bottom: 1.5px; }
+  .film i { display: block; height: 100%; background: var(--kc); border-right: 2px solid #000; min-width: 3px; }
+  .film i:last-child { border-right: 0; }
+  .film-cap { margin: 2px 12px 8px; font: 500 10.5px var(--font-mono); letter-spacing: .06em; opacity: .65; }
+  .lav-row { display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  @media (max-width: 760px) { .lav-row { grid-template-columns: minmax(0, 1fr); } }
+  .lav-box { border: 1px solid color-mix(in srgb, var(--paper) 22%, transparent); border-radius: 6px; padding: 10px 12px 12px; min-width: 0; }
+  .lav-box > b { display: block; font: 500 11px var(--font-mono); letter-spacing: .12em; text-transform: uppercase; opacity: .75; margin-bottom: 8px; }
+  .per-sito { display: grid; gap: 7px; }
+  .ps { display: grid; grid-template-columns: 7.5em minmax(0, 1fr) 2.5em; gap: 8px; align-items: center; font-size: 12px; }
+  .ps .nm { display: inline-flex; gap: 6px; align-items: center; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .ps .bar { display: flex; height: 14px; border-radius: 2px; background: color-mix(in srgb, var(--paper) 8%, transparent); overflow: hidden; }
+  .ps .bar i { display: block; height: 100%; background: var(--kc); border-right: 1px solid var(--ink); }
+  .ps .n { font: 500 12px var(--font-mono); text-align: right; opacity: .85; }
+  .lav-legend { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 11px; opacity: .8; margin-top: 8px; }
+  .lav-legend span { display: inline-flex; gap: 5px; align-items: center; }
+  .lav-legend i { width: 10px; height: 10px; border-radius: 2px; background: var(--kc); }
+  .trend { display: block; width: 100%; height: auto; }
+  .trend .ax { font: 10px var(--font-mono); fill: currentColor; opacity: .6; }
+  .lavagna details { font-size: 13px; }
+  .lavagna summary { cursor: pointer; color: var(--paper); opacity: .85; }
+  .lavagna details ul { margin: 8px 0 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+  .lavagna details li { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; border-left: 2px solid color-mix(in srgb, var(--paper) 25%, transparent); padding-left: 8px; }
+  .lavagna details li .k { font: 500 10.5px var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: #ffb84d; }
+  .lavagna details li a { color: var(--paper); }
+  @media (max-width: 760px) { .lav-grid { grid-template-columns: minmax(0, 1fr); } .lav-col + .lav-col { border-left: 0; border-top: 1px solid color-mix(in srgb, var(--paper) 22%, transparent); } .lav-cell .v { font-size: 32px; } }
+  .wrap > section#lavagna { scroll-margin-top: calc(var(--nav-h) + 14px); }
 
   /* Testata: un ciak con scena e data. */
   .kicker { font: 500 11px var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin: 0 0 6px; }
   .head h1 span { color: var(--accent); }
-  .wrap { counter-reset: sc 1; }
+  .wrap { counter-reset: sc 2; }
   .wrap > section#costi.card > .card-head h2::before { content: "PRODUZIONE"; }
   .wrap > section.card { counter-increment: sc; position: relative; border-top: 3px solid var(--fg); }
   .wrap > section.card > .card-head h2::before { content: "SC." counter(sc, decimal-leading-zero); display: block; font: 500 11px var(--font-mono); letter-spacing: .12em; color: var(--accent); margin-bottom: 4px; }
@@ -219,15 +275,16 @@
     <a class="brand" href="#top" data-go="top"><svg viewBox="0 0 26 26" aria-hidden="true"><rect x="2" y="10" width="22" height="14" rx="2" fill="currentColor"/><path d="M2.6 4.8 22.4 1.6l.9 5-19.8 3.3z" fill="currentColor"/><path d="M6 4.2 9 8.6M11 3.4l3 4.4M16 2.6l3 4.4" stroke="var(--ink)" stroke-width="1.8"/><path d="M2 14h22" stroke="var(--ink)" stroke-width="1.2"/></svg>EIC <small>Editor-in-Chief</small></a>
     <ul class="menu" id="menu">
       <li><a href="#siti" data-go="siti"><span class="n">01</span>In scena</a></li>
-      <li><a href="#salute" data-go="salute"><span class="n">02</span>Il polso</a></li>
-      <li><a href="#consigli" data-go="consigli"><span class="n">03</span>Note di redazione</a></li>
-      <li><a href="#idee" data-go="idee"><span class="n">04</span>Soggetti</a></li>
-      <li><a href="#calendario" data-go="calendario"><span class="n">05</span>Palinsesto</a></li>
-      <li><a href="#mercato" data-go="mercato"><span class="n">06</span>Platea</a></li>
-      <li><a href="#pagine" data-go="pagine"><span class="n">07</span>Cartellone</a></li>
-      <li><a href="#ai" data-go="ai"><span class="n">08</span>La critica AI</a></li>
-      <li><a href="#log" data-go="log"><span class="n">09</span>Diario di set</a></li>
-      <li><a href="#interazioni" data-go="interazioni"><span class="n">10</span>In sala</a></li>
+      <li><a href="#lavagna" data-go="lavagna"><span class="n">02</span>Lavagna</a></li>
+      <li><a href="#salute" data-go="salute"><span class="n">03</span>Il polso</a></li>
+      <li><a href="#consigli" data-go="consigli"><span class="n">04</span>Note di redazione</a></li>
+      <li><a href="#idee" data-go="idee"><span class="n">05</span>Soggetti</a></li>
+      <li><a href="#calendario" data-go="calendario"><span class="n">06</span>Palinsesto</a></li>
+      <li><a href="#mercato" data-go="mercato"><span class="n">07</span>Platea</a></li>
+      <li><a href="#pagine" data-go="pagine"><span class="n">08</span>Cartellone</a></li>
+      <li><a href="#ai" data-go="ai"><span class="n">09</span>La critica AI</a></li>
+      <li><a href="#log" data-go="log"><span class="n">10</span>Diario di set</a></li>
+      <li><a href="#interazioni" data-go="interazioni"><span class="n">11</span>In sala</a></li>
       <li><a href="#costi" data-go="costi"><span class="n">&euro;</span>Budget</a></li>
     </ul>
     <span class="rec" id="rec" aria-live="polite"><i></i><span>pronto</span></span>
@@ -249,6 +306,22 @@
   </header>
 
   <section class="sites" id="siti" aria-label="Siti"></section>
+
+  <section class="lavagna" id="lavagna" aria-labelledby="lav-h">
+    <div class="lav-in">
+      <div class="lav-top"><h2 id="lav-h">La lavagna</h2><span class="verdetto go" id="lav-verdetto" aria-live="polite">—</span></div>
+      <p class="lav-why" id="lav-why">Tutto il lavoro in un colpo d'occhio: quanto aspetta Claude, quanto aspetta te, quanto è uscito.</p>
+      <div class="lav-grid">
+        <div class="lav-col"><b>Lavori</b><div class="film" id="lav-film-l" role="img"></div><div class="film-cap" id="lav-cap-l"></div><div class="lav-cells" id="lav-lavori"></div></div>
+        <div class="lav-col"><b>Uscite</b><div class="film" id="lav-film-u" role="img"></div><div class="film-cap" id="lav-cap-u"></div><div class="lav-cells" id="lav-uscite"></div></div>
+      </div>
+      <div class="lav-row">
+        <div class="lav-box"><b>Lavori aperti per sito</b><div class="per-sito" id="lav-siti"></div><div class="lav-legend" id="lav-leg"></div></div>
+        <div class="lav-box"><b>Ritmo · ultime 8 settimane</b><div id="lav-trend"></div><div class="lav-legend"><span><i style="--kc:var(--k-todo)"></i>lavori aperti</span><span><i style="--kc:var(--k-done)"></i>lavori chiusi</span><span><i style="--kc:var(--k-sched);border-radius:50%"></i>uscite pubblicate</span></div></div>
+      </div>
+      <details id="lav-det"><summary>Cosa aspetta te</summary><ul id="lav-lista"></ul></details>
+    </div>
+  </section>
 
   <section class="card" id="costi">
     <div class="card-head"><div><h2>Budget di produzione</h2><p><b>I costi sostenuti.</b> Quanto è costato ogni sito nel tempo e in totale. Entrano da soli i lavori di Claude misurati (stima a prezzi API, da quando la routine li misura) e i crediti OpenSEO; le altre spese (abbonamenti, domini, hosting, pubblicità) le aggiungi qui sotto. Le spese "ogni mese" si ripetono da sole fino a oggi. Il filtro per sito in alto vale anche qui.</p></div><span class="status" id="costi-stato" aria-live="polite"></span></div>
@@ -706,6 +779,156 @@
       const s7 = spesaSito(p.id, 7), st = spesaSito(p.id, 0);
       card.append(el('div', { className: 'next' }, [el('div', { className: 'l', textContent: 'Spesa Claude' }), el('div', {}, [el('b', { textContent: soldi(s7.usd) }), document.createTextNode(' negli ultimi 7 giorni · ' + soldi(st.usd) + ' in tutto (' + st.n + ' lavori misurati)' + (st.cr ? ' · ' + st.cr + ' crediti OpenSEO' : ''))])]));
       box.append(card);
+    }
+  }
+
+  /* ---------- Lavagna: i contatori ----------
+     Un lavoro = un consiglio o un elemento (rif) con la sua ultima richiesta, oppure una richiesta senza rif.
+     Chi blocca un lavoro "Da fare a mano" o "Da approvare": campo blocco (desk | decisione | esterno) se c'è,
+     altrimenti si deduce dal testo dell'esito. "Desk" = serve il tuo PC acceso (browser con i tuoi accessi). */
+  const RX_DECIDE = /decid|decision|scegli|scelta|approv|conferm|preferisci|vuoi che|nome e struttura/i;
+  const RX_ESTERNO = /non è in nessun repository|non dipende|attendere|serve (solo )?tempo|indicizzazion|google deve|in attesa di/i;
+  function bloccoDi(x) {
+    const b = String(x.blocco || '').toLowerCase();
+    if (/^desk/.test(b)) return 'desk';
+    if (/^dec/.test(b)) return 'dec';
+    if (/^est/.test(b)) return 'ext';
+    if (x.stato === 'Da approvare') return 'dec';
+    const t = (x.esito || '') + ' ' + (x.passo || '') + ' ' + (x.dettaglio || '');
+    if (RX_DECIDE.test(t)) return 'dec';
+    if (RX_ESTERNO.test(t)) return 'ext';
+    return 'desk';
+  }
+  function classe(x) {
+    const st = x.stato || '';
+    if (st === 'Fatto') return 'done';
+    if (st === 'Annullata' || st === 'Scartato') return 'rej';
+    if (st === 'In lavorazione' || st === 'Da verificare') return 'run';
+    if (st === 'In coda' || st === 'Da fare') return 'todo';
+    if (st === 'Errore') return 'ext';
+    if (st === 'Da fare a mano' || st === 'Da approvare') return bloccoDi(x);
+    return 'ext';
+  }
+  function lavori() {
+    const per = new Map();
+    for (const q of state.richieste) {
+      const k = q.rif ? 'r:' + q.rif : 'q:' + q.id;
+      const cur = per.get(k);
+      if (!cur || String(q.creata_il || '').localeCompare(String(cur.q.creata_il || '')) > 0) per.set(k, { q, progetto: q.progetto });
+    }
+    const out = [];
+    for (const c of state.consigli) {
+      const k = 'r:consigli/' + c.id, r = per.get(k); per.delete(k);
+      let x = c;
+      if (r && c.stato !== 'Fatto' && c.stato !== 'Scartato' && c.stato !== 'Da fare a mano') x = Object.assign({}, r.q, { titolo: c.titolo });
+      else if (c.stato === 'Da fare a mano' && r) x = Object.assign({}, c, { esito: c.esito || r.q.esito, blocco: c.blocco || r.q.blocco });
+      out.push({ progetto: c.progetto, titolo: c.titolo, k: classe(x), link: (r && r.q.sessione) || '' });
+    }
+    for (const { q } of per.values()) out.push({ progetto: q.progetto || 'tutti', titolo: (TIPO_NOME[q.tipo] || q.tipo) + (q.testo ? ': ' + q.testo : ''), k: classe(q), link: q.sessione || '' });
+    return out.filter((x) => !x.progetto || x.progetto === 'tutti' || visibile(x.progetto));
+  }
+  function uscite() {
+    const n = { new: 0, sched: 0, err: 0, pub: 0, pausa: 0 };
+    for (const r of state.piano) {
+      if (!visibile(r.progetto)) continue;
+      const st = r.stato || '';
+      if (st === 'Pubblicato') n.pub++;
+      else if (st === 'In pausa') n.pausa++;
+      else if (st === 'Idea' || st === 'Da confermare') n.new++;
+      else if (/errore/i.test(st) || ((st === 'Programmato' || st === 'Scritto') && r.data && r.data < oggi)) n.err++;
+      else n.sched++;
+    }
+    return n;
+  }
+  /* Ritmo: per settimana, lavori aperti contro lavori chiusi (barre) e uscite pubblicate (punti). */
+  function renderRitmo() {
+    const box = $('lav-trend'); box.replaceChildren();
+    const lun0 = lunedi(oggi), weeks = [];
+    for (let i = 7; i >= 0; i--) weeks.push(piuGiorni(lun0, -7 * i));
+    const w = (t) => { if (!t) return null; const d = String(t).slice(0, 10); const k = lunedi(d); return weeks.includes(k) ? k : null; };
+    const agg = new Map(weeks.map((k) => [k, { a: 0, c: 0, p: 0 }]));
+    for (const q of state.richieste) {
+      if (q.progetto && q.progetto !== 'tutti' && !visibile(q.progetto)) continue;
+      const ka = w(q.creata_il); if (ka) agg.get(ka).a++;
+      if (q.stato === 'Fatto') { const kc = w(q.finita_il); if (kc) agg.get(kc).c++; }
+    }
+    for (const r of state.piano) if (r.stato === 'Pubblicato' && visibile(r.progetto)) { const k = w(r.data); if (k) agg.get(k).p++; }
+    const W = Math.max(280, Math.min(900, box.clientWidth || 520)), H = 170, L = 26, R = 8, T = 10, B = 20, iw = W - L - R, ih = H - T - B;
+    const max = Math.max(1, ...[...agg.values()].map((v) => Math.max(v.a, v.c, v.p)));
+    const bw = iw / weeks.length;
+    const ns = 'http://www.w3.org/2000/svg';
+    const mk = (tag, at, txt) => { const x = document.createElementNS(ns, tag); for (const k in at) x.setAttribute(k, at[k]); if (txt != null) x.textContent = txt; return x; };
+    const svg = mk('svg', { viewBox: `0 0 ${W} ${H}`, class: 'trend', role: 'img', 'aria-label': 'Lavori aperti e chiusi e uscite pubblicate per settimana' });
+    svg.append(mk('line', { x1: L, x2: W - R, y1: T + ih, y2: T + ih, stroke: 'currentColor', 'stroke-opacity': '.3' }));
+    svg.append(mk('text', { x: L - 4, y: T + 8, 'text-anchor': 'end', class: 'ax' }, String(max)));
+    const y = (v) => T + ih - (v / max) * ih;
+    const pts = [];
+    weeks.forEach((k, i) => {
+      const v = agg.get(k), x0 = L + i * bw, half = (bw - 8) / 2;
+      const g = mk('g', {});
+      g.append(mk('title', {}, 'Settimana del ' + dataIt(k) + ': ' + v.a + ' lavori aperti, ' + v.c + ' chiusi, ' + v.p + ' uscite pubblicate'));
+      g.append(mk('rect', { x: x0 + 3, y: y(v.a), width: Math.max(1, half), height: T + ih - y(v.a), fill: 'var(--k-todo)', rx: 1 }));
+      g.append(mk('rect', { x: x0 + 5 + half, y: y(v.c), width: Math.max(1, half), height: T + ih - y(v.c), fill: 'var(--k-done)', rx: 1 }));
+      g.append(mk('rect', { x: x0, y: T, width: bw, height: ih, fill: 'transparent' }));
+      svg.append(g);
+      pts.push([x0 + bw / 2, y(v.p)]);
+      if (i % 2 === 1 || i === weeks.length - 1) { const d = new Date(k + 'T12:00:00'); svg.append(mk('text', { x: x0 + bw / 2, y: H - 6, 'text-anchor': 'middle', class: 'ax' }, d.getDate() + ' ' + MESI[d.getMonth()])); }
+    });
+    svg.append(mk('path', { d: pts.map((q, i) => (i ? 'L' : 'M') + q[0] + ',' + q[1]).join(' '), fill: 'none', stroke: 'var(--k-sched)', 'stroke-width': 2 }));
+    for (const q of pts) svg.append(mk('circle', { cx: q[0], cy: q[1], r: 3, fill: 'var(--ink)', stroke: 'var(--k-sched)', 'stroke-width': 2 }));
+    box.append(svg);
+  }
+  let ritmoW = 0; window.addEventListener('resize', () => { const w = $('lav-trend').clientWidth; if (Math.abs(w - ritmoW) > 40) { ritmoW = w; renderRitmo(); } });
+  function renderLavagna() {
+    const L = lavori(), n = {};
+    for (const x of L) n[x.k] = (n[x.k] || 0) + 1;
+    const u = uscite();
+    const cell = (v, l, k, cls) => { const c = el('div', { className: 'lav-cell ' + (cls || '') + (v ? '' : ' zero') }, [el('div', { className: 'v', textContent: fmt(v || 0) }), el('div', { className: 'l', textContent: l })]); c.style.setProperty('--kc', 'var(--k-' + k + ')'); return c; };
+    const KL = [['todo', 'da fare'], ['run', 'in corso'], ['desk', 'aspettano il tuo PC acceso'], ['dec', 'aspettano una tua decisione'], ['ext', 'blocco esterno o non classificato'], ['rej', 'rifiutati da te'], ['done', 'chiusi']];
+    const KU = [['new', 'nuove da mettere in onda'], ['sched', 'programmate'], ['err', 'in errore (data passata, non uscite)'], ['pub', 'pubblicate']];
+    $('lav-lavori').replaceChildren(...KL.map(([k, l]) => cell(n[k], l, k, k === 'desk' || k === 'dec' ? 'te' : '')));
+    $('lav-uscite').replaceChildren(...KU.map(([k, l]) => cell(u[k], l, k)));
+    /* Pellicola: i lavori aperti (senza chiusi e rifiutati) e tutte le uscite. */
+    const film = (box, parts, label) => {
+      const tot = parts.reduce((a, [, v]) => a + (v || 0), 0); box.replaceChildren(); box.setAttribute('aria-label', label);
+      for (const [k, v, l] of parts) { if (!v) continue; const f = el('i', { title: l + ': ' + v }); f.style.flex = String(v); f.style.setProperty('--kc', 'var(--k-' + k + ')'); box.append(f); }
+      return tot;
+    };
+    const aperti = KL.slice(0, 5).map(([k, l]) => [k, n[k] || 0, l]);
+    const totA = film($('lav-film-l'), aperti, 'Lavori aperti per stato');
+    const daTe = (n.desk || 0) + (n.dec || 0);
+    $('lav-cap-l').textContent = totA ? totA + ' aperti · ' + Math.round(100 * daTe / totA) + '% aspetta te' : 'nessun lavoro aperto';
+    const totU = film($('lav-film-u'), KU.map(([k, l]) => [k, u[k] || 0, l]), 'Uscite per stato');
+    $('lav-cap-u').textContent = totU ? totU + ' uscite · ' + Math.round(100 * (u.pub || 0) / totU) + '% già pubblicate' : 'calendario vuoto';
+    /* Per sito: barra dei lavori aperti divisa per stato. */
+    const ps = $('lav-siti'); ps.replaceChildren();
+    const siti = state.progetti.filter((p) => visibile(p.id));
+    const perSito = siti.map((p) => { const c = {}; for (const x of L) if (x.progetto === p.id) c[x.k] = (c[x.k] || 0) + 1; return [p, c, aperti.reduce((a, [k]) => a + (c[k] || 0), 0)]; });
+    const maxS = Math.max(1, ...perSito.map(([, , t]) => t));
+    for (const [p, c, t] of perSito) {
+      const bar = el('div', { className: 'bar' });
+      for (const [k, , l] of aperti) { if (!c[k]) continue; const f = el('i', { title: l + ': ' + c[k] }); f.style.width = (100 * c[k] / maxS) + '%'; f.style.setProperty('--kc', 'var(--k-' + k + ')'); bar.append(f); }
+      ps.append(el('div', { className: 'ps' }, [el('span', { className: 'nm' }, [dot(p), p.nome]), bar, el('span', { className: 'n', textContent: String(t) })]));
+    }
+    if (!perSito.length) ps.append(el('span', { className: 'l', textContent: 'Nessun sito.' }));
+    $('lav-leg').replaceChildren(...aperti.map(([k, , l]) => { const i = el('i'); i.style.setProperty('--kc', 'var(--k-' + k + ')'); return el('span', {}, [i, l]); }));
+    renderRitmo();
+    const te = (n.desk || 0) + (n.dec || 0), ko = (n.ext || 0) + u.err;
+    const v = $('lav-verdetto');
+    let cls = 'go', txt = 'Avanti tutta', why = 'Poco o niente aspetta te: Claude può continuare da solo.';
+    if (te >= 8 || u.err >= 2) { cls = 'stop'; txt = 'Stop, chiudi tu'; why = te + ' lavori aspettano te' + (u.err ? ' e ' + u.err + ' uscite sono in errore' : '') + ': conviene chiuderli prima di aprirne altri.'; }
+    else if (te >= 4 || ko >= 3) { cls = 'slow'; txt = 'Rallenta'; why = te + ' lavori aspettano te' + (ko ? ', ' + ko + ' sono fermi per un blocco esterno o un errore' : '') + ': chiudine qualcuno, poi si riparte.'; }
+    else if (te) why = te + (te === 1 ? ' lavoro aspetta' : ' lavori aspettano') + ' te, il resto procede.';
+    v.className = 'verdetto ' + cls; v.textContent = txt; $('lav-why').textContent = why;
+    const mine = L.filter((x) => x.k === 'desk' || x.k === 'dec');
+    const ul = $('lav-lista'); ul.replaceChildren();
+    $('lav-det').hidden = !mine.length;
+    for (const x of mine.slice(0, 30)) {
+      const li = el('li', {}, [el('span', { className: 'k', textContent: x.k === 'desk' ? 'PC acceso' : 'decisione' })]);
+      if (x.progetto && x.progetto !== 'tutti') li.append(sito(prog(x.progetto)));
+      li.append(el('span', { textContent: x.titolo || '' }));
+      if (x.link && /^https:\/\/claude\.ai\//.test(x.link)) li.append(el('a', { href: x.link, target: '_blank', rel: 'noopener', textContent: 'apri la chat' }));
+      ul.append(li);
     }
   }
 
@@ -1357,7 +1580,7 @@
   });
 
   function renderAll() {
-    renderVista(); renderCosti(); renderFiltro(); renderAggiorna(); renderSiti(); renderSalute(); renderConsigli(); renderIdee(); renderCalToolbar(); renderPiano(); renderKeyword(); renderPagine(); renderAi(); renderLog(); renderInterazioni();
+    renderVista(); renderCosti(); renderFiltro(); renderAggiorna(); renderSiti(); renderLavagna(); renderSalute(); renderConsigli(); renderIdee(); renderCalToolbar(); renderPiano(); renderKeyword(); renderPagine(); renderAi(); renderLog(); renderInterazioni();
     const sel = $('add-progetto');
     if (sel.options.length !== state.progetti.length) { sel.replaceChildren(); for (const p of state.progetti) sel.append(el('option', { value: p.id, textContent: p.nome })); }
     if (state.filtro !== 'tutti') sel.value = state.filtro;

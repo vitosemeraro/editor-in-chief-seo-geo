@@ -145,6 +145,7 @@ the declared db rule in `dashboard/README.md` limits writes to editors.
 | stato | `In coda`, `In lavorazione`, `Fatto`, `Da approvare`, `Da fare a mano`, `Errore`, `Annullata` |
 | passo | short live progress line |
 | esito, link, sessione | result, public link, link to the conversation that did the work, where the owner can reply |
+| blocco | optional, for `Da fare a mano` / `Da approvare`: who the job waits on. `desk` (the owner's computer must be on, e.g. a signed-in browser), `decisione` (an owner decision), `esterno` (outside block). Without it the dashboard infers it from `esito`. Also accepted on `consigli`. |
 | creata_il, avviata_il, iniziata_il, finita_il | ISO times |
 | crediti_openseo, costo_usd, token_output, token_totali | optional usage, shown in the log |
 | origine | optional: `quota avanzata` when created by the spare-capacity routine |

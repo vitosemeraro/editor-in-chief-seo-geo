@@ -17,6 +17,9 @@ editor:
     max_per_week: 15                 # weekly cap across all sites
   autofill_calendar: false           # true = every morning, "Da confermare" rows become "Programmato"
                                      # and empty slots get the best new idea. false = you confirm.
+  continuous_cycle: false            # true = when the queue is empty the agent applies the next automatic
+                                     # advice and starts itself again. On/off switch on the dashboard slate.
+  cycle_daily_cap: 12                # max requests the cycle creates per day
 
 # Editorial rules applied to every site. Add your own; keep them short and testable.
 rules:

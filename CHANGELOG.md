@@ -7,6 +7,21 @@ change to the database schema bumps the minor version, a fix bumps the patch.
 Every change comes from the private dashboard the author uses daily on 4 real sites, generalized before
 it lands here.
 
+## [0.13.0] - 2026-11-13
+
+### Added
+- **"Rolling" banner** right under the header: every request in progress or queued, with the advice title,
+  site, request type, current step, how long it has been running, a "cycle" tag, a "maybe stuck" tag after
+  3 hours without news, and a link to its chat. The "rec" light in the menu jumps to it.
+- **Continuous cycle**: when the queue is empty the agent applies the next automatic advice by priority and
+  starts itself again, up to `editor.cycle_daily_cap` requests a day (default 12). On/off switch on the slate,
+  styled like a slate clapper, with today's counter and the next advice on stage. Switching it on with an
+  empty queue starts a run right away. New section 1c in `prompts/run-requests.md`.
+
+### Schema
+- `editor/stato.ciclo_attivo` (missing = on) and `ciclo_cambiato_il`; requests created by the cycle have
+  `origine: "ciclo"`. New config keys `editor.continuous_cycle` and `editor.cycle_daily_cap`.
+
 ## [0.12.0] - 2026-11-13
 
 ### Added
@@ -190,6 +205,7 @@ it lands here.
   schema, dashboard that starts empty, modular data sources (Search Console required), deploy examples
   for Firebase, Netlify, Vercel and FTPS, link checker, secret scan and config validator in CI.
 
+[0.13.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.12.0...v0.13.0
 [0.12.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.11.0...v0.12.0
 [0.11.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.10.0...v0.11.0
 [0.10.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.9.0...v0.10.0

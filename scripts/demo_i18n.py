@@ -3,6 +3,32 @@
 # Status values are translated consistently in code and data, so the demo keeps working in every language.
 
 T = {
+    # ---------- rolling banner + continuous cycle (0.13.0) ----------
+    "Si gira": ("Rolling", "Se rueda", "Ça tourne"),
+    "Nessuna scena in corso.": ("No scene in progress.", "Ninguna escena en curso.", "Aucune scène en cours."),
+    " scena in lavorazione": (" scene rolling", " escena en rodaje", " scène en tournage"),
+    " scene in lavorazione": (" scenes rolling", " escenas en rodaje", " scènes en tournage"),
+    " in coda": (" queued", " en cola", " en file"),
+    "ciclo": ("cycle", "ciclo", "cycle"),
+    "forse ferma": ("maybe stuck", "quizá parada", "peut-être bloquée"),
+    "Nessuna novità da più di 3 ore: il prossimo giro programmato la riprende": ("No news for over 3 hours: the next scheduled run picks it up", "Sin novedades desde hace más de 3 horas: la próxima ronda programada la retoma", "Rien de neuf depuis plus de 3 heures : la prochaine exécution programmée la reprend"),
+    "adesso": ("just now", "ahora", "à l'instant"),
+    "da ": ("for ", "desde hace ", "depuis "),
+    " min": (" min", " min", " min"),
+    " h": (" h", " h", " h"),
+    " g": (" d", " d", " j"),
+    "● REC ": ("● REC ", "● REC ", "● REC "),
+    "take ": ("take ", "toma ", "prise "),
+    "Ciclo continuo": ("Continuous cycle", "Ciclo continuo", "Cycle continu"),
+    "Quando la coda è vuota Claude prende da solo il consiglio automatico più utile e lo applica, poi riparte.": ("When the queue is empty Claude picks the most useful automatic advice on its own, applies it, then starts again.", "Cuando la cola está vacía Claude toma solo el consejo automático más útil, lo aplica y vuelve a empezar.", "Quand la file est vide, Claude prend seul le conseil automatique le plus utile, l'applique, puis recommence."),
+    "di 12 oggi": ("of 12 today", "de 12 hoy", "sur 12 aujourd'hui"),
+    "di ": ("of ", "de ", "sur "),
+    " oggi": (" today", " hoy", " aujourd'hui"),
+    "Spento: Claude lavora solo sui pulsanti che premi e sul giro programmato.": ("Off: Claude works only on the buttons you press and on the scheduled run.", "Apagado: Claude trabaja solo con los botones que pulsas y la ronda programada.", "Éteint : Claude ne travaille que sur les boutons que vous pressez et l'exécution programmée."),
+    "Tetto di oggi raggiunto: riparte domani.": ("Today's cap reached: it starts again tomorrow.", "Tope de hoy alcanzado: vuelve mañana.", "Plafond du jour atteint : reprise demain."),
+    "Acceso. Prossimo in scena: ": ("On. Next on stage: ", "Encendido. Próximo en escena: ", "Allumé. Prochain en scène : "),
+    "Acceso, ma non ci sono consigli automatici da fare: riparte quando ne arrivano di nuovi.": ("On, but there is no automatic advice to apply: it restarts when new advice arrives.", "Encendido, pero no hay consejos automáticos pendientes: vuelve cuando lleguen nuevos.", "Allumé, mais aucun conseil automatique à appliquer : il repart quand de nouveaux arrivent."),
+    "Solo chi modifica la dashboard può cambiarlo.": ("Only dashboard editors can change it.", "Solo quien edita el panel puede cambiarlo.", "Seuls les éditeurs du tableau de bord peuvent le changer."),
     # ---------- manual requests (0.12.0) ----------
     "richieste lasciate a mano": ("requests left to you", "solicitudes que te quedan", "demandes laissées à vous"),
     "Chi le sblocca: quelle che Claude può chiudere da solo, quelle che aspettano il tuo PC acceso, quelle che aspettano una tua decisione e quelle ferme per un blocco esterno.": ("Who unblocks them: the ones Claude can close on its own, the ones waiting for your computer to be on, the ones waiting for your decision and the ones stuck on an external block.", "Quién las desbloquea: las que Claude puede cerrar solo, las que esperan tu ordenador encendido, las que esperan tu decisión y las paradas por un bloqueo externo.", "Qui les débloque : celles que Claude peut clore seul, celles qui attendent votre ordinateur allumé, celles qui attendent votre décision et celles bloquées de l'extérieur."),

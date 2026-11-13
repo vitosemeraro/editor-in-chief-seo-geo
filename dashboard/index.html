@@ -232,6 +232,46 @@
   .film i { display: block; height: 100%; background: var(--kc); border-right: 2px solid #000; min-width: 3px; }
   .film i:last-child { border-right: 0; }
   .film-cap { margin: 2px 12px 8px; font: 500 10.5px var(--font-mono); letter-spacing: .06em; opacity: .65; }
+  /* Si gira: i lavori in corso, in evidenza sotto la testata. */
+  .sigira { background: var(--ink); color: var(--paper); border-radius: var(--r); border-left: 6px solid #ff4b3a; padding: 12px 16px; display: grid; gap: 8px; }
+  .sigira.vuoto { border-left-color: #7d756a; }
+  .sigira-h { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; }
+  .sigira-h b { font: 800 24px/1 var(--font-display); text-transform: uppercase; letter-spacing: .04em; display: inline-flex; gap: 9px; align-items: center; }
+  .sigira-h b i { width: 11px; height: 11px; border-radius: 50%; background: #ff4b3a; box-shadow: 0 0 0 3px rgba(255, 75, 58, .25); animation: rec 1.2s steps(2, jump-none) infinite; }
+  .sigira.vuoto .sigira-h b i { background: #7d756a; box-shadow: none; animation: none; }
+  @media (prefers-reduced-motion: reduce) { .sigira-h b i { animation: none; } }
+  .sigira-h span { font-size: 12.5px; opacity: .75; }
+  .scene { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .scena { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 4px 12px; align-items: center; border-top: 1px dashed color-mix(in srgb, var(--paper) 22%, transparent); padding-top: 8px; }
+  .scena .ciak-n { font: 500 11px var(--font-mono); letter-spacing: .08em; color: #ff8a7a; white-space: nowrap; }
+  .scena .tt { font: 600 17px/1.2 var(--font-display); text-transform: uppercase; letter-spacing: .03em; overflow-wrap: anywhere; }
+  .scena .meta { font-size: 12.5px; opacity: .8; display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; margin-top: 2px; }
+  .scena .meta .tagc { font: 500 10px var(--font-mono); letter-spacing: .08em; text-transform: uppercase; border: 1px solid currentColor; border-radius: 3px; padding: 0 4px; }
+  .scena a { color: var(--paper); font-size: 12.5px; white-space: nowrap; }
+  @media (max-width: 640px) { .scena { grid-template-columns: minmax(0, 1fr); } }
+  .rec { text-decoration: none; color: inherit; }
+
+  /* Ciclo continuo: l'interruttore "motore" del set, con il contatore di oggi. */
+  .motore { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 10px 16px; align-items: center; border: 1px dashed color-mix(in srgb, var(--paper) 30%, transparent); border-radius: 8px; padding: 10px 14px; }
+  @media (max-width: 640px) { .motore { grid-template-columns: auto minmax(0, 1fr); } .motore .cnt { grid-column: 1 / -1; } }
+  .sw { position: relative; width: 86px; height: 40px; border-radius: 6px; border: 2px solid var(--paper); background: transparent; color: var(--paper); cursor: pointer; padding: 0; font: 800 15px var(--font-display); letter-spacing: .08em; overflow: hidden; }
+  .sw::before { content: ""; position: absolute; top: 3px; bottom: 3px; left: 3px; width: 36px; border-radius: 3px; background: repeating-linear-gradient(-45deg, var(--paper) 0 6px, var(--ink) 6px 12px); transition: left .18s; }
+  .sw span { position: absolute; top: 50%; transform: translateY(-50%); }
+  .sw[aria-checked="true"] { background: #ff4b3a; border-color: #ff4b3a; }
+  .sw[aria-checked="true"]::before { left: 43px; }
+  .sw[aria-checked="true"] span { left: 10px; color: #fff; }
+  .sw[aria-checked="false"] span { right: 10px; opacity: .7; }
+  .sw:disabled { opacity: .5; cursor: default; }
+  @media (prefers-reduced-motion: reduce) { .sw::before { transition: none; } }
+  .motore .t { font: 800 20px/1.05 var(--font-display); text-transform: uppercase; letter-spacing: .03em; }
+  .motore .d { font-size: 12.5px; opacity: .78; margin-top: 2px; overflow-wrap: anywhere; }
+  .motore .cnt { text-align: right; }
+  .motore .cnt b { font: 800 34px/1 var(--font-display); }
+  .motore .cnt small { display: block; font: 500 10.5px var(--font-mono); letter-spacing: .08em; text-transform: uppercase; opacity: .7; }
+  .motore .bar { display: flex; gap: 2px; margin-top: 4px; justify-content: flex-end; }
+  .motore .bar i { width: 7px; height: 10px; border-radius: 1px; background: color-mix(in srgb, var(--paper) 18%, transparent); }
+  .motore .bar i.on { background: #ff4b3a; }
+
   /* Il dato principale: le richieste lasciate a mano, divise per chi le sblocca. */
   .mano { border: 2px solid var(--k-desk); border-radius: 8px; padding: 14px 14px 12px; display: grid; gap: 10px; background: color-mix(in srgb, var(--k-desk) 6%, transparent); }
   .mano-top { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; }
@@ -302,7 +342,7 @@
       <li><a href="#interazioni" data-go="interazioni"><span class="n">11</span>In sala</a></li>
       <li><a href="#costi" data-go="costi"><span class="n">&euro;</span>Budget</a></li>
     </ul>
-    <span class="rec" id="rec" aria-live="polite"><i></i><span>pronto</span></span>
+    <a class="rec" id="rec" href="#sigira" data-go="sigira" aria-live="polite"><i></i><span>pronto</span></a>
     <button class="burger" type="button" id="burger" aria-expanded="false" aria-controls="menu" aria-label="Apri il menu"><span></span></button>
   </div>
 </nav>
@@ -320,12 +360,22 @@
     </div>
   </header>
 
+  <section class="sigira vuoto" id="sigira" aria-live="polite" aria-labelledby="sigira-h">
+    <div class="sigira-h"><b id="sigira-h"><i></i>Si gira</b><span id="sigira-s">Nessuna scena in corso.</span></div>
+    <ul class="scene" id="scene"></ul>
+  </section>
+
   <section class="sites" id="siti" aria-label="Siti"></section>
 
   <section class="lavagna" id="lavagna" aria-labelledby="lav-h">
     <div class="lav-in">
       <div class="lav-top"><h2 id="lav-h">La lavagna</h2><span class="verdetto go" id="lav-verdetto" aria-live="polite">—</span></div>
       <p class="lav-why" id="lav-why">Tutto il lavoro in un colpo d'occhio: quanto aspetta Claude, quanto aspetta te, quanto è uscito.</p>
+      <div class="motore" id="motore">
+        <button class="sw" type="button" role="switch" id="ciclo-sw" aria-checked="false" aria-label="Ciclo continuo"><span>OFF</span></button>
+        <div><div class="t">Ciclo continuo</div><div class="d" id="ciclo-d">Quando la coda è vuota Claude prende da solo il consiglio automatico più utile e lo applica, poi riparte.</div></div>
+        <div class="cnt"><b id="ciclo-n">0</b><small id="ciclo-max">di 12 oggi</small><div class="bar" id="ciclo-bar"></div></div>
+      </div>
       <div class="mano" id="mano">
         <div class="mano-top"><span class="tot" id="mano-tot">0</span><span class="tl">richieste lasciate a mano</span><span class="ts">Chi le sblocca: quelle che Claude può chiudere da solo, quelle che aspettano il tuo PC acceso, quelle che aspettano una tua decisione e quelle ferme per un blocco esterno.</span></div>
         <div class="film" id="mano-film" role="img"></div>
@@ -867,6 +917,63 @@
       ul.append(li);
     }
   }
+  /* Ciclo continuo: editor/stato.ciclo_attivo (assente = acceso), tetto di 12 richieste "ciclo" al giorno. */
+  const CICLO_MAX = 12;
+  function renderCiclo() {
+    const st = state.editor.find((d) => d.id === 'stato') || {};
+    const on = st.ciclo_attivo !== false;
+    const sw = $('ciclo-sw');
+    sw.setAttribute('aria-checked', String(on)); sw.firstChild.textContent = on ? 'ON' : 'OFF';
+    sw.disabled = !state.db || !state.canWrite;
+    const oggiQ = state.richieste.filter((q) => q.origine === 'ciclo' && q.creata_il && iso(new Date(q.creata_il)) === oggi);
+    const n = oggiQ.length;
+    $('ciclo-n').textContent = String(n); $('ciclo-max').textContent = 'di ' + CICLO_MAX + ' oggi';
+    $('ciclo-bar').replaceChildren(...Array.from({ length: CICLO_MAX }, (_, i) => el('i', { className: i < n ? 'on' : '' })));
+    const auto = state.consigli.filter((c) => c.stato === 'Da fare' && c.come !== 'A mano' && !state.richieste.some((q) => q.rif === 'consigli/' + c.id && inCorso(q)))
+      .sort((a, b) => (punteggio(b) - punteggio(a)) || String(a.creato_il || '').localeCompare(String(b.creato_il || '')));
+    const d = $('ciclo-d');
+    if (!on) d.textContent = 'Spento: Claude lavora solo sui pulsanti che premi e sul giro programmato.';
+    else if (n >= CICLO_MAX) d.textContent = 'Tetto di oggi raggiunto: riparte domani.';
+    else if (auto[0]) d.textContent = 'Acceso. Prossimo in scena: ' + prog(auto[0].progetto).nome + ', ' + auto[0].titolo;
+    else d.textContent = 'Acceso, ma non ci sono consigli automatici da fare: riparte quando ne arrivano di nuovi.';
+  }
+  $('ciclo-sw').addEventListener('click', async () => {
+    const sw = $('ciclo-sw'); if (!state.db) return;
+    const st = state.editor.find((x) => x.id === 'stato') || {};
+    const on = st.ciclo_attivo === false;
+    sw.disabled = true;
+    try {
+      const { id, ...prima } = st;
+      await state.db.collection('editor').doc('stato').set(Object.assign(prima, { ciclo_attivo: on, ciclo_cambiato_il: new Date().toISOString() }));
+      /* Acceso con la coda vuota: fa partire subito un giro, che prende il primo consiglio. */
+      if (on && state.mcp && !state.richieste.some(inCorso)) { try { await state.mcp.callTool('Claude Code Remote', 'fire_trigger', { trigger_id: TRIGGER() }); } catch (e) {} }
+    } catch (e) { $('ciclo-d').textContent = e && e.code === 'not_granted' ? 'Solo chi modifica la dashboard può cambiarlo.' : 'Non salvato: riprova.'; }
+    sw.disabled = false;
+  });
+  /* Si gira: richieste In lavorazione e In coda, con titolo, sito, passo, da quanto e link alla chat. */
+  function daQuanto(t) { if (!t) return ''; const m = Math.round((Date.now() - new Date(t).getTime()) / 6e4); if (!(m >= 0)) return ''; return m < 1 ? 'adesso' : m < 60 ? 'da ' + m + ' min' : m < 1440 ? 'da ' + Math.floor(m / 60) + ' h' : 'da ' + Math.floor(m / 1440) + ' g'; }
+  function renderSigira() {
+    const rows = state.richieste.filter((q) => inCorso(q) && (!q.progetto || q.progetto === 'tutti' || visibile(q.progetto)))
+      .sort((a, b) => ((a.stato === 'In lavorazione' ? 0 : 1) - (b.stato === 'In lavorazione' ? 0 : 1)) || String(a.creata_il || '').localeCompare(String(b.creata_il || '')));
+    const box = $('sigira'), ul = $('scene'); ul.replaceChildren();
+    box.classList.toggle('vuoto', !rows.length);
+    const lav = rows.filter((q) => q.stato === 'In lavorazione').length;
+    $('sigira-s').textContent = rows.length ? lav + (lav === 1 ? ' scena in lavorazione' : ' scene in lavorazione') + ' · ' + (rows.length - lav) + ' in coda' : 'Nessuna scena in corso.';
+    rows.forEach((q, i) => {
+      const m = /^consigli\/(.+)$/.exec(q.rif || '');
+      const c = m ? state.consigli.find((x) => x.id === m[1]) : null;
+      const titolo = (c && c.titolo) || q.testo || TIPO_NOME[q.tipo] || q.tipo;
+      const meta = el('div', { className: 'meta' });
+      if (q.progetto && q.progetto !== 'tutti') meta.append(sito(prog(q.progetto)));
+      meta.append(el('span', { textContent: TIPO_NOME[q.tipo] || q.tipo }));
+      if (q.origine === 'ciclo') meta.append(el('span', { className: 'tagc', textContent: 'ciclo' }));
+      const ferma = Date.now() - new Date(q.iniziata_il || q.avviata_il || q.creata_il || Date.now()).getTime() > 3 * 3600e3;
+      if (ferma) meta.append(el('span', { className: 'tagc', style: 'color:#ffb84d', textContent: 'forse ferma', title: 'Nessuna novità da più di 3 ore: il prossimo giro programmato la riprende' }));
+      meta.append(el('span', { textContent: (q.stato === 'In lavorazione' ? (q.passo || 'In lavorazione') : 'In coda') + ' · ' + daQuanto(q.iniziata_il || q.avviata_il || q.creata_il) }));
+      const link = q.sessione && /^https:\/\/claude\.ai\//.test(q.sessione) ? el('a', { href: q.sessione, target: '_blank', rel: 'noopener', textContent: 'apri la chat' }) : el('span');
+      ul.append(el('li', { className: 'scena' }, [el('span', { className: 'ciak-n', textContent: (q.stato === 'In lavorazione' ? '● REC ' : '○ ') + 'take ' + (i + 1) }), el('div', {}, [el('div', { className: 'tt', textContent: titolo }), meta]), link]));
+    });
+  }
   function lavori() {
     const per = new Map();
     for (const q of state.richieste) {
@@ -972,6 +1079,7 @@
     $('lav-leg').replaceChildren(...aperti.map(([k, , l]) => { const i = el('i'); i.style.setProperty('--kc', 'var(--k-' + k + ')'); return el('span', {}, [i, l]); }));
     renderRitmo();
     renderMano();
+    renderCiclo();
     const te = (n.desk || 0) + (n.dec || 0), ko = (n.ext || 0) + u.err;
     const v = $('lav-verdetto');
     let cls = 'go', txt = 'Avanti tutta', why = 'Poco o niente aspetta te: Claude può continuare da solo.';
@@ -1639,7 +1747,7 @@
   });
 
   function renderAll() {
-    renderVista(); renderCosti(); renderFiltro(); renderAggiorna(); renderSiti(); renderLavagna(); renderSalute(); renderConsigli(); renderIdee(); renderCalToolbar(); renderPiano(); renderKeyword(); renderPagine(); renderAi(); renderLog(); renderInterazioni();
+    renderVista(); renderCosti(); renderFiltro(); renderAggiorna(); renderSigira(); renderSiti(); renderLavagna(); renderSalute(); renderConsigli(); renderIdee(); renderCalToolbar(); renderPiano(); renderKeyword(); renderPagine(); renderAi(); renderLog(); renderInterazioni();
     const sel = $('add-progetto');
     if (sel.options.length !== state.progetti.length) { sel.replaceChildren(); for (const p of state.progetti) sel.append(el('option', { value: p.id, textContent: p.nome })); }
     if (state.filtro !== 'tutti') sel.value = state.filtro;

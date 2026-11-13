@@ -126,6 +126,22 @@ session of its own.
   and the data point. Something missing → `Da fare a mano` with what is missing and the exact step. Not
   verifiable now → `Fatto`, esito "Segnato dal proprietario, non verificabile ora: <why and when>".
 
+## 1c) Continuous cycle (only if editor.continuous_cycle is true)
+
+The work keeps going without the owner pushing it. When your request is closed (or you started from the
+schedule and found nothing queued), before the final message:
+1. If `editor/stato.ciclo_attivo` is `false` (the switch on the dashboard slate), skip this section.
+2. Query `richieste`: if any request is `In coda`, or `In lavorazione` for less than 2 hours, do nothing:
+   another session is already moving.
+3. Count today's requests with `origine: "ciclo"`. If they reach `editor.cycle_daily_cap` (default 12), stop.
+4. Pick from `consigli` the advice with stato `Da fare`, come `Automatico`, no open request naming it in rif,
+   highest priority (impact divided by effort: Alto=3, Medio=2, Basso=1; ties go to the oldest). Skip advice
+   that waits for external data not out yet.
+5. Create the request (op set, doc_id "<advice id>-ciclo"): tipo `applica_consiglio`, progetto, rif
+   "consigli/<id>", testo = advice title, stato `In coda`, creata_il = now, origine `ciclo`. Then call
+   fire_trigger once on `editor.trigger_id`, with no extra text.
+6. No automatic advice left: start nothing. The cycle restarts when the weekly review or a button adds advice.
+
 ## 2) Calendar autofill (only if editor.autofill_calendar is true and you started from the schedule)
 
 - Set every `piano` row in `Da confermare` dated today or later to `Programmato`.

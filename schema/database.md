@@ -34,6 +34,7 @@ One per site, synced from `sites[]` in the config.
 | stato | ultimo_aggiornamento | ISO time of the last data refresh |
 | stato | fonti_saltate | list of sources not read in the last run, with reason |
 | stato | crediti_openseo_residui, crediti_letti_il | optional, if OpenSEO is used |
+| stato | ciclo_attivo, ciclo_cambiato_il | continuous-cycle switch from the slate (missing = on); see prompts/run-requests.md 1c |
 | quota | attiva, max_notte, max_settimana | spare-capacity switch and caps, editable by the owner |
 | quota | settimana, usate_settimana, pausa_fino_al, ultima_notte, note | written by the spare-capacity routine |
 | costi | usd_eur | exchange rate used by the Costs view (default 0.86), editable from the page |

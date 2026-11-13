@@ -3,6 +3,36 @@
 # Status values are translated consistently in code and data, so the demo keeps working in every language.
 
 T = {
+    # ---------- conversion forecast (0.8.0) ----------
+    "Conversioni previste · 30 gg": ("Expected conversions · 30 days", "Conversiones previstas · 30 días", "Conversions prévues · 30 j"),
+    "affidabilità ": ("reliability ", "fiabilidad ", "fiabilité "),
+    "alta": ("high", "alta", "haute"),
+    "media": ("medium", "media", "moyenne"),
+    "bassa": ("low", "baja", "faible"),
+    "dati reali + settore": ("real data + industry", "datos reales + sector", "données réelles + secteur"),
+    "stima di settore": ("industry estimate", "estimación del sector", "estimation sectorielle"),
+    "Come è calcolata": ("How it is calculated", "Cómo se calcula", "Comment c'est calculé"),
+    "Visite previste: ": ("Expected visits: ", "Visitas previstas: ", "Visites prévues : "),
+    " (Cloudflare, ": (" (Cloudflare, ", " (Cloudflare, ", " (Cloudflare, "),
+    "una sola settimana di dati, ±30%": ("only one week of data, ±30%", "solo una semana de datos, ±30%", "une seule semaine de données, ±30 %"),
+    "ultime due settimane": ("last two weeks", "últimas dos semanas", "deux dernières semaines"),
+    "Tasso usato: ": ("Rate used: ", "Tasa usada: ", "Taux utilisé : "),
+    ", da ": (", from ", ", de ", ", d'après "),
+    "solo riferimento di settore: la conversione non è ancora misurata": ("industry benchmark only: the conversion is not measured yet", "solo referencia del sector: la conversión aún no se mide", "référence sectorielle seule : la conversion n'est pas encore mesurée"),
+    "dati reali (": ("real data (", "datos reales (", "données réelles ("),
+    " su ": (" out of ", " de ", " sur "),
+    " sessioni GA4 in 28 gg) corretti col riferimento di settore": (" GA4 sessions in 28 days) adjusted with the industry benchmark", " sesiones GA4 en 28 días) corregidos con la referencia del sector", " sessions GA4 sur 28 j) corrigées avec la référence sectorielle"),
+    "riferimento di settore corretto con i dati reali (0 su ": ("industry benchmark adjusted with real data (0 out of ", "referencia del sector corregida con datos reales (0 de ", "référence sectorielle corrigée avec les données réelles (0 sur "),
+    " sessioni GA4 in 28 gg)": (" GA4 sessions in 28 days)", " sesiones GA4 en 28 días)", " sessions GA4 sur 28 j)"),
+    "Riferimento di settore: ": ("Industry benchmark: ", "Referencia del sector: ", "Référence sectorielle : "),
+    "\"Conversioni previste\" su ogni sito è una stima per i prossimi 30 giorni: visite previste da Cloudflare per un tasso di conversione. Dove il sito non misura ancora le conversioni il tasso è un riferimento di settore dichiarato; quando arrivano dati reali da Google Analytics pesano sempre di più. È sempre un intervallo, con l'affidabilità accanto.":
+        ("\"Expected conversions\" on each site is an estimate for the next 30 days: expected visits from Cloudflare times a conversion rate. Where the site does not measure conversions yet, the rate is a stated industry benchmark; as real data arrives from Google Analytics it weighs more and more. It is always a range, with its reliability next to it.",
+         "\"Conversiones previstas\" en cada sitio es una estimación para los próximos 30 días: visitas previstas de Cloudflare por una tasa de conversión. Donde el sitio aún no mide conversiones, la tasa es una referencia del sector declarada; cuando llegan datos reales de Google Analytics pesan cada vez más. Siempre es un intervalo, con la fiabilidad al lado.",
+         "« Conversions prévues » sur chaque site est une estimation pour les 30 prochains jours : visites prévues par Cloudflare multipliées par un taux de conversion. Là où le site ne mesure pas encore les conversions, le taux est une référence sectorielle déclarée ; quand les données réelles de Google Analytics arrivent, elles pèsent de plus en plus. C'est toujours une fourchette, avec sa fiabilité à côté."),
+    "richieste di preventivo": ("quote requests", "solicitudes de presupuesto", "demandes de devis"),
+    "richieste di viaggio": ("trip enquiries", "consultas de viaje", "demandes de voyage"),
+    "prove gratuite": ("free trials", "pruebas gratuitas", "essais gratuits"),
+    "Esempio: benchmark di settore della tua fonte preferita": ("Example: an industry benchmark from your preferred source", "Ejemplo: referencia del sector de tu fuente preferida", "Exemple : référence sectorielle de votre source préférée"),
     # ---------- costs view (0.5.0) ----------
     "Vista": ("View", "Vista", "Vue"),
     "Redazione": ("Newsroom", "Redacción", "Rédaction"),

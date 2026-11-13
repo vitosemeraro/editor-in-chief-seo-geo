@@ -59,8 +59,16 @@
         'CTR medio ' + (c28 / i28 * 100).toFixed(1) + '%: i title delle pagine in posizione 5-10 sono il margine più facile.',
         s.id === 'saas' ? 'La guida "fattura elettronica forfettari" porta il 52% dei clic: serve una seconda pagina forte.' : 'Le guide nuove entrano in prima pagina in circa 3 settimane.',
       ],
+      conversioni_28g: s.id === 'saas' ? Math.round(c28 * 3.1 * 0.04) : s.id === 'bakery' ? Math.round(c28 * 3.1 * 0.015) : 0,
       aggiornato_il: new Date(now - 3 * 36e5).toISOString(),
     });
+    // Conversion forecast: what counts as a conversion, whether it is measured, and an industry benchmark range (%).
+    const conv = {
+      bakery: { obiettivo: 'richieste di preventivo', misurato: true, rif_min: 1, rif_max: 3, fonte_rif: 'Esempio: benchmark di settore della tua fonte preferita' },
+      trips: { obiettivo: 'richieste di viaggio', misurato: false, rif_min: 0.5, rif_max: 2, fonte_rif: 'Esempio: benchmark di settore della tua fonte preferita' },
+      saas: { obiettivo: 'prove gratuite', misurato: true, rif_min: 2, rif_max: 7, fonte_rif: 'Esempio: benchmark di settore della tua fonte preferita' },
+    }[s.id];
+    put('conversioni', s.id, Object.assign({ progetto: s.id }, conv));
   }
 
   const tips = [

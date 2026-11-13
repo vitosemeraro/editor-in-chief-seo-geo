@@ -7,6 +7,20 @@ change to the database schema bumps the minor version, a fix bumps the patch.
 Every change comes from the private dashboard the author uses daily on 4 real sites, generalized before
 it lands here.
 
+## [0.8.0] - 2026-11-13
+
+### Added
+- **Conversion forecast** on every site card: "Expected conversions · 30 days" as a range, never a single
+  number, with a reliability label (low, medium, high) and a "How it is calculated" detail. Expected visits
+  come from the last two weeks of Cloudflare visits; the rate blends a stated industry benchmark with real
+  GA4 key events (the benchmark counts like 100 sessions, so real data takes over as it grows). Sites that do
+  not measure the conversion yet use the benchmark only and say so.
+
+### Schema
+- New optional collection `conversioni/{site_id}` (`obiettivo`, `misurato`, `rif_min`, `rif_max`,
+  `fonte_rif`, `nota`); new field `salute.conversioni_28g`; new optional config block `sites[].conversions`.
+  The weekly review writes `conversioni_28g` when GA4 is on.
+
 ## [0.7.0] - 2026-11-13
 
 ### Fixed
@@ -119,6 +133,7 @@ it lands here.
   schema, dashboard that starts empty, modular data sources (Search Console required), deploy examples
   for Firebase, Netlify, Vercel and FTPS, link checker, secret scan and config validator in CI.
 
+[0.8.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.6.2...v0.7.0
 [0.6.2]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.6.1...v0.6.2
 [0.6.1]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.6.0...v0.6.1

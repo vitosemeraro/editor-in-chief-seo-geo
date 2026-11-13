@@ -7,6 +7,22 @@ change to the database schema bumps the minor version, a fix bumps the patch.
 Every change comes from the private dashboard the author uses daily on 4 real sites, generalized before
 it lands here.
 
+## [0.10.0] - 2026-11-13
+
+### Added
+- **Sticky top menu** shaped like a film slate: always visible while you scroll, it jumps to each section,
+  highlights the one you are reading and opens the Budget view. On phones (under 900 px) it folds into a
+  hamburger. A "rec" light in the menu blinks while Claude is working on requests.
+
+### Changed
+- **New look and section names.** Every section is a numbered scene (SC.02, SC.03…) with a short name and a
+  plain subtitle that says what it is: The pulse (site health), Editor's notes (advice), Story ideas, Line-up
+  (calendar), Audience (keywords), Now showing (pages on Google), AI critics (AI citations), Set diary (work
+  log), In the room (visitor actions), Production budget (costs), Behind the scenes (how it works).
+  Warm paper palette with a slate red accent, condensed display headings, light and dark themes.
+- The view switch (main / costs) moved from the header chips to the menu.
+- Demo: the banner sits above the menu; new strings translated in English, Spanish and French.
+
 ## [0.9.0] - 2026-11-13
 
 ### Added
@@ -142,6 +158,8 @@ it lands here.
   schema, dashboard that starts empty, modular data sources (Search Console required), deploy examples
   for Firebase, Netlify, Vercel and FTPS, link checker, secret scan and config validator in CI.
 
+[0.10.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.9.0...v0.10.0
+[0.9.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.6.2...v0.7.0
 [0.6.2]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.6.1...v0.6.2

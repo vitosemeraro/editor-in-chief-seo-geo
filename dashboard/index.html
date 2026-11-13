@@ -2,31 +2,33 @@
 <title>Editor-in-Chief</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
   /* Layout: una plancia di redazione. In alto i siti e il pulsante di aggiornamento, poi salute e consigli con le azioni, poi calendario e dettaglio. */
   :root {
-    --bg: #f5f6f8; --panel: #ffffff; --line: #dfe2e8; --fg: #1b2230; --muted: #5d6679; --accent: #2f5bd3;
-    --ok: #1d7a4f; --warn: #a76a06; --bad: #b4372e; --sel: #e8eefc;
+    --bg: #f3eee5; --panel: #fffdf8; --line: #e2dacb; --fg: #18150f; --muted: #6a6153; --accent: #c0291f;
+    --ok: #1d7a4f; --warn: #9a5f00; --bad: #b4372e; --sel: #fae4de; --ink: #18150f; --paper: #fffdf8;
     --c1: #2f5bd3; --c2: #0f8a7a; --c3: #a04fc4; --c4: #c4572c;
-    --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+    --font-display: "Big Shoulders Display", "Arial Narrow", "Segoe UI", system-ui, sans-serif;
     --font-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
     --font-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
-    --r: 10px;
+    --r: 10px; --nav-h: 58px;
   }
   @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-    --bg: #11151c; --panel: #181e27; --line: #2a3240; --fg: #e6e9ef; --muted: #98a2b5; --accent: #7d9cf0;
-    --ok: #4cc28a; --warn: #e0a23a; --bad: #ef7a70; --sel: #1f2a40;
+    --bg: #12110e; --panel: #1b1915; --line: #2f2b25; --fg: #f1eadf; --muted: #a69d8f; --accent: #ff6b57;
+    --ok: #4cc28a; --warn: #e0a23a; --bad: #ef7a70; --sel: #3a201b; --ink: #060504; --paper: #f1eadf;
     --c1: #7d9cf0; --c2: #3cc3b0; --c3: #c98ae6; --c4: #ef8d62; color-scheme: dark } }
   :root[data-theme="dark"] {
-    --bg: #11151c; --panel: #181e27; --line: #2a3240; --fg: #e6e9ef; --muted: #98a2b5; --accent: #7d9cf0;
-    --ok: #4cc28a; --warn: #e0a23a; --bad: #ef7a70; --sel: #1f2a40;
+    --bg: #12110e; --panel: #1b1915; --line: #2f2b25; --fg: #f1eadf; --muted: #a69d8f; --accent: #ff6b57;
+    --ok: #4cc28a; --warn: #e0a23a; --bad: #ef7a70; --sel: #3a201b; --ink: #060504; --paper: #f1eadf;
     --c1: #7d9cf0; --c2: #3cc3b0; --c3: #c98ae6; --c4: #ef8d62; color-scheme: dark }
   body { background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 14px; line-height: 1.5; }
   .wrap { max-width: 1240px; margin: 0 auto; padding-block: 28px 56px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 28px; }
-  h1, h2 { font-family: var(--font-display); font-weight: 700; margin: 0; text-wrap: balance; }
-  h1 { font-size: clamp(26px, 4vw, 36px); letter-spacing: -0.01em; }
-  h2 { font-size: 19px; }
+  h1, h2 { font-family: var(--font-display); font-weight: 800; margin: 0; text-wrap: balance; letter-spacing: .01em; }
+  html { scroll-padding-top: calc(var(--nav-h) + 14px); }
+  section[id] { scroll-margin-top: calc(var(--nav-h) + 14px); }
+  h1 { font-size: clamp(44px, 8vw, 76px); line-height: .9; text-transform: uppercase; letter-spacing: .005em; }
+  h2 { font-size: 26px; text-transform: uppercase; line-height: 1.05; }
   .sub { color: var(--muted); margin: 4px 0 0; max-width: 70ch; }
   .head { display: flex; flex-wrap: wrap; gap: 16px; align-items: end; justify-content: space-between; }
   .head-r { display: grid; gap: 10px; justify-items: end; }
@@ -43,7 +45,7 @@
   .sites { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 255px), 1fr)); }
   .site { background: var(--panel); border: 1px solid var(--line); border-top: 3px solid var(--c); border-radius: var(--r); padding: 16px; display: grid; gap: 12px; min-width: 0; align-content: start; }
   .site-top { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; flex-wrap: wrap; }
-  .site-name { font-family: var(--font-display); font-weight: 700; font-size: 18px; }
+  .site-name { font-family: var(--font-display); font-weight: 800; font-size: 24px; text-transform: uppercase; line-height: 1; }
   .site-url { color: var(--muted); font-size: 12px; overflow-wrap: anywhere; }
   /* Nessun testo lungo (note, url, stati) può allargare una scheda: la colonna interna non supera mai la card. */
   .site, .hcard, .tip, .idea, .card, .ctile { grid-template-columns: minmax(0, 1fr); }
@@ -135,7 +137,7 @@
   .tag.on, button.tag[aria-pressed="true"] { color: var(--bg); background: var(--tc, var(--fg)); border-color: var(--tc, var(--fg)); }
   .t-SEO { --tc: var(--c1); } .t-AEO { --tc: var(--c2); } .t-GEO { --tc: var(--c3); } .t-Tecnico { --tc: var(--muted); } .t-Conversioni { --tc: var(--c4); }
   .legend { font-size: 12px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 14px; }
-  .bulk { position: sticky; top: 0; z-index: 2; display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; background: var(--sel); border: 1px solid var(--accent); border-radius: var(--r); padding: 10px 12px; font-size: 13px; }
+  .bulk { position: sticky; top: calc(var(--nav-h) + 6px); z-index: 2; display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; background: var(--sel); border: 1px solid var(--accent); border-radius: var(--r); padding: 10px 12px; font-size: 13px; }
   .bulk[hidden] { display: none; }
   .bulk .grp { display: inline-flex; gap: 6px; align-items: center; }
   .small { font-size: 12px; color: var(--muted); }
@@ -160,17 +162,88 @@
   .prev details { font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
   .prev summary { cursor: pointer; color: var(--accent); }
   .prev details p { margin: 4px 0 0; }
+
+  /* Menu a forma di ciak da set. Barra in alto sempre visibile, strisce bianche e nere sotto, hamburger su telefono. */
+  .nav { position: sticky; top: 0; z-index: 20; background: var(--ink); color: var(--paper); }
+  .nav-in { max-width: 1240px; margin: 0 auto; height: var(--nav-h); display: flex; align-items: center; gap: 18px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  .nav::after { content: ""; display: block; height: 7px; background: repeating-linear-gradient(-45deg, var(--ink) 0 11px, var(--paper) 11px 22px); border-bottom: 1px solid var(--line); }
+  .brand { display: inline-flex; align-items: center; gap: 9px; font: 800 26px/1 var(--font-display); text-transform: uppercase; letter-spacing: .04em; color: var(--paper); text-decoration: none; flex: none; }
+  .brand svg { width: 26px; height: 26px; flex: none; }
+  .brand small { font: 500 10.5px var(--font-mono); letter-spacing: .08em; opacity: .7; text-transform: uppercase; }
+  .menu { display: flex; gap: 2px; list-style: none; margin: 0; padding: 0; overflow-x: auto; scrollbar-width: none; flex: 1; min-width: 0; }
+  .menu::-webkit-scrollbar { display: none; }
+  .menu a { display: block; padding: 7px 8px; border-radius: 6px; color: var(--paper); opacity: .72; text-decoration: none; font: 600 15px var(--font-display); text-transform: uppercase; letter-spacing: .04em; white-space: nowrap; }
+  .menu a:hover { opacity: 1; background: color-mix(in srgb, var(--paper) 12%, transparent); }
+  .menu a[aria-current="true"] { opacity: 1; color: var(--ink); background: var(--paper); }
+  .menu a .n { font: 500 10px var(--font-mono); opacity: .6; margin-right: 5px; letter-spacing: 0; }
+  .rec { display: inline-flex; align-items: center; gap: 7px; font: 500 11px var(--font-mono); letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; flex: none; opacity: .85; }
+  .rec i { width: 9px; height: 9px; border-radius: 50%; background: #7d756a; }
+  .rec.on i { background: #ff4b3a; box-shadow: 0 0 0 3px rgba(255, 75, 58, .25); animation: rec 1.2s steps(2, jump-none) infinite; }
+  @keyframes rec { 50% { opacity: .25; } }
+  @media (prefers-reduced-motion: reduce) { .rec.on i { animation: none; } }
+  .burger { display: none; margin-left: auto; width: 42px; height: 38px; border-radius: 6px; border: 1px solid color-mix(in srgb, var(--paper) 35%, transparent); background: transparent; color: var(--paper); cursor: pointer; align-items: center; justify-content: center; }
+  .burger span, .burger span::before, .burger span::after { display: block; width: 18px; height: 2px; background: currentColor; border-radius: 2px; position: relative; transition: transform .2s, background .2s; }
+  .burger span::before, .burger span::after { content: ""; position: absolute; left: 0; }
+  .burger span::before { top: -6px; } .burger span::after { top: 6px; }
+  .burger[aria-expanded="true"] span { background: transparent; }
+  .burger[aria-expanded="true"] span::before { transform: translateY(6px) rotate(45deg); }
+  .burger[aria-expanded="true"] span::after { transform: translateY(-6px) rotate(-45deg); }
+  .nav a:focus-visible, .burger:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  @media (max-width: 900px) {
+    .burger { display: inline-flex; }
+    .rec { margin-left: auto; }
+    .rec + .burger { margin-left: 0; }
+    .menu { display: none; position: absolute; left: 0; right: 0; top: calc(var(--nav-h) + 7px); flex-direction: column; gap: 0; background: var(--ink); padding: 6px max(16px, env(safe-area-inset-left, 0px)) 14px; border-bottom: 3px solid var(--accent); max-height: calc(100vh - var(--nav-h) - 7px); overflow-y: auto; box-shadow: 0 18px 30px rgba(0, 0, 0, .25); }
+    .menu.open { display: flex; }
+    .menu a { font-size: 20px; padding: 11px 6px; border-bottom: 1px solid color-mix(in srgb, var(--paper) 12%, transparent); border-radius: 0; }
+    .menu a[aria-current="true"] { background: transparent; color: var(--paper); box-shadow: inset 4px 0 0 var(--accent); padding-left: 14px; }
+  }
+  @media (max-width: 1360px) { .brand small { display: none; } }
+
+  /* Testata: un ciak con scena e data. */
+  .kicker { font: 500 11px var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin: 0 0 6px; }
+  .head h1 span { color: var(--accent); }
+  .wrap { counter-reset: sc 1; }
+  .wrap > section#costi.card > .card-head h2::before { content: "PRODUZIONE"; }
+  .wrap > section.card { counter-increment: sc; position: relative; border-top: 3px solid var(--fg); }
+  .wrap > section.card > .card-head h2::before { content: "SC." counter(sc, decimal-leading-zero); display: block; font: 500 11px var(--font-mono); letter-spacing: .12em; color: var(--accent); margin-bottom: 4px; }
+  .card-head p b { color: var(--fg); font-weight: 600; }
+  #quinte h2::before { content: "FUORI SCENA"; display: block; font: 500 11px var(--font-mono); letter-spacing: .12em; color: var(--accent); margin-bottom: 4px; }
+  .btn.primary { font-weight: 600; }
+  .light b { font-family: var(--font-display); font-size: 20px; text-transform: uppercase; letter-spacing: .03em; }
+  .hcard .site-top b { font-family: var(--font-display); font-size: 20px; text-transform: uppercase; }
 </style>
 
-<div class="wrap">
+<nav class="nav" aria-label="Sezioni">
+  <div class="nav-in">
+    <a class="brand" href="#top" data-go="top"><svg viewBox="0 0 26 26" aria-hidden="true"><rect x="2" y="10" width="22" height="14" rx="2" fill="currentColor"/><path d="M2.6 4.8 22.4 1.6l.9 5-19.8 3.3z" fill="currentColor"/><path d="M6 4.2 9 8.6M11 3.4l3 4.4M16 2.6l3 4.4" stroke="var(--ink)" stroke-width="1.8"/><path d="M2 14h22" stroke="var(--ink)" stroke-width="1.2"/></svg>EIC <small>Editor-in-Chief</small></a>
+    <ul class="menu" id="menu">
+      <li><a href="#siti" data-go="siti"><span class="n">01</span>In scena</a></li>
+      <li><a href="#salute" data-go="salute"><span class="n">02</span>Il polso</a></li>
+      <li><a href="#consigli" data-go="consigli"><span class="n">03</span>Note di redazione</a></li>
+      <li><a href="#idee" data-go="idee"><span class="n">04</span>Soggetti</a></li>
+      <li><a href="#calendario" data-go="calendario"><span class="n">05</span>Palinsesto</a></li>
+      <li><a href="#mercato" data-go="mercato"><span class="n">06</span>Platea</a></li>
+      <li><a href="#pagine" data-go="pagine"><span class="n">07</span>Cartellone</a></li>
+      <li><a href="#ai" data-go="ai"><span class="n">08</span>La critica AI</a></li>
+      <li><a href="#log" data-go="log"><span class="n">09</span>Diario di set</a></li>
+      <li><a href="#interazioni" data-go="interazioni"><span class="n">10</span>In sala</a></li>
+      <li><a href="#costi" data-go="costi"><span class="n">&euro;</span>Budget</a></li>
+    </ul>
+    <span class="rec" id="rec" aria-live="polite"><i></i><span>pronto</span></span>
+    <button class="burger" type="button" id="burger" aria-expanded="false" aria-controls="menu" aria-label="Apri il menu"><span></span></button>
+  </div>
+</nav>
+
+<div class="wrap" id="top">
   <header class="head">
     <div>
-      <h1>Editor-in-Chief</h1>
-      <p class="sub">Tutti i tuoi siti in un posto: come vanno su Google (SEO), nelle risposte dirette di Google (AEO) e nelle citazioni dei motori AI (GEO), cosa migliorare e il calendario delle uscite. I pulsanti con stato avviano subito il lavoro.</p>
+      <p class="kicker" id="ciak-data">Editor-in-Chief · tutti i siti</p>
+      <h1>Editor<span>-</span>in-Chief</h1>
+      <p class="sub">Tutti i siti sullo stesso set: come vanno su Google (SEO), nelle risposte dirette di Google (AEO) e nelle citazioni dei motori AI (GEO), cosa migliorare e cosa esce quando. I pulsanti con lo stato accanto fanno partire subito il lavoro.</p>
     </div>
     <div class="head-r">
       <div class="refresh"><span id="agg-quando">Dati aggiornati: —</span><button class="btn primary" type="button" id="agg-btn">Aggiorna dati</button><span class="rq" id="agg-stato" aria-live="polite"></span></div>
-      <div class="chips" id="vista" role="group" aria-label="Vista"></div>
       <div class="chips" id="filtro" role="group" aria-label="Filtra per sito"></div>
     </div>
   </header>
@@ -178,7 +251,7 @@
   <section class="sites" id="siti" aria-label="Siti"></section>
 
   <section class="card" id="costi">
-    <div class="card-head"><div><h2>Costi sostenuti</h2><p>Quanto è costato ogni sito nel tempo e in totale. Entrano da soli i lavori di Claude misurati (stima a prezzi API, da quando la routine li misura) e i crediti OpenSEO; le altre spese (abbonamenti, domini, hosting, pubblicità) le aggiungi qui sotto. Le spese "ogni mese" si ripetono da sole fino a oggi. Il filtro per sito in alto vale anche qui.</p></div><span class="status" id="costi-stato" aria-live="polite"></span></div>
+    <div class="card-head"><div><h2>Budget di produzione</h2><p><b>I costi sostenuti.</b> Quanto è costato ogni sito nel tempo e in totale. Entrano da soli i lavori di Claude misurati (stima a prezzi API, da quando la routine li misura) e i crediti OpenSEO; le altre spese (abbonamenti, domini, hosting, pubblicità) le aggiungi qui sotto. Le spese "ogni mese" si ripetono da sole fino a oggi. Il filtro per sito in alto vale anche qui.</p></div><span class="status" id="costi-stato" aria-live="polite"></span></div>
     <div class="toolbar">
       <div class="chips" id="costi-passo" role="group" aria-label="Raggruppa per"></div>
       <div class="chips" id="costi-valuta" role="group" aria-label="Valuta"></div>
@@ -208,27 +281,27 @@
   </section>
 
   <section class="card" id="salute">
-    <div class="card-head"><div><h2>Stato di salute</h2><p>Visite e pagine viste da Google Analytics, ricerche da Search Console e cosa vogliono dire i numeri. Sotto, le tre azioni più utili per ogni sito: "Applica ora" fa la modifica sul sito. "Verifica e consiglia" rilegge i dati e aggiunge consigli nuovi.</p></div><span class="per" id="salute-per"></span></div>
+    <div class="card-head"><div><h2>Il polso</h2><p><b>Lo stato di salute dei siti.</b> Visite e pagine viste da Google Analytics, ricerche da Search Console e cosa vogliono dire i numeri. Sotto, le tre azioni più utili per ogni sito: "Applica ora" fa la modifica sul sito. "Verifica e consiglia" rilegge i dati e aggiunge consigli nuovi.</p></div><span class="per" id="salute-per"></span></div>
     <div class="light" id="semaforo" aria-live="polite"><span class="muted">Controllo lo stato…</span></div>
     <div class="health" id="salute-box"><p class="empty">Carico lo stato dei siti…</p></div>
   </section>
 
   <section class="card" id="consigli">
-    <div class="card-head"><div><h2>Consigli per migliorare</h2><p>Azioni concrete tratte dai dati, dalla più utile. "Applica ora" fa la modifica sul sito: i siti in modalità automatica vengono pubblicati direttamente, gli altri ricevono una bozza da approvare. I consigli "a mano" richiedono un tuo accesso (per esempio Google Business). Su ogni consiglio: "Spiegami come" scrive qui i passi, "Apri la chat" apre una conversazione solo su quel consiglio, "L'ho fatto" chiede a Claude di verificarlo.</p></div><span class="status" id="cons-stato" aria-live="polite"></span></div>
+    <div class="card-head"><div><h2>Note di redazione</h2><p><b>I consigli per migliorare.</b> Azioni concrete tratte dai dati, dalla più utile. "Applica ora" fa la modifica sul sito: i siti in modalità automatica vengono pubblicati direttamente, gli altri ricevono una bozza da approvare. I consigli "a mano" richiedono un tuo accesso (per esempio Google Business). Su ogni consiglio: "Spiegami come" scrive qui i passi, "Apri la chat" apre una conversazione solo su quel consiglio, "L'ho fatto" chiede a Claude di verificarlo.</p></div><span class="status" id="cons-stato" aria-live="polite"></span></div>
     <div class="toolbar"><div class="chips" id="cons-tipo" role="group" aria-label="Filtra per tipo"></div><label><input type="checkbox" id="cons-fatti"> mostra anche fatti e scartati</label><span id="cons-conta"></span></div>
     <div class="tips" id="cons-box"><p class="empty">Carico i consigli…</p></div>
   </section>
 
   <section class="card" id="idee">
-    <div class="card-head"><div><h2>Idee dai dati</h2><p>Temi nuovi suggeriti da ricerche, posizioni e concorrenti. Scegli la data e aggiungili al calendario: entrano come "Da confermare", poi li metti su "Programmato" quando vuoi che escano.</p></div><span class="status" id="idee-stato" aria-live="polite"></span></div>
+    <div class="card-head"><div><h2>Soggetti</h2><p><b>Le idee dai dati.</b> Temi nuovi suggeriti da ricerche, posizioni e concorrenti. Scegli la data e aggiungili al calendario: entrano come "Da confermare", poi li metti su "Programmato" quando vuoi che escano.</p></div><span class="status" id="idee-stato" aria-live="polite"></span></div>
     <div class="ideas" id="idee-box"><p class="empty">Carico le idee…</p></div>
   </section>
 
   <section class="card" id="calendario">
     <div class="card-head">
       <div>
-        <h2>Calendario uscite</h2>
-        <p>Le uscite seguono i giorni scelti nella configurazione. Cambia data, tema, tipo o stato e si salva da solo. Seleziona più righe, anche di siti diversi, per cambiarle in blocco. Tutto quello che è "Programmato" esce da solo nella sua data (o diventa una bozza da approvare, se il sito è in modalità bozza). Metti "In pausa" solo quello che vuoi fermare.</p>
+        <h2>Palinsesto</h2>
+        <p><b>Il calendario delle uscite.</b> Le uscite seguono i giorni scelti nella configurazione. Cambia data, tema, tipo o stato e si salva da solo. Seleziona più righe, anche di siti diversi, per cambiarle in blocco. Tutto quello che è "Programmato" esce da solo nella sua data (o diventa una bozza da approvare, se il sito è in modalità bozza). Metti "In pausa" solo quello che vuoi fermare.</p>
       </div>
       <span class="status" id="stato-salvataggio" aria-live="polite"></span>
     </div>
@@ -263,7 +336,7 @@
   </section>
 
   <section class="card" id="mercato">
-    <div class="card-head"><div><h2><span class="tag">SEO</span><span class="tag">AEO</span> Parole chiave e mercato</h2><p>Le ricerche che contano per ogni sito: quante volte si cercano al mese in Italia, dove siamo noi e chi è primo su Google. "Risposta AI" dice se Google mostra una risposta generata o le domande correlate. Dove non abbiamo una pagina, "Crea pagina ora" la scrive e la pubblica subito, senza passare dal calendario.</p></div></div>
+    <div class="card-head"><div><h2><span class="tag">SEO</span><span class="tag">AEO</span> Platea</h2><p><b>Parole chiave e mercato.</b> Le ricerche che contano per ogni sito: quante volte si cercano al mese in Italia, dove siamo noi e chi è primo su Google. "Risposta AI" dice se Google mostra una risposta generata o le domande correlate. Dove non abbiamo una pagina, "Crea pagina ora" la scrive e la pubblica subito, senza passare dal calendario.</p></div></div>
     <div class="scroll"><table>
       <thead><tr><th>Sito</th><th>Ricerca</th><th class="num">Ricerche/mese</th><th class="num">Noi</th><th>Nostra pagina</th><th>Primo su Google</th><th>Risposta AI</th><th>Cosa notare</th></tr></thead>
       <tbody id="kw-body"></tbody>
@@ -271,7 +344,7 @@
   </section>
 
   <section class="card" id="pagine">
-    <div class="card-head"><div><h2><span class="tag">SEO</span> Pagine su Google</h2><p>Da Search Console, le pagine con più impressioni negli ultimi 28 giorni, ognuna con la mossa più utile.</p></div></div>
+    <div class="card-head"><div><h2><span class="tag">SEO</span> Cartellone</h2><p><b>Le pagine su Google.</b> Da Search Console, le pagine con più impressioni negli ultimi 28 giorni, ognuna con la mossa più utile.</p></div></div>
     <div class="scroll"><table>
       <thead><tr><th>Sito</th><th>Pagina</th><th class="num">Impr.</th><th class="num">Clic</th><th class="num">Pos.</th><th>Consiglio</th></tr></thead>
       <tbody id="pagine-body"></tbody>
@@ -279,7 +352,7 @@
   </section>
 
   <section class="card" id="ai">
-    <div class="card-head"><div><h2><span class="tag">GEO</span> Citazioni nei motori AI</h2><p>Le domande del pubblico ripetute su ChatGPT, Perplexity e simili: "sì" vuol dire che il sito viene citato. Accanto, chi citano oggi e cosa fare per entrare. Il controllo gira con la cadenza della routine settimanale.</p></div></div>
+    <div class="card-head"><div><h2><span class="tag">GEO</span> La critica AI</h2><p><b>Le citazioni nei motori AI.</b> Le domande del pubblico ripetute su ChatGPT, Perplexity e simili: "sì" vuol dire che il sito viene citato. Accanto, chi citano oggi e cosa fare per entrare. Il controllo gira con la cadenza della routine settimanale.</p></div></div>
     <div class="scroll"><table>
       <thead><tr><th>Sito</th><th>Motore</th><th>Domanda</th><th>Citato</th><th>Chi citano</th><th>Consiglio</th></tr></thead>
       <tbody id="ai-body"></tbody>
@@ -287,7 +360,7 @@
   </section>
 
   <section class="card" id="log">
-    <div class="card-head"><div><h2>Registro interventi</h2><p>Tutto quello che Claude ha fatto sui siti e sulla dashboard, dal più recente. "Apri la chat" riapre la conversazione che ha fatto il lavoro: lì puoi fare domande o chiedere di continuare.</p></div></div>
+    <div class="card-head"><div><h2>Diario di set</h2><p><b>Il registro degli interventi.</b> Tutto quello che Claude ha fatto sui siti e sulla dashboard, dal più recente. "Apri la chat" riapre la conversazione che ha fatto il lavoro: lì puoi fare domande o chiedere di continuare.</p></div></div>
     <div class="toolbar"><span id="log-consumo" class="small"></span><label><input type="checkbox" id="log-tutti"> mostra anche annullati e in coda</label></div>
     <div class="scroll"><table>
       <thead><tr><th>Quando</th><th>Sito</th><th>Intervento</th><th>Esito</th><th>Consumo</th><th>Link</th></tr></thead>
@@ -296,15 +369,15 @@
   </section>
 
   <section class="card" id="interazioni">
-    <div class="card-head"><div><h2>Cosa fanno i visitatori</h2><p>Dal contatore anonimo sul sito (nessun cookie, nessun IP): visite alle schede, uso del calendario, preventivi, richieste e clic dagli articoli. Opzionale: si riempie se il sito invia eventi alla collezione "interazioni".</p></div></div>
+    <div class="card-head"><div><h2>In sala</h2><p><b>Cosa fanno i visitatori.</b> Dal contatore anonimo sul sito (nessun cookie, nessun IP): visite alle schede, uso del calendario, preventivi, richieste e clic dagli articoli. Opzionale: si riempie se il sito invia eventi alla collezione "interazioni".</p></div></div>
     <div class="scroll"><table>
       <thead><tr><th>Sito</th><th>Pagina o scheda</th><th class="num">Visite</th><th class="num">Letto fino in fondo</th><th class="num">Calendario</th><th class="num">Preventivo</th><th class="num">Richieste</th><th class="num">Clic verso schede</th></tr></thead>
       <tbody id="inter-body"></tbody>
     </table></div>
   </section>
 
-  <section class="card">
-    <h2>Come funziona</h2>
+  <section class="card" id="quinte">
+    <h2>Dietro le quinte</h2>
     <ul class="how">
       <li>Nei giorni di uscita scelti in configurazione le routine leggono il calendario, scrivono i contenuti "Programmato" del giorno, li pubblicano (o preparano la bozza) e li segnano.</li>
       <li>I pulsanti (Aggiorna dati, Verifica e consiglia, Applica, Crea pagina ora) mettono il lavoro in coda e lo avviano subito; lo stato accanto al pulsante si aggiorna da solo. Se l'avvio immediato non è disponibile, il lavoro parte al prossimo giro programmato.</li>
@@ -461,6 +534,12 @@
     b.disabled = !state.db || !state.canWrite || inCorso(r);
     b.textContent = inCorso(r) ? 'Aggiornamento in corso' : 'Aggiorna dati' + (state.filtro !== 'tutti' ? ' di ' + prog(state.filtro).nome : '');
     const box = $('agg-stato'); box.replaceChildren(); const bd = badge(r); if (bd && (inCorso(r) || r.stato === 'Errore')) box.append(bd);
+    const n = state.richieste.filter(inCorso).length;
+    $('rec').classList.toggle('on', n > 0);
+    $('rec').lastChild.textContent = n ? 'rec · ' + n + (n === 1 ? ' lavoro' : ' lavori') : 'pronto';
+    $('rec').title = n ? 'Claude sta lavorando su ' + n + (n === 1 ? ' richiesta' : ' richieste') : 'Nessun lavoro in corso';
+    const np = state.progetti.length;
+    $('ciak-data').textContent = 'Editor-in-Chief · ' + new Date().toLocaleDateString('it-IT', { day: 'numeric', month: 'long' }) + ' · ' + (np ? np + ' siti' : 'tutti i siti');
   }
   $('agg-btn').addEventListener('click', async () => {
     const b = $('agg-btn'); b.disabled = true; b.textContent = 'Metto in coda…';
@@ -1077,16 +1156,44 @@
 
 
   /* ---------- Costi sostenuti ---------- */
-  const VISTE = [['main', 'Redazione'], ['costi', 'Costi sostenuti']];
+  /* Le due viste (set e budget) si scelgono dal menu in alto. */
   function renderVista() {
     document.body.classList.toggle('v-costi', state.vista === 'costi');
-    const box = $('vista'); box.replaceChildren();
-    for (const [id, nome] of VISTE) {
-      const b = el('button', { className: 'chip', type: 'button', textContent: nome });
-      b.setAttribute('aria-pressed', String(state.vista === id));
-      b.addEventListener('click', () => { state.vista = id; try { localStorage.setItem('eic-vista', id); } catch (e) {} renderVista(); if (id === 'costi') renderCosti(); window.scrollTo(0, 0); });
-      box.append(b);
-    }
+    if (state.vista === 'costi') segnaMenu('costi');
+  }
+  function segnaMenu(id) {
+    for (const a of document.querySelectorAll('#menu a')) a.setAttribute('aria-current', String(a.dataset.go === id));
+  }
+  function chiudiMenu() { $('menu').classList.remove('open'); $('burger').setAttribute('aria-expanded', 'false'); $('burger').setAttribute('aria-label', 'Apri il menu'); }
+  $('burger').addEventListener('click', () => {
+    const open = !$('menu').classList.contains('open');
+    $('menu').classList.toggle('open', open);
+    $('burger').setAttribute('aria-expanded', String(open));
+    $('burger').setAttribute('aria-label', open ? 'Chiudi il menu' : 'Apri il menu');
+  });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') chiudiMenu(); });
+  document.addEventListener('click', (e) => { if (!e.target.closest('.nav')) chiudiMenu(); });
+  for (const a of document.querySelectorAll('.nav a[data-go]')) {
+    a.addEventListener('click', (ev) => {
+      ev.preventDefault(); chiudiMenu();
+      const id = a.dataset.go, vista = id === 'costi' ? 'costi' : 'main';
+      if (vista !== state.vista) { state.vista = vista; try { localStorage.setItem('eic-vista', vista); } catch (e) {} renderVista(); if (vista === 'costi') renderCosti(); }
+      if (id === 'costi' || id === 'top') { window.scrollTo(0, 0); if (id === 'top') segnaMenu('siti'); return; }
+      const t = $(id); if (t) t.scrollIntoView({ block: 'start' });
+      segnaMenu(id);
+    });
+  }
+  /* Evidenzia nel menu la scena che stai guardando. */
+  if ('IntersectionObserver' in window) {
+    const vis = new Map();
+    const io = new IntersectionObserver((ents) => {
+      for (const e of ents) vis.set(e.target.id, e.isIntersecting ? e.intersectionRatio : 0);
+      if (state.vista === 'costi') return;
+      const ids = [...document.querySelectorAll('#menu a')].map((a) => a.dataset.go).filter((x) => x !== 'costi');
+      const on = ids.find((x) => (vis.get(x) || 0) > 0);
+      if (on) segnaMenu(on);
+    }, { rootMargin: '-' + (58 + 20) + 'px 0px -55% 0px', threshold: [0, 0.01] });
+    for (const a of document.querySelectorAll('#menu a')) { const t = $(a.dataset.go); if (t && a.dataset.go !== 'costi') io.observe(t); }
   }
   const CAMBIO_BASE = 0.86;
   const cambio = () => { const c = parseFloat((state.editor.find((d) => d.id === 'costi') || {}).usd_eur); return c > 0 ? c : CAMBIO_BASE; };

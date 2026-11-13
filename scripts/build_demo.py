@@ -106,7 +106,8 @@ def build(lang, missing):
     banner = ('<div style="background:#1b2230;color:#fff;font:14px system-ui,sans-serif;padding:10px 16px;text-align:center;line-height:1.6">'
               f'{note} <a style="color:#9db6ff" href="https://github.com/vitosemeraro/editor-in-chief-seo-geo">{cta}</a>'
               f'<br><span style="opacity:.85">{links}</span></div>')
-    marker = '<div class="wrap">'
+    # the banner goes above the sticky menu (0.10.0), or above the page on older dashboards
+    marker = '<nav class="nav"' if '<nav class="nav"' in page else '<div class="wrap"'
     assert marker in page
     page = page.replace(marker, banner + marker, 1)
     page = page.replace("<title>Editor-in-Chief</title>", "<title>Editor-in-Chief demo</title>", 1)

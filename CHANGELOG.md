@@ -7,6 +7,21 @@ change to the database schema bumps the minor version, a fix bumps the patch.
 Every change comes from the private dashboard the author uses daily on 4 real sites, generalized before
 it lands here.
 
+## [0.16.0] - 2026-11-13
+
+### Added
+- **Results days**: publish days listed in `editor.cadence.results_days` (default Thursday) no longer take a
+  topic from the calendar. That morning the agent reads Search Console for the last 14 days and writes the
+  piece next to the page with the most clicks (or targets the best near-page-one query), with a fallback
+  topic stored on the row. The other weekly slot still comes from the calendar.
+- **Experiments on winning pages**: on each results day, one experiment per site on the page that already
+  brings clicks (conversion box, missing question section, or title/description), with a stored baseline,
+  kept or rolled back after `window_days`. New config block `editor.experiments`.
+
+### Schema
+- `piano`: origine `risultati`, new fields `riserva` and `perche_risultati`.
+- New collection `esperimenti/{site_id}-{YYYYMMDD}-{n}`.
+
 ## [0.15.0] - 2026-11-13
 
 ### Added
@@ -230,6 +245,7 @@ it lands here.
   schema, dashboard that starts empty, modular data sources (Search Console required), deploy examples
   for Firebase, Netlify, Vercel and FTPS, link checker, secret scan and config validator in CI.
 
+[0.16.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.15.0...v0.16.0
 [0.15.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.13.1...v0.15.0
 [0.13.1]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.13.0...v0.13.1
 [0.13.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.12.0...v0.13.0

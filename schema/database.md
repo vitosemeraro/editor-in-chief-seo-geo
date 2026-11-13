@@ -54,7 +54,9 @@ The calendar drives the routines. The owner edits it from the page.
 | stato | enum | see below |
 | bozza | string | link to the draft (draft mode) |
 | url | string | public URL once published |
-| origine | string | `idea`, `crea_pagina`, or empty if added by hand |
+| origine | string | `idea`, `crea_pagina`, `risultati` (topic chosen on the day from results), or empty if added by hand |
+| riserva | string | `risultati` rows only: fallback topic if results give no clear signal |
+| perche_risultati | string | `risultati` rows only: why that topic was chosen, with the numbers |
 | aggiornato_il | string | ISO time |
 
 States: `Idea` (parked) · `Da confermare` (skipped by routines) · `Programmato` (goes out on its date) ·
@@ -188,6 +190,13 @@ what it is for), `rif` ("consigli/<id>", optional), `aperta_il`, `stato` (`Apert
 
 Log of work not started from a button (scheduled publishing, calendar autofill): `quando`, `progetto`,
 `titolo`, `stato`, `esito`, `link`, `sessione`, and the same usage fields as `richieste`.
+
+## esperimenti/{site_id}-{YYYYMMDD}-{n}
+
+One change on a page that already performs, measured before and after (`prompts/run-requests.md`, step 3):
+`progetto`, `url`, `ipotesi` (one sentence), `modifica`, `base` (object: period, clicks, impressions, ctr,
+position, key events), `avviato_il`, `stato` (`Da pubblicare`, `In corso`, `Tenuto`, `Tolto`), `esito`,
+`commit`.
 
 ## interazioni, traffico_pagine (optional)
 

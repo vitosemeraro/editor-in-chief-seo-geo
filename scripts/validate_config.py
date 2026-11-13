@@ -22,6 +22,11 @@ def main():
     need(editor.get("language"), "editor.language is required")
     days = editor.get("cadence", {}).get("publish_days", [])
     need(days and set(days) <= DAYS, f"editor.cadence.publish_days must be a subset of {sorted(DAYS)}")
+    rdays = editor.get("cadence", {}).get("results_days", []) or []
+    need(set(rdays) <= set(days), "editor.cadence.results_days must be a subset of publish_days")
+    exp = editor.get("experiments", {}) or {}
+    need(isinstance(exp.get("min_clicks", 3), int) and isinstance(exp.get("window_days", 14), int),
+         "editor.experiments.min_clicks and window_days must be integers")
     need(isinstance(cfg.get("rules"), list), "rules must be a list")
     need(cfg.get("sources", {}).get("search_console", {}).get("provider") in ("openseo", "ahrefs"),
          "sources.search_console.provider must be openseo or ahrefs")

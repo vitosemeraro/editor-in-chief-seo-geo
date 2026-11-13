@@ -191,7 +191,8 @@
   .nav a:focus-visible, .burger:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   @media (max-width: 900px) {
     .burger { display: inline-flex; }
-    .rec { margin-left: auto; }
+    .rec, .prc { margin-left: auto; }
+    .prc:not([hidden]) + .rec { margin-left: 0; }
     .rec + .burger { margin-left: 0; }
     .menu { display: none; position: absolute; left: 0; right: 0; top: calc(var(--nav-h) + 7px); flex-direction: column; gap: 0; background: var(--ink); padding: 6px max(16px, env(safe-area-inset-left, 0px)) 14px; border-bottom: 3px solid var(--accent); max-height: calc(100vh - var(--nav-h) - 7px); overflow-y: auto; box-shadow: 0 18px 30px rgba(0, 0, 0, .25); }
     .menu.open { display: flex; }
@@ -250,6 +251,46 @@
   .scena a { color: var(--paper); font-size: 12.5px; white-space: nowrap; }
   @media (max-width: 640px) { .scena { grid-template-columns: minmax(0, 1fr); } }
   .rec { text-decoration: none; color: inherit; }
+
+  /* Al montaggio: le PR pronte che aspettano solo di essere unite. */
+  .montaggio { background: var(--ink); color: var(--paper); border-radius: var(--r); border-left: 6px solid #ffb84d; padding: 12px 16px; display: grid; gap: 8px; }
+  .montaggio.vuoto { border-left-color: #7d756a; }
+  .montaggio .sigira-h b i { background: #ffb84d; border-radius: 2px; box-shadow: none; animation: none; }
+  .montaggio.vuoto .sigira-h b i { background: #7d756a; }
+  .montaggio .scena .pr-n { font: 800 22px/1 var(--font-display); color: #ffb84d; white-space: nowrap; }
+  .montaggio .scena .perche { font-size: 13px; opacity: .85; margin-top: 3px; overflow-wrap: anywhere; }
+  .montaggio a.unisci { display: inline-block; border: 2px solid #ffb84d; color: #ffb84d; border-radius: 4px; padding: 6px 10px; font: 700 13px var(--font-display); text-transform: uppercase; letter-spacing: .05em; text-decoration: none; white-space: nowrap; }
+  .montaggio a.unisci:hover { background: #ffb84d; color: var(--ink); }
+  .prc i { background: #ffb84d; border-radius: 2px; }
+  .montaggio .mont-tot { font: 800 48px/0.9 var(--font-display); color: #ffb84d; }
+  .montaggio.vuoto .mont-tot { color: #7d756a; }
+  .montaggio .mont-tl { font: 800 18px/1.05 var(--font-display); text-transform: uppercase; letter-spacing: .03em; opacity: 1; }
+  .montaggio #mont-s { flex-basis: 100%; }
+  .prc[hidden] { display: none; }
+
+  /* Lavagna cliccabile: ogni numero, striscia e riga apre l elenco filtrato. */
+  button.lav-cell, button.mano-c { font: inherit; color: inherit; text-align: left; background: transparent; border-left: 0; border-right-style: dashed; cursor: pointer; }
+  button.mano-c { border: 0; border-top: 4px solid var(--kc); background: transparent; padding: 6px 0 0; }
+  button.lav-cell:hover, button.mano-c:hover, button.lav-cell[aria-pressed="true"], button.mano-c[aria-pressed="true"] { background: color-mix(in srgb, var(--kc) 16%, transparent); }
+  button.lav-cell:focus-visible, button.mano-c:focus-visible, .ps:focus-visible { outline: 2px solid var(--paper); outline-offset: 2px; }
+  .film i, .ps .bar i { cursor: pointer; }
+  .film i:hover, .ps .bar i:hover { filter: brightness(1.25); }
+  .ps { cursor: pointer; border-radius: 3px; }
+  .ps:hover, .ps[aria-pressed="true"] { background: color-mix(in srgb, var(--paper) 8%, transparent); }
+  .zoom { border: 2px solid var(--kc, var(--paper)); border-radius: 6px; padding: 10px 12px 12px; display: grid; gap: 8px; scroll-margin-top: calc(var(--nav-h) + 14px); }
+  .zoom[hidden] { display: none; }
+  .zoom-h { display: flex; gap: 8px 14px; align-items: baseline; justify-content: space-between; flex-wrap: wrap; }
+  .zoom-h b { font: 800 20px/1.1 var(--font-display); text-transform: uppercase; letter-spacing: .03em; color: var(--kc, var(--paper)); }
+  .zoom-h button { font: 500 11px var(--font-mono); letter-spacing: .08em; text-transform: uppercase; background: transparent; color: var(--paper); border: 1px solid color-mix(in srgb, var(--paper) 40%, transparent); border-radius: 4px; padding: 4px 8px; cursor: pointer; }
+  .zoom ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+  .zoom li { display: grid; gap: 3px; border-left: 3px solid var(--kc, var(--paper)); padding: 2px 0 2px 10px; font-size: 13px; }
+  .zoom li .r1 { display: flex; gap: 4px 10px; flex-wrap: wrap; align-items: baseline; }
+  .zoom li .k { font: 500 10.5px var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--kc, var(--paper)); }
+  .zoom li .tt { font-weight: 600; }
+  .zoom li .dd { font-size: 12px; opacity: .75; overflow-wrap: anywhere; }
+  .zoom li .ln { display: flex; gap: 4px 14px; flex-wrap: wrap; font-size: 12.5px; }
+  .zoom li a { color: var(--paper); }
+  .zoom .piu { font-size: 12px; opacity: .7; }
 
   /* Ciclo continuo: l'interruttore "motore" del set, con il contatore di oggi. */
   .motore { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 10px 16px; align-items: center; border: 1px dashed color-mix(in srgb, var(--paper) 30%, transparent); border-radius: 8px; padding: 10px 14px; }
@@ -342,6 +383,7 @@
       <li><a href="#interazioni" data-go="interazioni"><span class="n">11</span>In sala</a></li>
       <li><a href="#costi" data-go="costi"><span class="n">&euro;</span>Budget</a></li>
     </ul>
+    <a class="rec prc" id="prc" href="#montaggio" data-go="montaggio" hidden><i></i><span>0 PR</span></a>
     <a class="rec" id="rec" href="#sigira" data-go="sigira" aria-live="polite"><i></i><span>pronto</span></a>
     <button class="burger" type="button" id="burger" aria-expanded="false" aria-controls="menu" aria-label="Apri il menu"><span></span></button>
   </div>
@@ -365,6 +407,11 @@
     <ul class="scene" id="scene"></ul>
   </section>
 
+  <section class="montaggio vuoto" id="montaggio" aria-labelledby="mont-h">
+    <div class="sigira-h"><b id="mont-h"><i></i>Al montaggio</b><span class="mont-tot" id="mont-tot">0</span><span class="mont-tl">PR da unire, aspettano te</span><span id="mont-s">Nessuna PR da unire.</span></div>
+    <ul class="scene" id="mont-lista"></ul>
+  </section>
+
   <section class="sites" id="siti" aria-label="Siti"></section>
 
   <section class="lavagna" id="lavagna" aria-labelledby="lav-h">
@@ -377,15 +424,16 @@
         <div class="cnt"><b id="ciclo-n">0</b><small id="ciclo-max">di 12 oggi</small><div class="bar" id="ciclo-bar"></div></div>
       </div>
       <div class="mano" id="mano">
-        <div class="mano-top"><span class="tot" id="mano-tot">0</span><span class="tl">richieste lasciate a mano</span><span class="ts">Chi le sblocca: quelle che Claude può chiudere da solo, quelle che aspettano il tuo PC acceso, quelle che aspettano una tua decisione e quelle ferme per un blocco esterno.</span></div>
+        <div class="mano-top"><span class="tot" id="mano-tot">0</span><span class="tl">lavori lasciati a mano</span><span class="ts">Chi le sblocca: quelle che Claude può chiudere da solo, quelle che aspettano il tuo PC acceso, quelle che aspettano una tua decisione e quelle ferme per un blocco esterno.</span></div>
         <div class="film" id="mano-film" role="img"></div>
         <div class="mano-cells" id="mano-cells"></div>
-        <details id="mano-det"><summary>Vedi le richieste una per una</summary><ul id="mano-lista"></ul></details>
+        <details id="mano-det"><summary>Vedi i lavori uno per uno</summary><ul id="mano-lista"></ul></details>
       </div>
       <div class="lav-grid">
         <div class="lav-col"><b>Lavori</b><div class="film" id="lav-film-l" role="img"></div><div class="film-cap" id="lav-cap-l"></div><div class="lav-cells" id="lav-lavori"></div></div>
         <div class="lav-col"><b>Uscite</b><div class="film" id="lav-film-u" role="img"></div><div class="film-cap" id="lav-cap-u"></div><div class="lav-cells" id="lav-uscite"></div></div>
       </div>
+      <div class="zoom" id="lav-zoom" hidden aria-live="polite"><div class="zoom-h"><b id="zoom-t"></b><button type="button" id="zoom-x">Chiudi</button></div><ul id="zoom-lista"></ul></div>
       <div class="lav-row">
         <div class="lav-box"><b>Lavori aperti per sito</b><div class="per-sito" id="lav-siti"></div><div class="lav-legend" id="lav-leg"></div></div>
         <div class="lav-box"><b>Ritmo · ultime 8 settimane</b><div id="lav-trend"></div><div class="lav-legend"><span><i style="--kc:var(--k-todo)"></i>lavori aperti</span><span><i style="--kc:var(--k-done)"></i>lavori chiusi</span><span><i style="--kc:var(--k-sched);border-radius:50%"></i>uscite pubblicate</span></div></div>
@@ -572,7 +620,7 @@
     for (const q of state.interventi) if (q.progetto === pid && isFinite(parseFloat(q.costo_usd)) && ok(q.quando)) { usd += parseFloat(q.costo_usd); cr += Number(q.crediti_openseo) || 0; n++; }
     return { usd, cr, n };
   }
-  const state = { progetti: [], metriche: [], piano: [], pagine: [], aeo: [], interazioni: [], salute: [], keyword: [], idee: [], consigli: [], richieste: [], editor: [], interventi: [], serie: [], costi: [], conversioni: [], logTutti: false,
+  const state = { progetti: [], metriche: [], piano: [], pagine: [], aeo: [], interazioni: [], salute: [], keyword: [], idee: [], consigli: [], richieste: [], pr: [], zoom: '', editor: [], interventi: [], serie: [], costi: [], conversioni: [], logTutti: false,
     vista: 'main', costiPasso: 'settimana', costiValuta: 'EUR',
     filtro: 'tutti', calTipo: '', calStato: '', calPassate: false, consTipo: '', consFatti: false, sel: new Set(), db: null, mcp: null, canWrite: true };
   try { state.filtro = localStorage.getItem('eic-filtro') || 'tutti'; } catch (e) {}
@@ -895,28 +943,133 @@
     if (RX_CLAUDE.test(q.esito || '')) return 'claude';
     return bloccoDi(q);
   }
+  const aMano = (x) => x.stato === 'Da fare a mano' || x.stato === 'Da approvare';
+  const vis = (id) => !id || id === 'tutti' || visibile(id);
+  const consiglioDi = (q) => { const m = /^consigli\/(.+)$/.exec((q && q.rif) || ''); return m ? state.consigli.find((x) => x.id === m[1]) : null; };
+  /* Lasciati a mano: le richieste e i consigli "Da fare a mano" o "Da approvare", senza contare due volte lo stesso lavoro. */
+  function manoRows() {
+    const rows = state.richieste.filter((q) => aMano(q) && vis(q.progetto)).map((q) => ({ q, c: consiglioDi(q), k: chiSblocca(q) }));
+    for (const c of state.consigli) {
+      if (!aMano(c) || !vis(c.progetto)) continue;
+      if (state.richieste.some((q) => q.rif === 'consigli/' + c.id && (aMano(q) || inCorso(q)))) continue;
+      const b = String(c.blocco || '').toLowerCase();
+      rows.push({ c, k: /^claude/.test(b) ? 'claude' : (RX_CLAUDE.test(c.esito || '') && c.stato !== 'Da approvare') ? 'claude' : bloccoDi(c) });
+    }
+    return rows;
+  }
+  const KM = [['claude', 'Le chiude Claude', 'già fatti o senza nulla da fare: Claude li segna chiusi'], ['desk', 'PC acceso', 'servono i tuoi accessi dal browser del tuo PC'], ['dec', 'Tua decisione', 'serve una tua scelta, o unire una PR, prima di andare avanti'], ['ext', 'Blocco esterno', 'dipendono da altri (Google, tempi di indicizzazione, siti fuori repository)']];
   function renderMano() {
-    const rows = state.richieste.filter((q) => (q.stato === 'Da fare a mano' || q.stato === 'Da approvare') && (!q.progetto || q.progetto === 'tutti' || visibile(q.progetto)))
-      .map((q) => ({ q, k: chiSblocca(q) }));
-    const KM = [['claude', 'Le chiude Claude', 'già fatte o senza nulla da fare: Claude le segna chiuse'], ['desk', 'PC acceso', 'servono i tuoi accessi dal browser del tuo PC'], ['dec', 'Tua decisione', 'serve una tua scelta prima di andare avanti'], ['ext', 'Blocco esterno', 'dipendono da altri (Google, tempi di indicizzazione, siti fuori repository)']];
+    const rows = manoRows();
     const n = {}; for (const r of rows) n[r.k] = (n[r.k] || 0) + 1;
     $('mano-tot').textContent = String(rows.length);
-    const fb = $('mano-film'); fb.replaceChildren(); fb.setAttribute('aria-label', 'Richieste lasciate a mano, per chi le sblocca');
-    for (const [k, l] of KM) { if (!n[k]) continue; const f = el('i', { title: l + ': ' + n[k] }); f.style.flex = String(n[k]); f.style.setProperty('--kc', 'var(--k-' + k + ')'); fb.append(f); }
-    $('mano-cells').replaceChildren(...KM.map(([k, l, d]) => { const c = el('div', { className: 'mano-c' + (n[k] ? '' : ' zero') }, [el('div', { className: 'v', textContent: String(n[k] || 0) }), el('div', { className: 'l', textContent: l }), el('div', { className: 'd', textContent: d })]); c.style.setProperty('--kc', 'var(--k-' + k + ')'); return c; }));
+    const fb = $('mano-film'); fb.replaceChildren(); fb.setAttribute('aria-label', 'Lavori lasciati a mano, per chi li sblocca');
+    for (const [k, l] of KM) { if (!n[k]) continue; const f = el('i', { title: l + ': ' + n[k] + ' (clic per vederli)' }); f.style.flex = String(n[k]); f.style.setProperty('--kc', 'var(--k-' + k + ')'); f.dataset.z = 'mano:' + k; fb.append(f); }
+    $('mano-cells').replaceChildren(...KM.map(([k, l, d]) => { const c = el('button', { type: 'button', className: 'mano-c' + (n[k] ? '' : ' zero') }, [el('div', { className: 'v', textContent: String(n[k] || 0) }), el('div', { className: 'l', textContent: l }), el('div', { className: 'd', textContent: d })]); c.dataset.z = 'mano:' + k; c.style.setProperty('--kc', 'var(--k-' + k + ')'); return c; }));
     const ul = $('mano-lista'); ul.replaceChildren();
     $('mano-det').hidden = !rows.length;
     const ord = { desk: 0, dec: 1, ext: 2, claude: 3 };
-    for (const { q, k } of rows.sort((a, b) => ord[a.k] - ord[b.k])) {
-      const lab = (KM.find((x) => x[0] === k) || [])[1] || '';
-      const tag = el('span', { className: 'k', textContent: lab }); tag.style.setProperty('--kc', 'var(--k-' + k + ')'); tag.style.color = 'var(--k-' + k + ')';
-      const li = el('li', {}, [tag]);
-      if (q.progetto && q.progetto !== 'tutti') li.append(sito(prog(q.progetto)));
-      li.append(el('span', { textContent: (TIPO_NOME[q.tipo] || q.tipo) + (q.testo ? ': ' + q.testo : '') }));
-      if (q.sessione && /^https:\/\/claude\.ai\//.test(q.sessione)) li.append(el('a', { href: q.sessione, target: '_blank', rel: 'noopener', textContent: 'apri la chat' }));
-      ul.append(li);
+    for (const r of rows.sort((a, b) => ord[a.k] - ord[b.k])) ul.append(rigaZoom(r));
+  }
+  /* Una riga dell elenco filtrato: etichetta, sito, titolo, dettaglio e i link (chat, PR, pagina). */
+  const RX_PR = /https:\/\/github\.com\/([\w.-]+\/[\w.-]+)\/pull\/(\d+)/;
+  const titoloDi = (q, c) => (c && c.titolo) || (q ? (TIPO_NOME[q.tipo] || q.tipo) + (q.testo ? ': ' + q.testo : '') : '');
+  const KNOME = { todo: 'da fare', run: 'in corso', desk: 'PC acceso', dec: 'tua decisione', ext: 'blocco esterno', rej: 'rifiutato', done: 'chiuso', claude: 'le chiude Claude', new: 'nuova', sched: 'programmata', err: 'in errore', pub: 'pubblicata', pausa: 'in pausa' };
+  function rigaZoom({ q, c, r, k, titolo }) {
+    const tag = el('span', { className: 'k', textContent: KNOME[k] || k });
+    const li = el('li'); li.style.setProperty('--kc', 'var(--k-' + k + ')');
+    const r1 = el('div', { className: 'r1' }, [tag]);
+    const pid = (c && c.progetto) || (q && q.progetto) || (r && r.progetto);
+    if (pid && pid !== 'tutti') r1.append(sito(prog(pid)));
+    r1.append(el('span', { className: 'tt', textContent: titolo || (r ? (r.tema || r.titolo || '') : titoloDi(q, c)) }));
+    li.append(r1);
+    const det = r ? [r.data, r.stato, r.keyword].filter(Boolean).join(' · ') : ((c && c.esito) || (q && q.esito) || (q && q.passo) || (c && c.dettaglio) || '');
+    if (det) li.append(el('div', { className: 'dd', textContent: det.length > 220 ? det.slice(0, 217) + '…' : det }));
+    const ln = el('div', { className: 'ln' }), a = (href, t) => ln.append(el('a', { href, target: '_blank', rel: 'noopener', textContent: t }));
+    if (q && q.sessione && /^https:\/\/claude\.ai\//.test(q.sessione)) a(q.sessione, 'apri la chat');
+    const testi = [(c && c.link) || '', (c && c.esito) || '', (q && q.esito) || ''].join(' ');
+    const pr = RX_PR.exec(testi);
+    if (pr) a(pr[0], 'apri la PR #' + pr[2]);
+    const lk = c && c.link && /^https:\/\//.test(c.link) && !RX_PR.test(c.link) ? c.link : '';
+    if (lk) a(lk, 'apri il link');
+    const pg = r && (r.url || r.link); if (pg && /^https:\/\//.test(pg)) a(pg, 'apri la pagina');
+    if (c && c.id) { const b = el('a', { href: '#consigli', textContent: 'vai al consiglio' }); b.addEventListener('click', (e) => { e.preventDefault(); const t = $('consigli'); if (t) t.scrollIntoView({ block: 'start' }); }); ln.append(b); }
+    if (ln.childNodes.length) li.append(ln);
+    return li;
+  }
+  /* Le PR aperte: dalla collezione pr, più quelle citate nei consigli ancora da approvare. */
+  function prAperte() {
+    const rows = state.pr.filter((p) => p.stato === 'Aperta' && vis(p.progetto));
+    const seen = new Set(state.pr.map((p) => p.url));
+    for (const c of state.consigli) {
+      if (!aMano(c) || !vis(c.progetto)) continue;
+      const m = RX_PR.exec((c.link || '') + ' ' + (c.esito || ''));
+      if (!m || seen.has(m[0])) continue;
+      seen.add(m[0]);
+      rows.push({ repo: m[1], numero: Number(m[2]), url: m[0], titolo: c.titolo, perche: '', progetto: c.progetto, rif: 'consigli/' + c.id, aperta_il: c.aggiornato_il || c.creato_il });
+    }
+    return rows.sort((a, b) => String(a.aperta_il || '').localeCompare(String(b.aperta_il || '')));
+  }
+  function renderPr() {
+    const rows = prAperte(), ul = $('mont-lista'); ul.replaceChildren();
+    $('montaggio').classList.toggle('vuoto', !rows.length);
+    $('mont-tot').textContent = String(rows.length);
+    $('mont-s').textContent = rows.length ? 'La più vecchia è aperta ' + daQuanto(rows[0].aperta_il) + '. Aprila, controlla e premi "Merge": il sito si pubblica da solo.' : 'Nessuna PR da unire.';
+    const chip = $('prc'); chip.hidden = !rows.length; chip.lastChild.textContent = rows.length + ' PR';
+    for (const p of rows) {
+      const meta = el('div', { className: 'meta' });
+      if (p.progetto && p.progetto !== 'tutti') meta.append(sito(prog(p.progetto)));
+      meta.append(el('span', { textContent: String(p.repo || '').split('/').pop() }));
+      if (p.aperta_il) meta.append(el('span', { textContent: 'aperta ' + daQuanto(p.aperta_il) }));
+      const c = consiglioDi(p); if (c) meta.append(el('span', { className: 'tagc', textContent: c.stato }));
+      const mid = el('div', {}, [el('div', { className: 'tt', textContent: p.titolo || '' })]);
+      const perche = p.perche || (c && c.titolo !== p.titolo ? c.titolo : ''); if (perche) mid.append(el('div', { className: 'perche', textContent: perche }));
+      mid.append(meta);
+      const link = /^https:\/\/github\.com\//.test(p.url || '') ? el('a', { className: 'unisci', href: p.url, target: '_blank', rel: 'noopener', textContent: 'Apri e unisci' }) : el('span');
+      ul.append(el('li', { className: 'scena' }, [el('span', { className: 'pr-n', textContent: '#' + (p.numero || '?') }), mid, link]));
     }
   }
+  /* Elenco filtrato della lavagna: chiave tipo "lav:desk", "lav:todo:site1", "sito:site1", "usc:err", "mano:dec". */
+  function uscitaK(r) {
+    const st = r.stato || '';
+    if (st === 'Pubblicato') return 'pub';
+    if (st === 'In pausa') return 'pausa';
+    if (st === 'Idea' || st === 'Da confermare') return 'new';
+    if (/errore/i.test(st) || ((st === 'Programmato' || st === 'Scritto') && r.data && r.data < oggi)) return 'err';
+    return 'sched';
+  }
+  const APERTI = ['todo', 'run', 'desk', 'dec', 'ext'];
+  function renderZoom() {
+    const box = $('lav-zoom'), key = state.zoom;
+    for (const b of document.querySelectorAll('#lavagna [data-z]')) if (b.tagName === 'BUTTON' || b.classList.contains('ps')) b.setAttribute('aria-pressed', String(b.dataset.z === key));
+    if (!key) { box.hidden = true; return; }
+    const [kind, k, sid] = key.split(':');
+    let rows = [], titolo = '';
+    if (kind === 'lav' || kind === 'sito') {
+      const ks = kind === 'sito' ? APERTI : [k], pid = kind === 'sito' ? k : sid;
+      rows = lavori().filter((x) => ks.includes(x.k) && (!pid || x.progetto === pid)).map((x) => ({ q: x.q, c: x.c, k: x.k, titolo: x.titolo }));
+      titolo = (kind === 'sito' ? 'Lavori aperti' : KNOME[k] || k) + (pid ? ' · ' + prog(pid).nome : '');
+    } else if (kind === 'usc') {
+      rows = state.piano.filter((r) => visibile(r.progetto) && uscitaK(r) === k).sort((a, b) => String(a.data || '').localeCompare(String(b.data || ''))).map((r) => ({ r, k }));
+      titolo = 'Uscite ' + (KNOME[k] || k);
+    } else if (kind === 'mano') {
+      rows = manoRows().filter((x) => x.k === k);
+      titolo = 'A mano · ' + (KNOME[k] || k);
+    }
+    box.hidden = false; box.style.setProperty('--kc', kind === 'sito' ? 'var(--paper)' : 'var(--k-' + k + ')');
+    $('zoom-t').textContent = titolo + ' (' + rows.length + ')';
+    const ul = $('zoom-lista'); ul.replaceChildren(...rows.slice(0, 60).map(rigaZoom));
+    if (!rows.length) ul.append(el('li', { className: 'piu', textContent: 'Niente qui.' }));
+    if (rows.length > 60) ul.append(el('li', { className: 'piu', textContent: 'e altri ' + (rows.length - 60) }));
+  }
+  $('lavagna').addEventListener('click', (e) => {
+    const t = e.target.closest('[data-z]'); if (!t) return;
+    e.stopPropagation();
+    state.zoom = state.zoom === t.dataset.z ? '' : t.dataset.z;
+    renderZoom();
+    if (state.zoom) $('lav-zoom').scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  });
+  $('lavagna').addEventListener('keydown', (e) => { const t = e.target.closest('.ps[data-z]'); if (t && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); t.click(); } });
+  $('zoom-x').addEventListener('click', () => { state.zoom = ''; renderZoom(); });
   /* Ciclo continuo: editor/stato.ciclo_attivo (assente = acceso), tetto di 12 richieste "ciclo" al giorno. */
   const CICLO_MAX = 12;
   function renderCiclo() {
@@ -987,21 +1140,16 @@
       let x = c;
       if (r && c.stato !== 'Fatto' && c.stato !== 'Scartato' && c.stato !== 'Da fare a mano') x = Object.assign({}, r.q, { titolo: c.titolo });
       else if (c.stato === 'Da fare a mano' && r) x = Object.assign({}, c, { esito: c.esito || r.q.esito, blocco: c.blocco || r.q.blocco });
-      out.push({ progetto: c.progetto, titolo: c.titolo, k: classe(x), link: (r && r.q.sessione) || '' });
+      out.push({ progetto: c.progetto, titolo: c.titolo, k: classe(x), link: (r && r.q.sessione) || '', c, q: r && r.q });
     }
-    for (const { q } of per.values()) out.push({ progetto: q.progetto || 'tutti', titolo: (TIPO_NOME[q.tipo] || q.tipo) + (q.testo ? ': ' + q.testo : ''), k: classe(q), link: q.sessione || '' });
+    for (const { q } of per.values()) out.push({ progetto: q.progetto || 'tutti', titolo: (TIPO_NOME[q.tipo] || q.tipo) + (q.testo ? ': ' + q.testo : ''), k: classe(q), link: q.sessione || '', q });
     return out.filter((x) => !x.progetto || x.progetto === 'tutti' || visibile(x.progetto));
   }
   function uscite() {
     const n = { new: 0, sched: 0, err: 0, pub: 0, pausa: 0 };
     for (const r of state.piano) {
       if (!visibile(r.progetto)) continue;
-      const st = r.stato || '';
-      if (st === 'Pubblicato') n.pub++;
-      else if (st === 'In pausa') n.pausa++;
-      else if (st === 'Idea' || st === 'Da confermare') n.new++;
-      else if (/errore/i.test(st) || ((st === 'Programmato' || st === 'Scritto') && r.data && r.data < oggi)) n.err++;
-      else n.sched++;
+      n[uscitaK(r)]++;
     }
     return n;
   }
@@ -1048,22 +1196,22 @@
     const L = lavori(), n = {};
     for (const x of L) n[x.k] = (n[x.k] || 0) + 1;
     const u = uscite();
-    const cell = (v, l, k, cls) => { const c = el('div', { className: 'lav-cell ' + (cls || '') + (v ? '' : ' zero') }, [el('div', { className: 'v', textContent: fmt(v || 0) }), el('div', { className: 'l', textContent: l })]); c.style.setProperty('--kc', 'var(--k-' + k + ')'); return c; };
+    const cell = (v, l, k, cls, z) => { const c = el('button', { type: 'button', className: 'lav-cell ' + (cls || '') + (v ? '' : ' zero') }, [el('div', { className: 'v', textContent: fmt(v || 0) }), el('div', { className: 'l', textContent: l })]); c.dataset.z = z + ':' + k; c.style.setProperty('--kc', 'var(--k-' + k + ')'); return c; };
     const KL = [['todo', 'da fare'], ['run', 'in corso'], ['desk', 'aspettano il tuo PC acceso'], ['dec', 'aspettano una tua decisione'], ['ext', 'blocco esterno o non classificato'], ['rej', 'rifiutati da te'], ['done', 'chiusi']];
     const KU = [['new', 'nuove da mettere in onda'], ['sched', 'programmate'], ['err', 'in errore (data passata, non uscite)'], ['pub', 'pubblicate']];
-    $('lav-lavori').replaceChildren(...KL.map(([k, l]) => cell(n[k], l, k, k === 'desk' || k === 'dec' ? 'te' : '')));
-    $('lav-uscite').replaceChildren(...KU.map(([k, l]) => cell(u[k], l, k)));
+    $('lav-lavori').replaceChildren(...KL.map(([k, l]) => cell(n[k], l, k, k === 'desk' || k === 'dec' ? 'te' : '', 'lav')));
+    $('lav-uscite').replaceChildren(...KU.map(([k, l]) => cell(u[k], l, k, '', 'usc')));
     /* Pellicola: i lavori aperti (senza chiusi e rifiutati) e tutte le uscite. */
-    const film = (box, parts, label) => {
+    const film = (box, parts, label, z) => {
       const tot = parts.reduce((a, [, v]) => a + (v || 0), 0); box.replaceChildren(); box.setAttribute('aria-label', label);
-      for (const [k, v, l] of parts) { if (!v) continue; const f = el('i', { title: l + ': ' + v }); f.style.flex = String(v); f.style.setProperty('--kc', 'var(--k-' + k + ')'); box.append(f); }
+      for (const [k, v, l] of parts) { if (!v) continue; const f = el('i', { title: l + ': ' + v + ' (clic per vederli)' }); f.dataset.z = z + ':' + k; f.style.flex = String(v); f.style.setProperty('--kc', 'var(--k-' + k + ')'); box.append(f); }
       return tot;
     };
     const aperti = KL.slice(0, 5).map(([k, l]) => [k, n[k] || 0, l]);
-    const totA = film($('lav-film-l'), aperti, 'Lavori aperti per stato');
+    const totA = film($('lav-film-l'), aperti, 'Lavori aperti per stato', 'lav');
     const daTe = (n.desk || 0) + (n.dec || 0);
     $('lav-cap-l').textContent = totA ? totA + ' aperti · ' + Math.round(100 * daTe / totA) + '% aspetta te' : 'nessun lavoro aperto';
-    const totU = film($('lav-film-u'), KU.map(([k, l]) => [k, u[k] || 0, l]), 'Uscite per stato');
+    const totU = film($('lav-film-u'), KU.map(([k, l]) => [k, u[k] || 0, l]), 'Uscite per stato', 'usc');
     $('lav-cap-u').textContent = totU ? totU + ' uscite · ' + Math.round(100 * (u.pub || 0) / totU) + '% già pubblicate' : 'calendario vuoto';
     /* Per sito: barra dei lavori aperti divisa per stato. */
     const ps = $('lav-siti'); ps.replaceChildren();
@@ -1072,14 +1220,16 @@
     const maxS = Math.max(1, ...perSito.map(([, , t]) => t));
     for (const [p, c, t] of perSito) {
       const bar = el('div', { className: 'bar' });
-      for (const [k, , l] of aperti) { if (!c[k]) continue; const f = el('i', { title: l + ': ' + c[k] }); f.style.width = (100 * c[k] / maxS) + '%'; f.style.setProperty('--kc', 'var(--k-' + k + ')'); bar.append(f); }
-      ps.append(el('div', { className: 'ps' }, [el('span', { className: 'nm' }, [dot(p), p.nome]), bar, el('span', { className: 'n', textContent: String(t) })]));
+      for (const [k, , l] of aperti) { if (!c[k]) continue; const f = el('i', { title: l + ': ' + c[k] + ' (clic per vederli)' }); f.dataset.z = 'lav:' + k + ':' + p.id; f.style.width = (100 * c[k] / maxS) + '%'; f.style.setProperty('--kc', 'var(--k-' + k + ')'); bar.append(f); }
+      const row = el('div', { className: 'ps', tabIndex: 0, title: 'Clic per vedere i lavori aperti di ' + p.nome }, [el('span', { className: 'nm' }, [dot(p), p.nome]), bar, el('span', { className: 'n', textContent: String(t) })]);
+      row.dataset.z = 'sito:' + p.id; row.setAttribute('role', 'button'); ps.append(row);
     }
     if (!perSito.length) ps.append(el('span', { className: 'l', textContent: 'Nessun sito.' }));
     $('lav-leg').replaceChildren(...aperti.map(([k, , l]) => { const i = el('i'); i.style.setProperty('--kc', 'var(--k-' + k + ')'); return el('span', {}, [i, l]); }));
     renderRitmo();
     renderMano();
     renderCiclo();
+    renderZoom();
     const te = (n.desk || 0) + (n.dec || 0), ko = (n.ext || 0) + u.err;
     const v = $('lav-verdetto');
     let cls = 'go', txt = 'Avanti tutta', why = 'Poco o niente aspetta te: Claude può continuare da solo.';
@@ -1090,13 +1240,7 @@
     const mine = L.filter((x) => x.k === 'desk' || x.k === 'dec');
     const ul = $('lav-lista'); ul.replaceChildren();
     $('lav-det').hidden = !mine.length;
-    for (const x of mine.slice(0, 30)) {
-      const li = el('li', {}, [el('span', { className: 'k', textContent: x.k === 'desk' ? 'PC acceso' : 'decisione' })]);
-      if (x.progetto && x.progetto !== 'tutti') li.append(sito(prog(x.progetto)));
-      li.append(el('span', { textContent: x.titolo || '' }));
-      if (x.link && /^https:\/\/claude\.ai\//.test(x.link)) li.append(el('a', { href: x.link, target: '_blank', rel: 'noopener', textContent: 'apri la chat' }));
-      ul.append(li);
-    }
+    for (const x of mine.slice(0, 30)) ul.append(rigaZoom(x));
   }
 
   /* ---------- Stato di salute ---------- */
@@ -1747,7 +1891,7 @@
   });
 
   function renderAll() {
-    renderVista(); renderCosti(); renderFiltro(); renderAggiorna(); renderSigira(); renderSiti(); renderLavagna(); renderSalute(); renderConsigli(); renderIdee(); renderCalToolbar(); renderPiano(); renderKeyword(); renderPagine(); renderAi(); renderLog(); renderInterazioni();
+    renderVista(); renderCosti(); renderFiltro(); renderAggiorna(); renderSigira(); renderPr(); renderSiti(); renderLavagna(); renderSalute(); renderConsigli(); renderIdee(); renderCalToolbar(); renderPiano(); renderKeyword(); renderPagine(); renderAi(); renderLog(); renderInterazioni();
     const sel = $('add-progetto');
     if (sel.options.length !== state.progetti.length) { sel.replaceChildren(); for (const p of state.progetti) sel.append(el('option', { value: p.id, textContent: p.nome })); }
     if (state.filtro !== 'tutti') sel.value = state.filtro;
@@ -1779,7 +1923,7 @@
     try { const user = await window.claude.use('user'); if (user && user.can) { const c = await user.can('data.write'); if (c === false) state.canWrite = false; } } catch (e) {}
     try { state.mcp = await window.claude.use('mcp'); } catch (e) { state.mcp = null; }
     const sub = (name) => db.collection(name).onSnapshot((snap) => { state[name] = snap.docs.map((d) => Object.assign({ id: d.id }, d.data())); if (name === 'progetti') state.progetti.sort((a, b) => (a.ordine || 0) - (b.ordine || 0)); pianifica(); }, () => say('Connessione ai dati interrotta: ricarica la pagina.'));
-    ['progetti', 'metriche', 'piano', 'pagine', 'aeo', 'interazioni', 'salute', 'keyword', 'idee', 'consigli', 'richieste', 'editor', 'interventi', 'serie', 'costi', 'conversioni'].forEach(sub);
+    ['progetti', 'metriche', 'piano', 'pagine', 'aeo', 'interazioni', 'salute', 'keyword', 'idee', 'consigli', 'richieste', 'pr', 'editor', 'interventi', 'serie', 'costi', 'conversioni'].forEach(sub);
   })();
 })();
 </script>

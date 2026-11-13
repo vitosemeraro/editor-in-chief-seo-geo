@@ -7,6 +7,24 @@ change to the database schema bumps the minor version, a fix bumps the patch.
 Every change comes from the private dashboard the author uses daily on 4 real sites, generalized before
 it lands here.
 
+## [0.15.0] - 2026-11-13
+
+### Added
+- **"In the edit" strip** under "Rolling": the pull requests waiting for you to merge, with a big count,
+  repository, number, title, one line on what each is for, how long it has been open, the linked advice
+  state and an "Open and merge" button. A "PRs" chip in the menu shows the count and jumps there.
+- **Clickable slate**: every counter, film strip segment, per-site bar and manual-work card opens the
+  filtered list right on the slate, and every row links to its chat, its PR, its page or its advice.
+
+### Changed
+- "Left for manual work" now counts advice in `Da approvare` or `Da fare a mano` too, not only requests,
+  without counting the same job twice. Advice waiting for a PR merge counts as "your decision".
+- `prompts/run-requests.md` point 8: write a `pr` row for every pull request opened and refresh their
+  state at the start of every run.
+
+### Schema
+- New collection `pr/{repo name}-{number}`.
+
 ## [0.13.1] - 2026-11-13
 
 ### Fixed
@@ -212,6 +230,7 @@ it lands here.
   schema, dashboard that starts empty, modular data sources (Search Console required), deploy examples
   for Firebase, Netlify, Vercel and FTPS, link checker, secret scan and config validator in CI.
 
+[0.15.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.13.1...v0.15.0
 [0.13.1]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.13.0...v0.13.1
 [0.13.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.12.0...v0.13.0
 [0.12.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.11.0...v0.12.0

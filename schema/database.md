@@ -176,6 +176,14 @@ Written from the Costs view. The view adds them to the measured `costo_usd` of `
 | fino_al | optional YYYY-MM-DD, stops a recurring expense |
 | creata_il | ISO time |
 
+## pr/{repo name}-{number}: pull requests to merge
+
+Written by the agent whenever it opens a pull request, refreshed at the start of every run. Fields: `repo`
+("owner/name"), `numero`, `titolo`, `url`, `progetto` (site id or "tutti"), `perche` (one plain sentence on
+what it is for), `rif` ("consigli/<id>", optional), `aperta_il`, `stato` (`Aperta`, `Unita`, `Chiusa`),
+`aggiornato_il`. The dashboard shows the `Aperta` ones, plus any GitHub PR link found in advice still
+`Da approvare` or `Da fare a mano`.
+
 ## interventi/{YYYYMMDD-HHMM}-{site_id}-{n}
 
 Log of work not started from a button (scheduled publishing, calendar autofill): `quando`, `progetto`,

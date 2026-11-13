@@ -84,6 +84,14 @@ Then work on that request only:
    more than 24 hours (iniziata_il, avviata_il or creata_il). Check whether the work actually landed (commit,
    live page, link): if yes close it `Fatto` with esito "Resumed: the work was already published"; if not,
    put it back `In coda` with passo "Resumed after interruption". The dashboard shows them as "maybe stuck".
+8. Pull requests to merge. Whenever you open a pull request (also when a direct push to the default branch is
+   refused), write `pr/<repo name>-<number>` right away: repo ("owner/name"), numero, titolo, url, progetto
+   (site id, or "tutti"), perche (one plain sentence: what it does for the owner), rif ("consigli/<id>" if
+   any), aperta_il, stato `Aperta`, aggiornato_il. The dashboard lists them in "In the edit" with the count
+   in the menu. At the start of every run, check the open ones with
+   `gh api -X GET search/issues -f q='is:pr is:open user:<owner>'`: set `Unita` or `Chiusa` on those no
+   longer open and add the open ones that are missing. When a PR is `Unita`, close the linked advice and
+   request `Fatto` if the work is complete.
 
 When your request is closed, stop: do not take others in this session. Every button already starts a
 session of its own.

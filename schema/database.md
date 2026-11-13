@@ -23,6 +23,7 @@ One per site, synced from `sites[]` in the config.
 | sito | string | `sites[].url` |
 | colore | string | `sites[].color` |
 | automazione | string | `Automatica` (publish_mode auto) or `Con il tuo ok` (draft) |
+| nota | string | Optional. Free-text note shown under the site name on its card (hosting, deploy, open issues). Wraps, so it never widens the card. |
 | ordine | number | position in the config |
 
 ## editor/config and editor/stato

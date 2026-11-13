@@ -45,13 +45,17 @@
   .site-top { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; flex-wrap: wrap; }
   .site-name { font-family: var(--font-display); font-weight: 700; font-size: 18px; }
   .site-url { color: var(--muted); font-size: 12px; overflow-wrap: anywhere; }
+  /* Nessun testo lungo (note, url, stati) può allargare una scheda: la colonna interna non supera mai la card. */
+  .site, .hcard, .tip, .idea, .card, .ctile { grid-template-columns: minmax(0, 1fr); }
+  .site-top > * { min-width: 0; }
+  .site-note { font-size: 12px; color: var(--muted); overflow-wrap: anywhere; margin-top: 2px; }
   .kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 12px; }
   .kpi .l { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
   .kpi .v { font-family: var(--font-mono); font-size: 20px; font-variant-numeric: tabular-nums; }
   .kpi .d { font-family: var(--font-mono); font-size: 12px; }
   .next { border-top: 1px dashed var(--line); padding-top: 10px; font-size: 13px; }
   .next .l { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
-  .pill { display: inline-block; font-size: 12px; padding: 1px 9px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; }
+  .pill { display: inline-block; font-size: 12px; padding: 1px 9px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis; vertical-align: middle; }
   .ok { color: var(--ok); } .warn { color: var(--warn); } .bad { color: var(--bad); } .muted { color: var(--muted); }
 
   .card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); padding: 18px; display: grid; gap: 12px; min-width: 0; align-content: start; }
@@ -538,8 +542,14 @@
       const usciti = state.piano.filter((r) => r.progetto === p.id && r.stato === 'Pubblicato').length;
       const prossimo = state.piano.filter((r) => r.progetto === p.id && r.data >= oggi && r.stato !== 'Pubblicato' && r.stato !== 'In pausa').sort((a, b) => a.data.localeCompare(b.data))[0];
       const card = el('article', { className: 'site' }); card.style.setProperty('--c', p.colore);
-      const auto = el('span', { className: 'pill ' + (p.automazione === 'Automatica' ? 'ok' : p.automazione === 'Con il tuo ok' ? 'warn' : 'muted'), textContent: p.automazione || 'Da attivare' });
-      card.append(el('div', { className: 'site-top' }, [el('div', {}, [el('div', { className: 'site-name', textContent: p.nome }), el('div', { className: 'site-url', textContent: p.sito })]), auto]));
+      /* Lo stato dell'automazione è un'etichetta breve; un testo lungo va nella nota sotto il nome, che va a capo. */
+      const autoTxt = String(p.automazione || 'Da attivare');
+      const autoLungo = autoTxt.length > 24;
+      const auto = autoLungo ? null : el('span', { className: 'pill ' + (autoTxt === 'Automatica' ? 'ok' : autoTxt === 'Con il tuo ok' ? 'warn' : 'muted'), textContent: autoTxt, title: autoTxt });
+      const nota = [p.nota, autoLungo ? autoTxt : ''].filter(Boolean).join(' · ');
+      const testa = el('div', {}, [el('div', { className: 'site-name', textContent: p.nome }), el('div', { className: 'site-url', textContent: p.sito })]);
+      if (nota) testa.append(el('div', { className: 'site-note', textContent: nota }));
+      card.append(el('div', { className: 'site-top' }, [testa, auto].filter(Boolean)));
       const kp = el('div', { className: 'kpis' });
       const k = (label, v, d) => { const n = el('div', { className: 'kpi' }, [el('div', { className: 'l', textContent: label }), el('div', { className: 'v', textContent: v })]); if (d) n.append(el('div', { className: 'd ' + d.c, textContent: d.t + ' vs sett. prima' })); return n; };
       const sal = state.salute.find((s) => s.id === p.id) || {};

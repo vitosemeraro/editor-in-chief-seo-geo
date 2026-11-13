@@ -7,6 +7,17 @@ change to the database schema bumps the minor version, a fix bumps the patch.
 Every change comes from the private dashboard the author uses daily on 4 real sites, generalized before
 it lands here.
 
+## [0.7.0] - 2026-11-13
+
+### Fixed
+- Site cards: a long text in `automazione` (or any long note, URL or status) no longer spills out of the
+  card and over the cards next to it. Card grids now use a `minmax(0, 1fr)` column, pills shrink with an
+  ellipsis, and an `automazione` longer than a short label is shown as a wrapping note instead of a pill.
+
+### Schema
+- `progetti/<site>.nota` (optional string): a note shown under the site name on its card, for things like
+  hosting or deploy status. Keep `automazione` to a short label (`Automatica`, `Con il tuo ok`).
+
 ## [0.6.2] - 2026-11-11
 
 ### Fixed
@@ -108,6 +119,7 @@ it lands here.
   schema, dashboard that starts empty, modular data sources (Search Console required), deploy examples
   for Firebase, Netlify, Vercel and FTPS, link checker, secret scan and config validator in CI.
 
+[0.7.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.6.2...v0.7.0
 [0.6.2]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.6.1...v0.6.2
 [0.6.1]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.5.0...v0.6.0

@@ -23,6 +23,7 @@ routines that do the work, and your own GitHub repos and deploy workflows. No se
 | Costs and priorities | Every tip and page fix is ranked by impact ÷ effort. Every button shows an estimated cost, every finished job its real cost (Claude $ and data credits), every site its spend in the last 7 days and in total |
 | Costs view | A dedicated "Costs" view: spend per site over time (day, week or month, stacked chart and table with running total) and totals per site. Measured Claude jobs and data credits come in on their own; you add subscriptions, domains, hosting or ads, once, monthly or yearly, in € or $ |
 | Weekly chart | Per site: impressions, clicks and visits week by week |
+| Conversion forecast | Per site: expected conversions in the next 30 days as a range, from expected visits times a conversion rate. Where conversions are not measured yet the rate is a stated industry benchmark; real GA4 key events weigh more as they come in. Each forecast shows its reliability and how it was calculated |
 | Work log | Every action with result, public link, cost, and a link to the Claude session that did it |
 
 ## How it works

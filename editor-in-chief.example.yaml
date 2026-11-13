@@ -71,6 +71,12 @@ sites:
     deploy: "GitHub Action on push to main"         # informational: see deploy/*.yml
     editorial_plan: ""               # optional link (doc) or repo path with strategy, tone, audience
     facts: []                        # site-specific facts the writer may use, e.g. "9 apartments", "15% fee"
+    conversions:                     # optional: "Expected conversions · 30 days" on the site card
+      goal: "quote requests"         # what counts as a conversion
+      measured: false                # true only if a GA4 key event counts exactly this
+      benchmark_min: 1.0             # industry range in %, visits -> conversions
+      benchmark_max: 3.0
+      benchmark_source: ""           # name, year and URL of the benchmark you chose
     sources:
       openseo_project: ""            # project id in OpenSEO, if you use it
       gsc_property: "sc-domain:example.com"

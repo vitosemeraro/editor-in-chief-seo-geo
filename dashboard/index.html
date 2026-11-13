@@ -45,13 +45,17 @@
   .site-top { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; flex-wrap: wrap; }
   .site-name { font-family: var(--font-display); font-weight: 700; font-size: 18px; }
   .site-url { color: var(--muted); font-size: 12px; overflow-wrap: anywhere; }
+  /* Nessun testo lungo (note, url, stati) può allargare una scheda: la colonna interna non supera mai la card. */
+  .site, .hcard, .tip, .idea, .card, .ctile { grid-template-columns: minmax(0, 1fr); }
+  .site-top > * { min-width: 0; }
+  .site-note { font-size: 12px; color: var(--muted); overflow-wrap: anywhere; margin-top: 2px; }
   .kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 12px; }
   .kpi .l { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
   .kpi .v { font-family: var(--font-mono); font-size: 20px; font-variant-numeric: tabular-nums; }
   .kpi .d { font-family: var(--font-mono); font-size: 12px; }
   .next { border-top: 1px dashed var(--line); padding-top: 10px; font-size: 13px; }
   .next .l { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
-  .pill { display: inline-block; font-size: 12px; padding: 1px 9px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; }
+  .pill { display: inline-block; font-size: 12px; padding: 1px 9px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; max-width: 100%; overflow: hidden; text-overflow: ellipsis; vertical-align: middle; }
   .ok { color: var(--ok); } .warn { color: var(--warn); } .bad { color: var(--bad); } .muted { color: var(--muted); }
 
   .card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); padding: 18px; display: grid; gap: 12px; min-width: 0; align-content: start; }
@@ -149,6 +153,13 @@
   .cchart .ax { font: 10px var(--font-mono, monospace); fill: var(--muted); }
   #costi h3 { margin: 6px 0 0; font-size: 15px; font-family: var(--font-display); }
   tr.tot td { font-weight: 600; border-top: 2px solid var(--line); }
+  /* Previsione conversioni: un intervallo, mai un numero secco, con quanto ci si può fidare. */
+  .prev .v { font-family: var(--font-mono); font-size: 18px; font-variant-numeric: tabular-nums; }
+  .prev .v small { font-family: var(--font-body); font-size: 12px; color: var(--muted); font-weight: 400; }
+  .prev .why { font-size: 12px; color: var(--muted); }
+  .prev details { font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
+  .prev summary { cursor: pointer; color: var(--accent); }
+  .prev details p { margin: 4px 0 0; }
 </style>
 
 <div class="wrap">
@@ -299,6 +310,7 @@
       <li>I pulsanti (Aggiorna dati, Verifica e consiglia, Applica, Crea pagina ora) mettono il lavoro in coda e lo avviano subito; lo stato accanto al pulsante si aggiorna da solo. Se l'avvio immediato non è disponibile, il lavoro parte al prossimo giro programmato.</li>
       <li>Ogni sito ha una modalità: "auto" pubblica direttamente, "draft" prepara una bozza da approvare.</li>
       <li>Per spostare un'uscita cambia la data; per fermarla metti "In pausa". Per cambiarne molte insieme selezionale.</li>
+      <li>"Conversioni previste" su ogni sito è una stima per i prossimi 30 giorni: visite previste da Cloudflare per un tasso di conversione. Dove il sito non misura ancora le conversioni il tasso è un riferimento di settore dichiarato; quando arrivano dati reali da Google Analytics pesano sempre di più. È sempre un intervallo, con l'affidabilità accanto.</li>
       <li>Stato di salute, parole chiave e idee si aggiornano dalle fonti dati attive in configurazione (Search Console come base; Analytics, Cloudflare, visibilità AI opzionali). Le idee e i consigli che scarti non tornano.</li>
     </ul>
   </section>
@@ -343,7 +355,7 @@
     for (const q of state.interventi) if (q.progetto === pid && isFinite(parseFloat(q.costo_usd)) && ok(q.quando)) { usd += parseFloat(q.costo_usd); cr += Number(q.crediti_openseo) || 0; n++; }
     return { usd, cr, n };
   }
-  const state = { progetti: [], metriche: [], piano: [], pagine: [], aeo: [], interazioni: [], salute: [], keyword: [], idee: [], consigli: [], richieste: [], editor: [], interventi: [], serie: [], costi: [], logTutti: false,
+  const state = { progetti: [], metriche: [], piano: [], pagine: [], aeo: [], interazioni: [], salute: [], keyword: [], idee: [], consigli: [], richieste: [], editor: [], interventi: [], serie: [], costi: [], conversioni: [], logTutti: false,
     vista: 'main', costiPasso: 'settimana', costiValuta: 'EUR',
     filtro: 'tutti', calTipo: '', calStato: '', calPassate: false, consTipo: '', consFatti: false, sel: new Set(), db: null, mcp: null, canWrite: true };
   try { state.filtro = localStorage.getItem('eic-filtro') || 'tutti'; } catch (e) {}
@@ -528,6 +540,55 @@
     return svg;
   }
 
+  /* ---------- Conversioni previste (prossimi 30 giorni) ----------
+     Visite: ultime due settimane Cloudflare (minimo e massimo tra la settimana scorsa e la media delle due, senza proiettare la crescita);
+     con una sola settimana ±30%. Tasso: riferimento di settore (rif_min–rif_max, in %) corretto con i dati reali di GA4
+     come se il riferimento valesse 100 visite: (conversioni + 100·rif) / (sessioni + 100). Dove la conversione non è misurata
+     (misurato = false) i dati reali non entrano. Il minimo non supera mai le conversioni reali dell'ultimo mese. */
+  const PESO_RIF = 100;
+  function previsione(pid) {
+    const cfg = state.conversioni.find((c) => c.id === pid);
+    if (!cfg) return null;
+    const sal = state.salute.find((s) => s.id === pid) || {};
+    const serie = state.metriche.filter((m) => m.progetto === pid && m.visite_7g != null).sort((a, b) => String(a.settimana).localeCompare(String(b.settimana)));
+    const cur = serie[serie.length - 1], prev = serie[serie.length - 2];
+    const v7 = cur ? Number(cur.visite_7g) : Number(sal.visite_7g_cloudflare);
+    if (!(v7 > 0)) return null;
+    let wLo, wHi;
+    if (prev && Number(prev.visite_7g) > 0) { const m = (v7 + Number(prev.visite_7g)) / 2; wLo = Math.min(v7, m); wHi = Math.max(v7, m); }
+    else { wLo = v7 * 0.7; wHi = v7 * 1.3; }
+    const vLo = wLo * 30 / 7, vHi = wHi * 30 / 7;
+    const rmin = Number(cfg.rif_min) / 100, rmax = Number(cfg.rif_max) / 100;
+    if (!(rmin >= 0) || !(rmax >= rmin)) return null;
+    const misurato = cfg.misurato !== false;
+    const c = misurato ? Number(sal.conversioni_28g != null ? sal.conversioni_28g : cfg.conversioni_28g) || 0 : 0;
+    const n = misurato ? Number(sal.sessioni_28g) || 0 : 0;
+    const tLo = (c + PESO_RIF * rmin) / (n + PESO_RIF), tHi = (c + PESO_RIF * rmax) / (n + PESO_RIF);
+    let lo = vLo * tLo; const hi = vHi * tHi;
+    if (misurato && c > 0) lo = Math.min(lo, c * 30 / 28);
+    const aff = misurato && c >= 10 && n >= 300 ? 'alta' : misurato && c >= 3 ? 'media' : 'bassa';
+    const base = !misurato ? 'solo riferimento di settore: la conversione non è ancora misurata' : c ? 'dati reali (' + c + ' su ' + n + ' sessioni GA4 in 28 gg) corretti col riferimento di settore' : 'riferimento di settore corretto con i dati reali (0 su ' + n + ' sessioni GA4 in 28 gg)';
+    return { cfg, lo, hi, vLo, vHi, tLo, tHi, c, n, misurato, aff, base, una: serie.length < 2 };
+  }
+  const pct = (v) => (v * 100).toLocaleString('it-IT', { maximumFractionDigits: 1 }) + '%';
+  function boxPrevisione(pid) {
+    const f = previsione(pid);
+    if (!f) return null;
+    const lo = Math.floor(f.lo), hi = Math.max(1, Math.ceil(f.hi));
+    const box = el('div', { className: 'next prev' }, [el('div', { className: 'l', textContent: 'Conversioni previste · 30 gg' })]);
+    box.append(el('div', { className: 'v' }, [document.createTextNode(lo === hi ? String(lo) : lo + '–' + hi), el('small', { textContent: ' ' + (f.cfg.obiettivo || 'conversioni') })]));
+    box.append(el('div', { className: 'why' }, [el('span', { className: 'pill ' + (f.aff === 'alta' ? 'ok' : f.aff === 'media' ? 'warn' : 'muted'), textContent: 'affidabilità ' + f.aff }), document.createTextNode(' ' + (f.misurato && f.c ? 'dati reali + settore' : 'stima di settore'))]));
+    const det = el('details', {}, [el('summary', { textContent: 'Come è calcolata' })]);
+    det.append(
+      el('p', { textContent: 'Visite previste: ' + fmt(Math.round(f.vLo)) + '–' + fmt(Math.round(f.vHi)) + ' (Cloudflare, ' + (f.una ? 'una sola settimana di dati, ±30%' : 'ultime due settimane') + ').' }),
+      el('p', { textContent: 'Tasso usato: ' + pct(f.tLo) + '–' + pct(f.tHi) + ', da ' + f.base + '.' }),
+      el('p', { textContent: 'Riferimento di settore: ' + pct(Number(f.cfg.rif_min) / 100) + '–' + pct(Number(f.cfg.rif_max) / 100) + (f.cfg.fonte_rif ? ' · ' + f.cfg.fonte_rif : '') }),
+    );
+    if (f.cfg.nota) det.append(el('p', { textContent: f.cfg.nota }));
+    box.append(det);
+    return box;
+  }
+
   function renderSiti() {
     const box = $('siti'); box.replaceChildren();
     if (!state.progetti.length) { box.append(el('p', { className: 'empty', textContent: 'Nessun sito ancora configurato.' })); return; }
@@ -538,8 +599,14 @@
       const usciti = state.piano.filter((r) => r.progetto === p.id && r.stato === 'Pubblicato').length;
       const prossimo = state.piano.filter((r) => r.progetto === p.id && r.data >= oggi && r.stato !== 'Pubblicato' && r.stato !== 'In pausa').sort((a, b) => a.data.localeCompare(b.data))[0];
       const card = el('article', { className: 'site' }); card.style.setProperty('--c', p.colore);
-      const auto = el('span', { className: 'pill ' + (p.automazione === 'Automatica' ? 'ok' : p.automazione === 'Con il tuo ok' ? 'warn' : 'muted'), textContent: p.automazione || 'Da attivare' });
-      card.append(el('div', { className: 'site-top' }, [el('div', {}, [el('div', { className: 'site-name', textContent: p.nome }), el('div', { className: 'site-url', textContent: p.sito })]), auto]));
+      /* Lo stato dell'automazione è un'etichetta breve; un testo lungo va nella nota sotto il nome, che va a capo. */
+      const autoTxt = String(p.automazione || 'Da attivare');
+      const autoLungo = autoTxt.length > 24;
+      const auto = autoLungo ? null : el('span', { className: 'pill ' + (autoTxt === 'Automatica' ? 'ok' : autoTxt === 'Con il tuo ok' ? 'warn' : 'muted'), textContent: autoTxt, title: autoTxt });
+      const nota = [p.nota, autoLungo ? autoTxt : ''].filter(Boolean).join(' · ');
+      const testa = el('div', {}, [el('div', { className: 'site-name', textContent: p.nome }), el('div', { className: 'site-url', textContent: p.sito })]);
+      if (nota) testa.append(el('div', { className: 'site-note', textContent: nota }));
+      card.append(el('div', { className: 'site-top' }, [testa, auto].filter(Boolean)));
       const kp = el('div', { className: 'kpis' });
       const k = (label, v, d) => { const n = el('div', { className: 'kpi' }, [el('div', { className: 'l', textContent: label }), el('div', { className: 'v', textContent: v })]); if (d) n.append(el('div', { className: 'd ' + d.c, textContent: d.t + ' vs sett. prima' })); return n; };
       const sal = state.salute.find((s) => s.id === p.id) || {};
@@ -553,6 +620,7 @@
       );
       card.append(kp);
       const gr = grafico(p.id); if (gr) card.append(gr); else { const sp = spark(serie); if (sp) card.append(sp); }
+      const pv = boxPrevisione(p.id); if (pv) card.append(pv);
       const nx = el('div', { className: 'next' }, [el('div', { className: 'l', textContent: 'Prossima uscita' })]);
       nx.append(prossimo ? el('div', {}, [el('b', { textContent: dataIt(prossimo.data) + ' · ' }), prossimo.tema]) : el('div', { className: 'muted', textContent: 'Niente in calendario' }));
       card.append(nx);
@@ -1214,7 +1282,7 @@
     try { const user = await window.claude.use('user'); if (user && user.can) { const c = await user.can('data.write'); if (c === false) state.canWrite = false; } } catch (e) {}
     try { state.mcp = await window.claude.use('mcp'); } catch (e) { state.mcp = null; }
     const sub = (name) => db.collection(name).onSnapshot((snap) => { state[name] = snap.docs.map((d) => Object.assign({ id: d.id }, d.data())); if (name === 'progetti') state.progetti.sort((a, b) => (a.ordine || 0) - (b.ordine || 0)); pianifica(); }, () => say('Connessione ai dati interrotta: ricarica la pagina.'));
-    ['progetti', 'metriche', 'piano', 'pagine', 'aeo', 'interazioni', 'salute', 'keyword', 'idee', 'consigli', 'richieste', 'editor', 'interventi', 'serie', 'costi'].forEach(sub);
+    ['progetti', 'metriche', 'piano', 'pagine', 'aeo', 'interazioni', 'salute', 'keyword', 'idee', 'consigli', 'richieste', 'editor', 'interventi', 'serie', 'costi', 'conversioni'].forEach(sub);
   })();
 })();
 </script>

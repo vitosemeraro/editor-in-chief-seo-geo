@@ -43,9 +43,13 @@ For each site, using only the modules enabled in `sources` (see `sources/*.md` f
 
 Extend `serie/<site>` with the daily Search Console clicks and impressions since the last stored day
 (see the schema). Write `metriche/<site>-<monday of this week>` (update, or set if new) and update `salute/<site>` with the
-fields of the schema, a `stato` (Buono, Attenzione, Critico), a one-line `voto` and 3-5 `note` with real
+fields of the schema (including `conversioni_28g`, the GA4 key events of the 28 days, when GA4 is on), a `stato` (Buono, Attenzione, Critico), a one-line `voto` and 3-5 `note` with real
 numbers on what changed and what to do. If a source fails, skip it and add it to
 `editor/stato.fonti_saltate`.
+
+If the site has `conversions` in the config, keep `conversioni/<site>` in step with it (set): `obiettivo` = goal,
+`misurato` = measured, `rif_min` / `rif_max` = benchmark_min / benchmark_max, `fonte_rif` = benchmark_source.
+Never invent a benchmark: if `benchmark_source` is empty, leave the document out.
 
 ## 3) GEO (only if sources.ai_visibility.enabled)
 

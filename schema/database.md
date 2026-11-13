@@ -23,6 +23,7 @@ One per site, synced from `sites[]` in the config.
 | sito | string | `sites[].url` |
 | colore | string | `sites[].color` |
 | automazione | string | `Automatica` (publish_mode auto) or `Con il tuo ok` (draft) |
+| nota | string | Optional. Free-text note shown under the site name on its card (hosting, deploy, open issues). Wraps, so it never widens the card. |
 | ordine | number | position in the config |
 
 ## editor/config and editor/stato
@@ -68,9 +69,30 @@ Weekly snapshot, one per site per week: `progetto`, `settimana`, `clic`, `impres
 
 Health card. `periodo`, `clic_28g`, `clic_prev`, `impressioni_28g`, `impressioni_prev`, and when GA4 is on
 `sessioni_28g`, `sessioni_prev`, `utenti_28g`, `pagine_viste_28g`, `sessioni_organiche`,
-`sessioni_organiche_prev`; `visite_7g_cloudflare` when Cloudflare is on.
+`sessioni_organiche_prev`, `conversioni_28g` (GA4 key events in the same 28 days); `visite_7g_cloudflare` when
+Cloudflare is on.
 `stato` is `Buono`, `Attenzione`, `Critico` or `Appena collegato`; `voto` is one line; `note` is a list of
 3-5 sentences with numbers; `aggiornato_il`, `controllato_il`.
+
+## conversioni/{site_id} (optional): conversion forecast
+
+Turns on the "Expected conversions · 30 days" box on the site card. Written once at setup from
+`sites[].conversions` in the config; edit it when tracking changes.
+
+| Field | Notes |
+| --- | --- |
+| obiettivo | what counts as a conversion, shown next to the number (e.g. `richieste di preventivo`) |
+| misurato | `true` if a GA4 key event really counts that conversion; `false` ignores GA4 zeros |
+| rif_min, rif_max | industry benchmark range in % (visits to conversions) |
+| fonte_rif | where the benchmark comes from: name, year, URL. Shown on the card |
+| nota | optional: what is or is not tracked |
+
+How the page computes it: expected visits for 30 days from the last two `metriche.visite_7g` (the lower and
+higher of last week and the two-week average; ±30% with only one week). Rate = (`salute.conversioni_28g` +
+100 × benchmark) / (`salute.sessioni_28g` + 100), once with `rif_min` and once with `rif_max`, so the
+benchmark counts like 100 sessions and real data weighs more as it grows; with `misurato: false` only the
+benchmark is used. The low end never exceeds the real conversions of the last 28 days. Reliability: high
+with at least 10 real conversions over 300 sessions, medium from 3, low otherwise. It is always a range.
 
 ## serie/{site_id}
 

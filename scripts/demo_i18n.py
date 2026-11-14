@@ -3,6 +3,12 @@
 # Status values are translated consistently in code and data, so the demo keeps working in every language.
 
 T = {
+    # ---------- PR state check (0.16.1) ----------
+    '. Aprila, controlla e premi "Merge": il sito si pubblica da solo. Lo stato si controlla su GitHub ogni 3 ore': ('. Open it, check it and press "Merge": the site publishes itself. The state is checked on GitHub every 3 hours', '. Ábrela, revísala y pulsa "Merge": el sitio se publica solo. El estado se comprueba en GitHub cada 3 horas', '. Ouvrez-la, vérifiez et cliquez sur "Merge" : le site se publie tout seul. L\'état est vérifié sur GitHub toutes les 3 heures'),
+    ', ultimo controllo alle ': (', last check at ', ', último control a las ', ', dernier contrôle à '),
+    'Già unita o chiusa': ('Already merged or closed', 'Ya fusionada o cerrada', 'Déjà fusionnée ou fermée'),
+    'Non salvato: riprova': ('Not saved: try again', 'No guardado: reinténtalo', 'Non enregistré : réessayez'),
+    'Toglila subito dall elenco: il controllo con GitHub ogni 3 ore conferma lo stato vero': ('Remove it from the list now: the GitHub check every 3 hours confirms the real state', 'Quítala ya de la lista: el control con GitHub cada 3 horas confirma el estado real', 'Retirez-la de la liste tout de suite : le contrôle GitHub toutes les 3 heures confirme l\'état réel'),
     # ---------- PRs to merge + clickable board (0.15.0) ----------
     'Al montaggio': ('In the edit', 'En montaje', 'Au montage'),
     'PR da unire, aspettano te': ('PRs to merge, waiting on you', 'PR por fusionar, te esperan', 'PR à fusionner, elles vous attendent'),

@@ -261,6 +261,10 @@
   .montaggio .scena .perche { font-size: 13px; opacity: .85; margin-top: 3px; overflow-wrap: anywhere; }
   .montaggio a.unisci { display: inline-block; border: 2px solid #ffb84d; color: #ffb84d; border-radius: 4px; padding: 6px 10px; font: 700 13px var(--font-display); text-transform: uppercase; letter-spacing: .05em; text-decoration: none; white-space: nowrap; }
   .montaggio a.unisci:hover { background: #ffb84d; color: var(--ink); }
+  .montaggio .azioni { display: grid; gap: 6px; justify-items: end; }
+  .montaggio button.fatta { font: 500 11px var(--font-mono); letter-spacing: .06em; text-transform: uppercase; background: transparent; color: var(--paper); opacity: .75; border: 1px solid color-mix(in srgb, var(--paper) 40%, transparent); border-radius: 4px; padding: 4px 8px; cursor: pointer; }
+  .montaggio button.fatta:hover { opacity: 1; }
+  @media (max-width: 640px) { .montaggio .azioni { justify-items: start; grid-auto-flow: column; justify-content: start; } }
   .prc i { background: #ffb84d; border-radius: 2px; }
   .montaggio .mont-tot { font: 800 48px/0.9 var(--font-display); color: #ffb84d; }
   .montaggio.vuoto .mont-tot { color: #7d756a; }
@@ -998,7 +1002,8 @@
   }
   /* Le PR aperte: dalla collezione pr, più quelle citate nei consigli ancora da approvare. */
   function prAperte() {
-    const rows = state.pr.filter((p) => p.stato === 'Aperta' && vis(p.progetto));
+    const chiuso = (rif) => { const c = consiglioDi({ rif }); return c && (c.stato === 'Fatto' || c.stato === 'Scartato'); };
+    const rows = state.pr.filter((p) => p.stato === 'Aperta' && vis(p.progetto) && !chiuso(p.rif));
     const seen = new Set(state.pr.map((p) => p.url));
     for (const c of state.consigli) {
       if (!aMano(c) || !vis(c.progetto)) continue;
@@ -1013,7 +1018,8 @@
     const rows = prAperte(), ul = $('mont-lista'); ul.replaceChildren();
     $('montaggio').classList.toggle('vuoto', !rows.length);
     $('mont-tot').textContent = String(rows.length);
-    $('mont-s').textContent = rows.length ? 'La più vecchia è aperta ' + daQuanto(rows[0].aperta_il) + '. Aprila, controlla e premi "Merge": il sito si pubblica da solo.' : 'Nessuna PR da unire.';
+    const agg = (state.editor.find((d) => d.id === 'stato') || {}).pr_controllo_il || '';
+    $('mont-s').textContent = rows.length ? 'La più vecchia è aperta ' + daQuanto(rows[0].aperta_il) + '. Aprila, controlla e premi "Merge": il sito si pubblica da solo. Lo stato si controlla su GitHub ogni 3 ore' + (agg ? ', ultimo controllo alle ' + new Date(agg).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }) : '') + '.' : 'Nessuna PR da unire.';
     const chip = $('prc'); chip.hidden = !rows.length; chip.lastChild.textContent = rows.length + ' PR';
     for (const p of rows) {
       const meta = el('div', { className: 'meta' });
@@ -1025,7 +1031,13 @@
       const perche = p.perche || (c && c.titolo !== p.titolo ? c.titolo : ''); if (perche) mid.append(el('div', { className: 'perche', textContent: perche }));
       mid.append(meta);
       const link = /^https:\/\/github\.com\//.test(p.url || '') ? el('a', { className: 'unisci', href: p.url, target: '_blank', rel: 'noopener', textContent: 'Apri e unisci' }) : el('span');
-      ul.append(el('li', { className: 'scena' }, [el('span', { className: 'pr-n', textContent: '#' + (p.numero || '?') }), mid, link]));
+      const azioni = el('div', { className: 'azioni' }, [link]);
+      if (p.id && state.db && state.canWrite) {
+        const b = el('button', { type: 'button', className: 'fatta', textContent: 'Già unita o chiusa', title: 'Toglila subito dall elenco: il controllo con GitHub ogni 3 ore conferma lo stato vero' });
+        b.addEventListener('click', async () => { b.disabled = true; try { await state.db.collection('pr').doc(p.id).update({ stato: 'Unita', segnata_dalla_pagina: true, chiusa_il: new Date().toISOString(), aggiornato_il: new Date().toISOString() }); } catch (e) { b.disabled = false; b.textContent = 'Non salvato: riprova'; } });
+        azioni.append(b);
+      }
+      ul.append(el('li', { className: 'scena' }, [el('span', { className: 'pr-n', textContent: '#' + (p.numero || '?') }), mid, azioni]));
     }
   }
   /* Elenco filtrato della lavagna: chiave tipo "lav:desk", "lav:todo:site1", "sito:site1", "usc:err", "mano:dec". */

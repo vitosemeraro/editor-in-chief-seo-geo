@@ -184,7 +184,9 @@ Written by the agent whenever it opens a pull request, refreshed at the start of
 ("owner/name"), `numero`, `titolo`, `url`, `progetto` (site id or "tutti"), `perche` (one plain sentence on
 what it is for), `rif` ("consigli/<id>", optional), `aperta_il`, `stato` (`Aperta`, `Unita`, `Chiusa`),
 `aggiornato_il`. The dashboard shows the `Aperta` ones, plus any GitHub PR link found in advice still
-`Da approvare` or `Da fare a mano`.
+`Da approvare` or `Da fare a mano`. The "Already merged or closed" button on the page sets `stato: "Unita"`
+and `segnata_dalla_pagina: true` at once; the `sync-prs` job confirms or corrects it. `editor/stato.pr_controllo_il`
+is the time of the last check.
 
 ## interventi/{YYYYMMDD-HHMM}-{site_id}-{n}
 

@@ -7,6 +7,20 @@ change to the database schema bumps the minor version, a fix bumps the patch.
 Every change comes from the private dashboard the author uses daily on 4 real sites, generalized before
 it lands here.
 
+## [0.16.1] - 2026-11-14
+
+### Fixed
+- "In the edit" no longer keeps pull requests that were already merged or closed: new `prompts/sync-prs.md`
+  job checks GitHub every 3 hours and updates `pr`, closing the linked advice when the merge was the only
+  step left. PRs whose linked advice is already `Fatto` or `Scartato` are hidden right away.
+
+### Added
+- "Already merged or closed" button on each PR to drop it from the list at once, and the time of the last
+  GitHub check under the count.
+
+### Schema
+- `editor/stato.pr_controllo_il`; `pr.segnata_dalla_pagina`, `pr.chiusa_il`.
+
 ## [0.16.0] - 2026-11-13
 
 ### Added
@@ -245,6 +259,7 @@ it lands here.
   schema, dashboard that starts empty, modular data sources (Search Console required), deploy examples
   for Firebase, Netlify, Vercel and FTPS, link checker, secret scan and config validator in CI.
 
+[0.16.1]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.16.0...v0.16.1
 [0.16.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.15.0...v0.16.0
 [0.15.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.13.1...v0.15.0
 [0.13.1]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.13.0...v0.13.1

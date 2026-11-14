@@ -7,6 +7,7 @@ Editor-in-Chief runs on two Claude routines, plus an optional third (scheduled c
 | --- | --- | --- | --- |
 | Weekly review | `weekly-review.md` | once a week, e.g. Monday 08:00 | config repo (read), data connectors, dashboard |
 | Run requests | `run-requests.md` | every morning, e.g. 07:00, and on demand from the buttons | config repo, site repos (write), data connectors, dashboard |
+| Sync PRs (optional) | `sync-prs.md` | every 3 hours in the daytime | dashboard, GitHub CLI |
 | Spare capacity (optional) | `spare-capacity.md` | every night, e.g. 02:40 | config repo, dashboard, the "Run requests" id |
 
 Setup:

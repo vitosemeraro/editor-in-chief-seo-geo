@@ -3,6 +3,14 @@
 # Status values are translated consistently in code and data, so the demo keeps working in every language.
 
 T = {
+    # ---------- done items hidden by default (0.18.0) ----------
+    'mostra fatti (anche scartati)': ('show done (also dismissed)', 'mostrar hechos (también descartados)', 'afficher les faits (aussi écartés)'),
+    'mostra fatti (anche annullati)': ('show done (also cancelled)', 'mostrar hechos (también cancelados)', 'afficher les faits (aussi annulés)'),
+    'mostra fatti (pubblicate)': ('show done (published)', 'mostrar hechos (publicadas)', 'afficher les faits (publiées)'),
+    'mostra fatti (aggiunte e scartate)': ('show done (added and dismissed)', 'mostrar hechos (añadidas y descartadas)', 'afficher les faits (ajoutées et écartées)'),
+    'mostra fatti (unite e chiuse)': ('show done (merged and closed)', 'mostrar hechos (fusionadas y cerradas)', 'afficher les faits (fusionnées et fermées)'),
+    'Niente di aperto: spunta "mostra fatti" per vedere il diario completo.': ('Nothing open: tick "show done" to see the full log.', 'Nada abierto: marca "mostrar hechos" para ver el diario completo.', 'Rien d\'ouvert : cochez "afficher les faits" pour voir tout le journal.'),
+    'apri la PR': ('open the PR', 'abrir la PR', 'ouvrir la PR'),
     # ---------- "I'm online, go ahead" (0.17.0) ----------
     'Sono online, procedi': ("I'm online, go ahead", 'Estoy en línea, adelante', 'Je suis en ligne, allez-y'),
     'Sono online, procedi (': ("I'm online, go ahead (", 'Estoy en línea, adelante (', 'Je suis en ligne, allez-y ('),

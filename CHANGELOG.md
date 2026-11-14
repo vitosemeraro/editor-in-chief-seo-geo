@@ -7,6 +7,14 @@ change to the database schema bumps the minor version, a fix bumps the patch.
 Every change comes from the private dashboard the author uses daily on 4 real sites, generalized before
 it lands here.
 
+## [0.18.0] - 2026-11-14
+
+### Changed
+- Done items are hidden by default in every list and come back with a "show done" checkbox on that list:
+  advice (already there), calendar (published releases), log (done and cancelled work, so by default it
+  shows only what is still open), ideas (added and dismissed, as a compact list) and "In the edit"
+  (merged and closed PRs, greyed out under the open ones). Lists on the slate already showed only open work.
+
 ## [0.17.0] - 2026-11-14
 
 ### Added
@@ -271,6 +279,7 @@ it lands here.
   schema, dashboard that starts empty, modular data sources (Search Console required), deploy examples
   for Firebase, Netlify, Vercel and FTPS, link checker, secret scan and config validator in CI.
 
+[0.18.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.17.0...v0.18.0
 [0.17.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.16.1...v0.17.0
 [0.16.1]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.16.0...v0.16.1
 [0.16.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.15.0...v0.16.0

@@ -270,6 +270,8 @@
   .montaggio.vuoto .mont-tot { color: #7d756a; }
   .montaggio .mont-tl { font: 800 18px/1.05 var(--font-display); text-transform: uppercase; letter-spacing: .03em; opacity: 1; }
   .montaggio #mont-s { flex-basis: 100%; }
+  .montaggio .mont-f { font-size: 12.5px; opacity: .8; margin-left: auto; display: inline-flex; gap: 6px; align-items: center; }
+  .montaggio .scena.fatta { opacity: .55; }
   .prc[hidden] { display: none; }
 
   /* Lavagna cliccabile: ogni numero, striscia e riga apre l elenco filtrato. */
@@ -286,6 +288,8 @@
   .zoom-h { display: flex; gap: 8px 14px; align-items: baseline; justify-content: space-between; flex-wrap: wrap; }
   .zoom-h b { font: 800 20px/1.1 var(--font-display); text-transform: uppercase; letter-spacing: .03em; color: var(--kc, var(--paper)); }
   .zoom-h button { font: 500 11px var(--font-mono); letter-spacing: .08em; text-transform: uppercase; background: transparent; color: var(--paper); border: 1px solid color-mix(in srgb, var(--paper) 40%, transparent); border-radius: 4px; padding: 4px 8px; cursor: pointer; }
+  .fatti-lista { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 6px; font-size: 13px; }
+  .fatti-lista li { display: flex; gap: 6px 10px; flex-wrap: wrap; align-items: baseline; border-top: 1px dashed var(--line); padding-top: 6px; }
   .zoom-a { display: inline-flex; gap: 8px; flex-wrap: wrap; align-items: center; }
   button.procedi { font: 700 12px var(--font-display); letter-spacing: .05em; text-transform: uppercase; background: var(--k-desk); color: var(--ink); border: 0; border-radius: 4px; padding: 5px 10px; cursor: pointer; }
   button.procedi.grande { font-size: 15px; padding: 8px 14px; box-shadow: 0 0 0 3px color-mix(in srgb, var(--k-desk) 35%, transparent); }
@@ -416,7 +420,7 @@
   </section>
 
   <section class="montaggio vuoto" id="montaggio" aria-labelledby="mont-h">
-    <div class="sigira-h"><b id="mont-h"><i></i>Al montaggio</b><span class="mont-tot" id="mont-tot">0</span><span class="mont-tl">PR da unire, aspettano te</span><span id="mont-s">Nessuna PR da unire.</span></div>
+    <div class="sigira-h"><b id="mont-h"><i></i>Al montaggio</b><span class="mont-tot" id="mont-tot">0</span><span class="mont-tl">PR da unire, aspettano te</span><label class="mont-f"><input type="checkbox" id="pr-fatti"> mostra fatti (unite e chiuse)</label><span id="mont-s">Nessuna PR da unire.</span></div>
     <ul class="scene" id="mont-lista"></ul>
   </section>
 
@@ -488,13 +492,15 @@
 
   <section class="card" id="consigli">
     <div class="card-head"><div><h2>Note di redazione</h2><p><b>I consigli per migliorare.</b> Azioni concrete tratte dai dati, dalla più utile. "Applica ora" fa la modifica sul sito: i siti in modalità automatica vengono pubblicati direttamente, gli altri ricevono una bozza da approvare. I consigli "a mano" richiedono un tuo accesso (per esempio Google Business). Su ogni consiglio: "Spiegami come" scrive qui i passi, "Apri la chat" apre una conversazione solo su quel consiglio, "L'ho fatto" chiede a Claude di verificarlo.</p></div><span class="status" id="cons-stato" aria-live="polite"></span></div>
-    <div class="toolbar"><div class="chips" id="cons-tipo" role="group" aria-label="Filtra per tipo"></div><label><input type="checkbox" id="cons-fatti"> mostra anche fatti e scartati</label><span id="cons-conta"></span></div>
+    <div class="toolbar"><div class="chips" id="cons-tipo" role="group" aria-label="Filtra per tipo"></div><label><input type="checkbox" id="cons-fatti"> mostra fatti (anche scartati)</label><span id="cons-conta"></span></div>
     <div class="tips" id="cons-box"><p class="empty">Carico i consigli…</p></div>
   </section>
 
   <section class="card" id="idee">
     <div class="card-head"><div><h2>Soggetti</h2><p><b>Le idee dai dati.</b> Temi nuovi suggeriti da ricerche, posizioni e concorrenti. Scegli la data e aggiungili al calendario: entrano come "Da confermare", poi li metti su "Programmato" quando vuoi che escano.</p></div><span class="status" id="idee-stato" aria-live="polite"></span></div>
+    <div class="toolbar"><label><input type="checkbox" id="idee-fatti"> mostra fatti (aggiunte e scartate)</label></div>
     <div class="ideas" id="idee-box"><p class="empty">Carico le idee…</p></div>
+    <ul class="fatti-lista" id="idee-fatte" hidden></ul>
   </section>
 
   <section class="card" id="calendario">
@@ -508,6 +514,7 @@
     <div class="toolbar">
       <div class="chips" id="cal-tipo" role="group" aria-label="Filtra per tipo"></div>
       <label>Stato <select id="cal-stato"><option value="">tutti</option></select></label>
+      <label><input type="checkbox" id="cal-fatti"> mostra fatti (pubblicate)</label>
       <label><input type="checkbox" id="cal-passate"> mostra le settimane passate</label>
       <span class="legend"><span><span class="tag t-SEO on">SEO</span>Google</span><span><span class="tag t-AEO on">AEO</span>risposte dirette di Google</span><span><span class="tag t-GEO on">GEO</span>citazioni nei motori AI</span></span>
     </div>
@@ -561,7 +568,7 @@
 
   <section class="card" id="log">
     <div class="card-head"><div><h2>Diario di set</h2><p><b>Il registro degli interventi.</b> Tutto quello che Claude ha fatto sui siti e sulla dashboard, dal più recente. "Apri la chat" riapre la conversazione che ha fatto il lavoro: lì puoi fare domande o chiedere di continuare.</p></div></div>
-    <div class="toolbar"><span id="log-consumo" class="small"></span><label><input type="checkbox" id="log-tutti"> mostra anche annullati e in coda</label></div>
+    <div class="toolbar"><span id="log-consumo" class="small"></span><label><input type="checkbox" id="log-tutti"> mostra fatti (anche annullati)</label></div>
     <div class="scroll"><table>
       <thead><tr><th>Quando</th><th>Sito</th><th>Intervento</th><th>Esito</th><th>Consumo</th><th>Link</th></tr></thead>
       <tbody id="log-body"></tbody>
@@ -1064,7 +1071,18 @@
       }
       ul.append(el('li', { className: 'scena' }, [el('span', { className: 'pr-n', textContent: '#' + (p.numero || '?') }), mid, azioni]));
     }
+    const fatte = state.prFatti ? state.pr.filter((p) => p.stato !== 'Aperta' && vis(p.progetto)).sort((a, b) => String(b.chiusa_il || b.aggiornato_il || '').localeCompare(String(a.chiusa_il || a.aggiornato_il || ''))).slice(0, 30) : [];
+    if (fatte.length) $('montaggio').classList.remove('vuoto');
+    for (const p of fatte) {
+      const meta = el('div', { className: 'meta' });
+      if (p.progetto && p.progetto !== 'tutti') meta.append(sito(prog(p.progetto)));
+      meta.append(el('span', { textContent: String(p.repo || '').split('/').pop() }), el('span', { className: 'tagc', textContent: p.stato }));
+      if (p.chiusa_il) meta.append(el('span', { textContent: quando(p.chiusa_il) }));
+      const a = /^https:\/\/github\.com\//.test(p.url || '') ? el('a', { href: p.url, target: '_blank', rel: 'noopener', textContent: 'apri la PR' }) : el('span');
+      ul.append(el('li', { className: 'scena fatta' }, [el('span', { className: 'pr-n', textContent: '#' + (p.numero || '?') }), el('div', {}, [el('div', { className: 'tt', textContent: p.titolo || '' }), meta]), a]));
+    }
   }
+  $('pr-fatti').addEventListener('change', (e) => { state.prFatti = e.target.checked; renderPr(); });
   /* Elenco filtrato della lavagna: chiave tipo "lav:desk", "lav:todo:site1", "sito:site1", "usc:err", "mano:dec". */
   function uscitaK(r) {
     const st = r.stato || '';
@@ -1448,6 +1466,7 @@
     return state.piano.filter((r) => visibile(r.progetto)
       && (!state.calTipo || (Array.isArray(r.tipi) ? r.tipi : ['SEO']).includes(state.calTipo))
       && (!state.calStato || r.stato === state.calStato)
+      && (state.calFatti || state.calStato === 'Pubblicato' || r.stato !== 'Pubblicato')
       && (state.calPassate || !r.data || r.data >= lun))
       .sort((a, b) => (a.data || '').localeCompare(b.data || '') || String(a.progetto).localeCompare(String(b.progetto)));
   }
@@ -1466,6 +1485,7 @@
     if (!bs.options.length) for (const s of STATI) bs.append(el('option', { value: s, textContent: s, selected: s === 'Programmato' }));
   }
   $('cal-stato').addEventListener('change', (e) => { state.calStato = e.target.value; renderPiano(); });
+  $('cal-fatti').addEventListener('change', (e) => { state.calFatti = e.target.checked; renderPiano(); });
   $('cal-passate').addEventListener('change', (e) => { state.calPassate = e.target.checked; renderPiano(); });
 
   function renderBulk() {
@@ -1648,10 +1668,10 @@
     const tb = $('log-body'); tb.replaceChildren();
     const rows = [];
     for (const r of state.richieste) {
-      if (!state.logTutti && (r.stato === 'Annullata' || r.stato === 'In coda')) continue;
+      if (!state.logTutti && (r.stato === 'Annullata' || r.stato === 'Fatto')) continue;
       rows.push({ t: r.finita_il || r.iniziata_il || r.avviata_il || r.creata_il, progetto: r.progetto, titolo: (TIPO_NOME[r.tipo] || r.tipo) + (r.testo ? ': ' + r.testo : ''), stato: r.stato, esito: inCorso(r) ? (r.passo || '') : (r.esito || ''), link: r.link, chat: r.sessione, cr: r.crediti_openseo, usd: r.costo_usd, tok: r.token_totali });
     }
-    for (const r of state.interventi) rows.push({ t: r.quando, progetto: r.progetto, titolo: r.titolo || '', stato: r.stato || 'Fatto', esito: r.esito || '', link: r.link, chat: r.sessione, cr: r.crediti_openseo, usd: r.costo_usd, tok: r.token_totali });
+    for (const r of state.interventi) if (state.logTutti || (r.stato && r.stato !== 'Fatto')) rows.push({ t: r.quando, progetto: r.progetto, titolo: r.titolo || '', stato: r.stato || 'Fatto', esito: r.esito || '', link: r.link, chat: r.sessione, cr: r.crediti_openseo, usd: r.costo_usd, tok: r.token_totali });
     const sette = Date.now() - 7 * 864e5;
     const ult = rows.filter((r) => r.t && new Date(r.t).getTime() >= sette && (usdOk(r.usd) || r.cr != null));
     const sum = (k) => ult.reduce((a, r) => a + (Number(r[k]) || 0), 0);
@@ -1662,7 +1682,7 @@
     if (st.crediti_openseo_residui != null) parti.push('Crediti OpenSEO rimasti: ' + fmt(st.crediti_openseo_residui) + '.');
     $('log-consumo').textContent = parti.join(' ');
     const vis = rows.filter((r) => !r.progetto || r.progetto === 'tutti' || visibile(r.progetto)).sort((a, b) => String(b.t || '').localeCompare(String(a.t || '')));
-    if (!vis.length) { tb.append(el('tr', {}, [el('td', { colSpan: 6, className: 'empty', textContent: 'Nessun intervento registrato.' })])); return; }
+    if (!vis.length) { tb.append(el('tr', {}, [el('td', { colSpan: 6, className: 'empty', textContent: state.logTutti ? 'Nessun intervento registrato.' : 'Niente di aperto: spunta "mostra fatti" per vedere il diario completo.' })])); return; }
     for (const r of vis.slice(0, 200)) {
       const p = r.progetto && r.progetto !== 'tutti' ? prog(r.progetto) : null;
       const links = el('td', {}, []);
@@ -1688,6 +1708,15 @@
 
   /* ---------- Idee ---------- */
   function renderIdee() {
+    renderIdeeNuove();
+    const ul = $('idee-fatte'); ul.replaceChildren();
+    const fatte = state.idee.filter((r) => visibile(r.progetto) && (r.stato || 'Nuova') !== 'Nuova').sort((a, b) => String(b.aggiornato_il || '').localeCompare(String(a.aggiornato_il || '')));
+    ul.hidden = !state.ideeFatti || !fatte.length;
+    if (!state.ideeFatti) return;
+    for (const r of fatte.slice(0, 80)) ul.append(el('li', {}, [sito(prog(r.progetto)), el('span', { className: 'pill ' + (r.stato === 'Aggiunta' ? 'ok' : 'muted'), textContent: r.stato }), el('span', { textContent: r.tema || '' }), el('span', { className: 'muted', textContent: r.data_scelta ? dataIt(r.data_scelta) : '' })]));
+  }
+  $('idee-fatti').addEventListener('change', (e) => { state.ideeFatti = e.target.checked; renderIdee(); });
+  function renderIdeeNuove() {
     const box = $('idee-box'); box.replaceChildren();
     const nuove = state.idee.filter((r) => visibile(r.progetto) && (r.stato || 'Nuova') === 'Nuova').sort((a, b) => String(a.data_suggerita).localeCompare(String(b.data_suggerita)));
     const fatte = state.idee.filter((r) => visibile(r.progetto) && r.stato === 'Aggiunta').length;

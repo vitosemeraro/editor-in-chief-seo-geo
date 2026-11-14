@@ -12,6 +12,12 @@ editor:
     publish_days: [mon, thu]         # days when scheduled content goes out
     weeks_ahead: 8                   # how far ahead the routine fills empty slots with ideas
     max_posts_per_site_per_week: 2   # hard cap, protects you from mass-produced content
+    results_days: [thu]              # publish days whose topic is chosen that morning from Search Console results
+                                     # (empty list = every slot comes from the calendar)
+  experiments:
+    enabled: true                    # one experiment per site per results day, on the page with the most clicks
+    min_clicks: 3                    # clicks in the last 14 days a page needs to host an experiment
+    window_days: 14                  # how long an experiment runs before it is kept or rolled back
   spare_capacity:                    # optional nightly routine (prompts/spare-capacity.md)
     max_per_night: 3                 # automatic tips applied per night; the nightly caps are your reserve
     max_per_week: 15                 # weekly cap across all sites

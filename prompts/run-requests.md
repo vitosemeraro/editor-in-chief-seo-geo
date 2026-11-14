@@ -157,12 +157,39 @@ schedule and found nothing queued), before the final message:
 ## 2) Calendar autofill (only if editor.autofill_calendar is true and you started from the schedule)
 
 - Set every `piano` row in `Da confermare` dated today or later to `Programmato`.
-- For each site, look at the next `editor.cadence.weeks_ahead` weeks. On each publish day without a row,
-  add the most useful `Nuova` idea of that site as a `Programmato` row (id `<site>-<date>-idea`,
-  origine `idea`), respecting `max_posts_per_site_per_week`. Mark the idea `Aggiunta` with piano_id.
+- For each site, look at the next `editor.cadence.weeks_ahead` weeks. On each publish day without a row
+  that is not in `editor.cadence.results_days`, add the most useful `Nuova` idea of that site as a
+  `Programmato` row (id `<site>-<date>-idea`, origine `idea`), respecting `max_posts_per_site_per_week`.
+  Mark the idea `Aggiunta` with piano_id.
+- On each day in `editor.cadence.results_days` without a row, add `<site>-<date>-res` with stato
+  `Programmato`, origine `risultati`, tema "Chosen from results on the day" and `riserva` = the text of the
+  most useful `Nuova` idea (the idea stays `Nuova`).
 - Never touch rows `In pausa`.
 
 ## 3) Scheduled publishing (only when you started from the schedule)
+
+**Results days.** If today is in `editor.cadence.results_days`, first choose the topic of every row dated
+today with origine `risultati`. For each site, read Search Console for the last 14 days (apply the site's
+`facts` about traffic to exclude, e.g. a bot country):
+1. The page with the most clicks (at least `editor.experiments.min_clicks`): write the piece that sits next
+   to it, i.e. the question it gets impressions for but does not answer, or the next event or season of the
+   same kind. Link the winning page and add a link from it.
+2. If no page reaches that: the query with at least 20 impressions at position 5-20 and no dedicated page.
+3. Otherwise: use `riserva`.
+Skip topics already published or scheduled in the next 30 days. Write `tema`, `keyword` and
+`perche_risultati` (one sentence with the numbers) on the row, then publish it as below.
+
+**Experiments** (only if `editor.experiments.enabled`). Experiments go into the pages that already work,
+never into new pages. On a results day, for each site with a page that has at least `min_clicks` clicks in
+the last 14 days:
+- First close experiments older than `window_days`: compare clicks, impressions, CTR, position and key
+  events with the stored baseline. Set `Tenuto` (better or equal) or `Tolto` (worse: revert the change).
+- Then start ONE experiment on that page, in this order: (a) clicks but no key events → change the
+  conversion box (copy, real offer, prefilled dates, position); (b) impressions on queries the page does not
+  cover → add a question H2 with a short answer; (c) CTR under 3% at position 1-10 → new title and
+  description.
+- Store it in `esperimenti` (see schema). Never change two things at once on one page, and never touch a
+  page with an experiment `In corso` younger than `window_days`.
 
 If today is one of `editor.cadence.publish_days`: for every `piano` row with date ≤ today and stato
 `Programmato` (or `Scritto` with an approved `bozza`), publish it as in "Where to publish", then set

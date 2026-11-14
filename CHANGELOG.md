@@ -7,6 +7,12 @@ change to the database schema bumps the minor version, a fix bumps the patch.
 Every change comes from the private dashboard the author uses daily on 4 real sites, generalized before
 it lands here.
 
+## [0.21.0] - 2026-11-14
+
+### Added
+- The morning run refreshes the numbers of every site when the last refresh is more than 20 hours old, so
+  the dashboard is never a day behind.
+
 ## [0.20.0] - 2026-11-14
 
 ### Changed
@@ -303,6 +309,7 @@ it lands here.
   schema, dashboard that starts empty, modular data sources (Search Console required), deploy examples
   for Firebase, Netlify, Vercel and FTPS, link checker, secret scan and config validator in CI.
 
+[0.21.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.20.0...v0.21.0
 [0.20.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.19.0...v0.20.0
 [0.19.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.18.0...v0.19.0
 [0.18.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.17.0...v0.18.0

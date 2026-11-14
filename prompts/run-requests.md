@@ -35,7 +35,9 @@ For each site in the config:
 Every request runs in its own session, so the dashboard's "open the chat" link leads to a conversation
 about that request only.
 
-**Started from the schedule:** do not take requests here. For each request `In coda` for more than 10
+**Started from the schedule:** first read `editor/stato`. If `ultimo_aggiornamento` is more than 20 hours
+old, create `all-<YYYYMMDD>-data` (tipo `aggiorna_dati`, progetto "tutti", stato `In coda`, origine
+`mattina`) and call fire_trigger once for it, so the numbers are fresh every morning. Then do not take requests here. For each request `In coda` for more than 10
 minutes, call fire_trigger on `editor.trigger_id` with no extra text (one call per request, at most 10),
 so that each one gets its own session. Then go to step 2.
 

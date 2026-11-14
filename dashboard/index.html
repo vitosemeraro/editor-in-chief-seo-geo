@@ -286,6 +286,10 @@
   .zoom-h { display: flex; gap: 8px 14px; align-items: baseline; justify-content: space-between; flex-wrap: wrap; }
   .zoom-h b { font: 800 20px/1.1 var(--font-display); text-transform: uppercase; letter-spacing: .03em; color: var(--kc, var(--paper)); }
   .zoom-h button { font: 500 11px var(--font-mono); letter-spacing: .08em; text-transform: uppercase; background: transparent; color: var(--paper); border: 1px solid color-mix(in srgb, var(--paper) 40%, transparent); border-radius: 4px; padding: 4px 8px; cursor: pointer; }
+  .zoom-a { display: inline-flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  button.procedi { font: 700 12px var(--font-display); letter-spacing: .05em; text-transform: uppercase; background: var(--k-desk); color: var(--ink); border: 0; border-radius: 4px; padding: 5px 10px; cursor: pointer; }
+  button.procedi.grande { font-size: 15px; padding: 8px 14px; box-shadow: 0 0 0 3px color-mix(in srgb, var(--k-desk) 35%, transparent); }
+  button.procedi:disabled { opacity: .55; cursor: default; box-shadow: none; }
   .zoom ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
   .zoom li { display: grid; gap: 3px; border-left: 3px solid var(--kc, var(--paper)); padding: 2px 0 2px 10px; font-size: 13px; }
   .zoom li .r1 { display: flex; gap: 4px 10px; flex-wrap: wrap; align-items: baseline; }
@@ -437,7 +441,7 @@
         <div class="lav-col"><b>Lavori</b><div class="film" id="lav-film-l" role="img"></div><div class="film-cap" id="lav-cap-l"></div><div class="lav-cells" id="lav-lavori"></div></div>
         <div class="lav-col"><b>Uscite</b><div class="film" id="lav-film-u" role="img"></div><div class="film-cap" id="lav-cap-u"></div><div class="lav-cells" id="lav-uscite"></div></div>
       </div>
-      <div class="zoom" id="lav-zoom" hidden aria-live="polite"><div class="zoom-h"><b id="zoom-t"></b><button type="button" id="zoom-x">Chiudi</button></div><ul id="zoom-lista"></ul></div>
+      <div class="zoom" id="lav-zoom" hidden aria-live="polite"><div class="zoom-h"><b id="zoom-t"></b><span class="zoom-a"><button type="button" class="procedi grande" id="zoom-go" hidden>Sono online, procedi</button><button type="button" id="zoom-x">Chiudi</button></span></div><ul id="zoom-lista"></ul></div>
       <div class="lav-row">
         <div class="lav-box"><b>Lavori aperti per sito</b><div class="per-sito" id="lav-siti"></div><div class="lav-legend" id="lav-leg"></div></div>
         <div class="lav-box"><b>Ritmo · ultime 8 settimane</b><div id="lav-trend"></div><div class="lav-legend"><span><i style="--kc:var(--k-todo)"></i>lavori aperti</span><span><i style="--kc:var(--k-done)"></i>lavori chiusi</span><span><i style="--kc:var(--k-sched);border-radius:50%"></i>uscite pubblicate</span></div></div>
@@ -978,6 +982,21 @@
   const RX_PR = /https:\/\/github\.com\/([\w.-]+\/[\w.-]+)\/pull\/(\d+)/;
   const titoloDi = (q, c) => (c && c.titolo) || (q ? (TIPO_NOME[q.tipo] || q.tipo) + (q.testo ? ': ' + q.testo : '') : '');
   const KNOME = { todo: 'da fare', run: 'in corso', desk: 'PC acceso', dec: 'tua decisione', ext: 'blocco esterno', rej: 'rifiutato', done: 'chiuso', claude: 'le chiude Claude', new: 'nuova', sched: 'programmata', err: 'in errore', pub: 'pubblicata', pausa: 'in pausa' };
+  /* "Sono online, procedi": per i lavori che aspettano il PC acceso crea una richiesta fai_col_pc e la avvia subito. */
+  const rifDi = (x) => (x.c ? 'consigli/' + x.c.id : x.q ? 'richieste/' + x.q.id : '');
+  const pcInCorso = (rif) => state.richieste.find((q) => q.tipo === 'fai_col_pc' && q.rif === rif && inCorso(q));
+  async function procedi(rows) {
+    if (!state.db || !state.canWrite) return 0;
+    try { await state.db.collection('editor').doc('stato').update({ pc_online_il: new Date().toISOString() }); } catch (e) {}
+    let n = 0;
+    for (const x of rows) {
+      const rif = rifDi(x);
+      if (!rif || pcInCorso(rif)) continue;
+      await richiedi('fai_col_pc', { rif, progetto: (x.c && x.c.progetto) || (x.q && x.q.progetto) || 'tutti', testo: titoloDi(x.q, x.c), origine: 'pc' });
+      n++;
+    }
+    return n;
+  }
   function rigaZoom({ q, c, r, k, titolo }) {
     const tag = el('span', { className: 'k', textContent: KNOME[k] || k });
     const li = el('li'); li.style.setProperty('--kc', 'var(--k-' + k + ')');
@@ -996,6 +1015,12 @@
     const lk = c && c.link && /^https:\/\//.test(c.link) && !RX_PR.test(c.link) ? c.link : '';
     if (lk) a(lk, 'apri il link');
     const pg = r && (r.url || r.link); if (pg && /^https:\/\//.test(pg)) a(pg, 'apri la pagina');
+    if (k === 'desk' && state.db && state.canWrite && (q || c)) {
+      const run = pcInCorso(rifDi({ q, c }));
+      const pb = el('button', { type: 'button', className: 'procedi', textContent: run ? 'In corso col tuo PC' : 'Sono online, procedi', disabled: !!run });
+      pb.addEventListener('click', async (e) => { e.stopPropagation(); pb.disabled = true; pb.textContent = 'Avvio…'; try { await procedi([{ q, c }]); } catch (x) { pb.disabled = false; pb.textContent = 'Non partito: riprova'; } });
+      ln.append(pb);
+    }
     if (c && c.id) { const b = el('a', { href: '#consigli', textContent: 'vai al consiglio' }); b.addEventListener('click', (e) => { e.preventDefault(); const t = $('consigli'); if (t) t.scrollIntoView({ block: 'start' }); }); ln.append(b); }
     if (ln.childNodes.length) li.append(ln);
     return li;
@@ -1067,6 +1092,10 @@
       rows = manoRows().filter((x) => x.k === k);
       titolo = 'A mano · ' + (KNOME[k] || k);
     }
+    const go = $('zoom-go'), daFare = k === 'desk' && (kind === 'lav' || kind === 'mano') ? rows.filter((x) => (x.q || x.c) && !pcInCorso(rifDi(x))) : [];
+    go.hidden = !(k === 'desk' && (kind === 'lav' || kind === 'mano') && state.db && state.canWrite);
+    go.disabled = !daFare.length; go.textContent = daFare.length ? 'Sono online, procedi (' + daFare.length + ')' : 'Tutti già in corso col tuo PC';
+    state.zoomRows = daFare;
     box.hidden = false; box.style.setProperty('--kc', kind === 'sito' ? 'var(--paper)' : 'var(--k-' + k + ')');
     $('zoom-t').textContent = titolo + ' (' + rows.length + ')';
     const ul = $('zoom-lista'); ul.replaceChildren(...rows.slice(0, 60).map(rigaZoom));
@@ -1081,6 +1110,7 @@
     if (state.zoom) $('lav-zoom').scrollIntoView({ block: 'nearest', behavior: 'smooth' });
   });
   $('lavagna').addEventListener('keydown', (e) => { const t = e.target.closest('.ps[data-z]'); if (t && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); t.click(); } });
+  $('zoom-go').addEventListener('click', async (e) => { e.stopPropagation(); const b = $('zoom-go'); b.disabled = true; b.textContent = 'Avvio…'; try { await procedi(state.zoomRows || []); } catch (x) { b.disabled = false; b.textContent = 'Non partito: riprova'; } });
   $('zoom-x').addEventListener('click', () => { state.zoom = ''; renderZoom(); });
   /* Ciclo continuo: editor/stato.ciclo_attivo (assente = acceso), tetto di 12 richieste "ciclo" al giorno. */
   const CICLO_MAX = 12;
@@ -1604,7 +1634,7 @@
   }
 
   /* ---------- Registro interventi ---------- */
-  const TIPO_NOME = { aggiorna_dati: 'Aggiorna dati', controllo_sito: 'Verifica e consiglia', applica_consiglio: 'Applica consiglio', implementa_nota: 'Implementa nota', crea_pagina: 'Crea pagina', verifica_manuale: 'Verifica lavoro fatto a mano', spiega_consiglio: 'Spiegami come', chat_consiglio: 'Chat sul consiglio' };
+  const TIPO_NOME = { aggiorna_dati: 'Aggiorna dati', controllo_sito: 'Verifica e consiglia', applica_consiglio: 'Applica consiglio', implementa_nota: 'Implementa nota', crea_pagina: 'Crea pagina', verifica_manuale: 'Verifica lavoro fatto a mano', spiega_consiglio: 'Spiegami come', chat_consiglio: 'Chat sul consiglio', fai_col_pc: 'Col tuo PC' };
   function quandoLog(iso) { if (!iso) return ''; const d = new Date(iso); if (isNaN(d)) return iso; return d.toLocaleString('it-IT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }); }
   function linkChat(u) { return u && /^https:\/\/claude\.ai\//.test(u) ? el('a', { href: u, target: '_blank', rel: 'noopener', textContent: 'Apri la chat' }) : null; }
   function consumo(r) {

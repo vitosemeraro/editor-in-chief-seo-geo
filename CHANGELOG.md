@@ -7,6 +7,18 @@ change to the database schema bumps the minor version, a fix bumps the patch.
 Every change comes from the private dashboard the author uses daily on 4 real sites, generalized before
 it lands here.
 
+## [0.17.0] - 2026-11-14
+
+### Added
+- **"I'm online, go ahead"** for jobs waiting for your computer: one big button on the "computer on" list
+  of the slate starts all of them at once, and a small one on each row starts that job alone. Each creates a
+  `fai_col_pc` request and starts a session right away; the session does the step itself (without a
+  browser when it can, otherwise with the owner's signed-in browser), closes the advice and tells you if
+  the computer could not be reached. New request type in `prompts/run-requests.md`.
+
+### Schema
+- Request type `fai_col_pc` (rif `consigli/<id>` or `richieste/<id>`, origine `pc`); `editor/stato.pc_online_il`.
+
 ## [0.16.1] - 2026-11-14
 
 ### Fixed
@@ -259,6 +271,7 @@ it lands here.
   schema, dashboard that starts empty, modular data sources (Search Console required), deploy examples
   for Firebase, Netlify, Vercel and FTPS, link checker, secret scan and config validator in CI.
 
+[0.17.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.16.1...v0.17.0
 [0.16.1]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.16.0...v0.16.1
 [0.16.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.15.0...v0.16.0
 [0.15.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.13.1...v0.15.0

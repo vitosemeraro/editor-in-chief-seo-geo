@@ -137,6 +137,15 @@ session of its own.
   Cloudflare if enabled, the site via its repo. Confirmed → tip `Fatto`, esito starting with "Verificato:"
   and the data point. Something missing → `Da fare a mano` with what is missing and the exact step. Not
   verifiable now → `Fatto`, esito "Segnato dal proprietario, non verificabile ora: <why and when>".
+- **fai_col_pc** (rif = `consigli/<id>` or `richieste/<id>`, origine `pc`): the owner pressed "I'm online,
+  go ahead": their computer is on now (`editor/stato.pc_online_il`) and they want you to do the step left
+  for them. Read the advice or request in rif. First try without a browser (scheduled task prompts,
+  DNS API, data provider, repository). If the step needs the owner's signed-in browser, load the browser
+  tools of their machine (for example Claude in Chrome) and work in a new tab. Never buy, pay, delete
+  accounts or data, or message outside people: leave those `Da fare a mano` with blocco `decisione` and
+  the exact step. Done → advice `Fatto` (esito starting with "Done with your computer:" and full URLs),
+  linked manual requests `Fatto`, this request `Fatto`. Browser not reachable → leave the advice as it is
+  and close this request `Da fare a mano` with esito "Computer not reachable: <what you tried>".
 
 ## 1c) Continuous cycle (only if editor.continuous_cycle is true)
 

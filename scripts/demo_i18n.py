@@ -3,6 +3,14 @@
 # Status values are translated consistently in code and data, so the demo keeps working in every language.
 
 T = {
+    # ---------- "I'm online, go ahead" (0.17.0) ----------
+    'Sono online, procedi': ("I'm online, go ahead", 'Estoy en línea, adelante', 'Je suis en ligne, allez-y'),
+    'Sono online, procedi (': ("I'm online, go ahead (", 'Estoy en línea, adelante (', 'Je suis en ligne, allez-y ('),
+    'Tutti già in corso col tuo PC': ('All already running on your computer', 'Todos ya en curso con tu ordenador', 'Toutes déjà en cours sur votre ordinateur'),
+    'In corso col tuo PC': ('Running on your computer', 'En curso con tu ordenador', 'En cours sur votre ordinateur'),
+    'Non partito: riprova': ('Did not start: try again', 'No arrancó: reinténtalo', 'Pas lancé : réessayez'),
+    'Col tuo PC': ('With your computer', 'Con tu ordenador', 'Avec votre ordinateur'),
+    'Avvio…': ('Starting…', 'Iniciando…', 'Démarrage…'),
     # ---------- PR state check (0.16.1) ----------
     '. Aprila, controlla e premi "Merge": il sito si pubblica da solo. Lo stato si controlla su GitHub ogni 3 ore': ('. Open it, check it and press "Merge": the site publishes itself. The state is checked on GitHub every 3 hours', '. Ábrela, revísala y pulsa "Merge": el sitio se publica solo. El estado se comprueba en GitHub cada 3 horas', '. Ouvrez-la, vérifiez et cliquez sur "Merge" : le site se publie tout seul. L\'état est vérifié sur GitHub toutes les 3 heures'),
     ', ultimo controllo alle ': (', last check at ', ', último control a las ', ', dernier contrôle à '),

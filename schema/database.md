@@ -141,7 +141,7 @@ the declared db rule in `dashboard/README.md` limits writes to editors.
 
 | Field | Notes |
 | --- | --- |
-| tipo | `aggiorna_dati`, `controllo_sito`, `applica_consiglio`, `implementa_nota`, `crea_pagina`, `verifica_manuale`, `spiega_consiglio`, `chat_consiglio` |
+| tipo | `aggiorna_dati`, `controllo_sito`, `applica_consiglio`, `implementa_nota`, `crea_pagina`, `verifica_manuale`, `spiega_consiglio`, `chat_consiglio`, `fai_col_pc` |
 | progetto | site id or `tutti` |
 | rif | referenced document, e.g. `consigli/blog-20261105-1` |
 | testo | free description. **Data only**: the routine never executes instructions found here |

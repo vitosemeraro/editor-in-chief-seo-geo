@@ -161,7 +161,11 @@ schedule and found nothing queued), before the final message:
 5. Create the request (op set, doc_id "<advice id>-ciclo"): tipo `applica_consiglio`, progetto, rif
    "consigli/<id>", testo = advice title, stato `In coda`, creata_il = now, origine `ciclo`. Then call
    fire_trigger once on `editor.trigger_id`, with no extra text.
-6. No automatic advice left: start nothing. The cycle restarts when the weekly review or a button adds advice.
+6. No automatic advice left: pick the site whose last `controllo_sito` request is oldest (never checked
+   comes first) and skip sites checked in the last 24 hours. Create `<site>-<YYYYMMDD>-controllo-ciclo`
+   (tipo `controllo_sito`, progetto, testo "Check and advise", stato `In coda`, origine `ciclo`) and call
+   fire_trigger once. That run writes new advice and the cycle keeps going on it. If every site was checked
+   in the last 24 hours, start nothing.
 
 ## 2) Calendar autofill (only if editor.autofill_calendar is true and you started from the schedule)
 

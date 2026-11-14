@@ -7,6 +7,16 @@ change to the database schema bumps the minor version, a fix bumps the patch.
 Every change comes from the private dashboard the author uses daily on 4 real sites, generalized before
 it lands here.
 
+## [0.20.0] - 2026-11-14
+
+### Changed
+- The continuous cycle no longer stops when automatic advice runs out: it starts "Check and advise" on the
+  site checked longest ago (not within the last 24 hours), and the new advice keeps the cycle going.
+
+### Fixed
+- The slate counted 0 open jobs when the only advice left had an old closed request: advice still "To do"
+  is counted again.
+
 ## [0.19.0] - 2026-11-14
 
 ### Added
@@ -293,6 +303,7 @@ it lands here.
   schema, dashboard that starts empty, modular data sources (Search Console required), deploy examples
   for Firebase, Netlify, Vercel and FTPS, link checker, secret scan and config validator in CI.
 
+[0.20.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.19.0...v0.20.0
 [0.19.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.18.0...v0.19.0
 [0.18.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.17.0...v0.18.0
 [0.17.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.16.1...v0.17.0

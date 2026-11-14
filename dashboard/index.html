@@ -1183,7 +1183,7 @@
     if (!on) d.textContent = 'Spento: Claude lavora solo sui pulsanti che premi e sul giro programmato.';
     else if (n >= CICLO_MAX) d.textContent = 'Tetto di oggi raggiunto: riparte domani.';
     else if (auto[0]) d.textContent = 'Acceso. Prossimo in scena: ' + prog(auto[0].progetto).nome + ', ' + auto[0].titolo;
-    else d.textContent = 'Acceso, ma non ci sono consigli automatici da fare: riparte quando ne arrivano di nuovi.';
+    else d.textContent = 'Acceso. Consigli automatici finiti: il prossimo giro fa "Verifica e consiglia" sul sito controllato da più tempo, poi applica i consigli nuovi.';
   }
   $('ciclo-sw').addEventListener('click', async () => {
     const sw = $('ciclo-sw'); if (!state.db) return;
@@ -1233,7 +1233,8 @@
     for (const c of state.consigli) {
       const k = 'r:consigli/' + c.id, r = per.get(k); per.delete(k);
       let x = c;
-      if (r && c.stato !== 'Fatto' && c.stato !== 'Scartato' && c.stato !== 'Da fare a mano') x = Object.assign({}, r.q, { titolo: c.titolo });
+      /* La richiesta conta solo se è ancora aperta: un consiglio Da fare con l ultima richiesta già chiusa resta da fare. */
+      if (r && c.stato !== 'Fatto' && c.stato !== 'Scartato' && c.stato !== 'Da fare a mano' && r.q.stato !== 'Fatto' && r.q.stato !== 'Annullata') x = Object.assign({}, r.q, { titolo: c.titolo });
       else if (c.stato === 'Da fare a mano' && r) x = Object.assign({}, c, { esito: c.esito || r.q.esito, blocco: c.blocco || r.q.blocco });
       out.push({ progetto: c.progetto, titolo: c.titolo, k: classe(x), link: (r && r.q.sessione) || '', c, q: r && r.q });
     }

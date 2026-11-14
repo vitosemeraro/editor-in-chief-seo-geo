@@ -7,6 +7,20 @@ change to the database schema bumps the minor version, a fix bumps the patch.
 Every change comes from the private dashboard the author uses daily on 4 real sites, generalized before
 it lands here.
 
+## [0.19.0] - 2026-11-14
+
+### Added
+- **Failed GitHub checks** (builds, preview deploys) are now visible: a red box at the top of the slate lists
+  each one with site, repository, branch or PR and a link to the log, and the PR in "In the edit" gets a red
+  tag. The `sync-prs` job writes them (new step 5b).
+
+### Changed
+- The keyword, pages and AI answers tables hide rows whose last job is done, with a "show done" checkbox
+  and the count of hidden rows, like every other list.
+
+### Schema
+- New collection `controlli`; `pr.controlli_ko`.
+
 ## [0.18.0] - 2026-11-14
 
 ### Changed
@@ -279,6 +293,7 @@ it lands here.
   schema, dashboard that starts empty, modular data sources (Search Console required), deploy examples
   for Firebase, Netlify, Vercel and FTPS, link checker, secret scan and config validator in CI.
 
+[0.19.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.18.0...v0.19.0
 [0.18.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.17.0...v0.18.0
 [0.17.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.16.1...v0.17.0
 [0.16.1]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.16.0...v0.16.1

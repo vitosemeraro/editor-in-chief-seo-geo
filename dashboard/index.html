@@ -274,6 +274,16 @@
   .montaggio .scena.fatta { opacity: .55; }
   .prc[hidden] { display: none; }
 
+  /* Controlli falliti su GitHub (build, deploy di anteprima): scritti dalla routine delle PR. */
+  .ko { border: 2px solid #ff4b3a; border-radius: 8px; padding: 10px 14px; display: grid; gap: 6px; background: color-mix(in srgb, #ff4b3a 10%, transparent); }
+  .ko[hidden] { display: none; }
+  .ko > b { font: 800 20px/1.1 var(--font-display); text-transform: uppercase; letter-spacing: .03em; color: #ff8a7a; }
+  .ko ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 5px; font-size: 13px; }
+  .ko li { display: flex; gap: 4px 10px; flex-wrap: wrap; align-items: baseline; }
+  .ko li a { color: var(--paper); }
+  .ko li .k, .montaggio .tagc.ko-t { font: 500 10.5px var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: #ff8a7a; }
+  .montaggio .tagc.ko-t { border-color: #ff8a7a; }
+
   /* Lavagna cliccabile: ogni numero, striscia e riga apre l elenco filtrato. */
   button.lav-cell, button.mano-c { font: inherit; color: inherit; text-align: left; background: transparent; border-left: 0; border-right-style: dashed; cursor: pointer; }
   button.mano-c { border: 0; border-top: 4px solid var(--kc); background: transparent; padding: 6px 0 0; }
@@ -430,6 +440,7 @@
     <div class="lav-in">
       <div class="lav-top"><h2 id="lav-h">La lavagna</h2><span class="verdetto go" id="lav-verdetto" aria-live="polite">—</span></div>
       <p class="lav-why" id="lav-why">Tutto il lavoro in un colpo d'occhio: quanto aspetta Claude, quanto aspetta te, quanto è uscito.</p>
+      <div class="ko" id="lav-ko" hidden><b id="ko-t"></b><ul id="ko-lista"></ul></div>
       <div class="motore" id="motore">
         <button class="sw" type="button" role="switch" id="ciclo-sw" aria-checked="false" aria-label="Ciclo continuo"><span>OFF</span></button>
         <div><div class="t">Ciclo continuo</div><div class="d" id="ciclo-d">Quando la coda è vuota Claude prende da solo il consiglio automatico più utile e lo applica, poi riparte.</div></div>
@@ -544,6 +555,7 @@
 
   <section class="card" id="mercato">
     <div class="card-head"><div><h2><span class="tag">SEO</span><span class="tag">AEO</span> Platea</h2><p><b>Parole chiave e mercato.</b> Le ricerche che contano per ogni sito: quante volte si cercano al mese in Italia, dove siamo noi e chi è primo su Google. "Risposta AI" dice se Google mostra una risposta generata o le domande correlate. Dove non abbiamo una pagina, "Crea pagina ora" la scrive e la pubblica subito, senza passare dal calendario.</p></div></div>
+    <div class="toolbar"><label><input type="checkbox" id="kw-fatti"> mostra fatti</label><span class="small muted" id="kw-fatti-n"></span></div>
     <div class="scroll"><table>
       <thead><tr><th>Sito</th><th>Ricerca</th><th class="num">Ricerche/mese</th><th class="num">Noi</th><th>Nostra pagina</th><th>Primo su Google</th><th>Risposta AI</th><th>Cosa notare</th></tr></thead>
       <tbody id="kw-body"></tbody>
@@ -552,6 +564,7 @@
 
   <section class="card" id="pagine">
     <div class="card-head"><div><h2><span class="tag">SEO</span> Cartellone</h2><p><b>Le pagine su Google.</b> Da Search Console, le pagine con più impressioni negli ultimi 28 giorni, ognuna con la mossa più utile.</p></div></div>
+    <div class="toolbar"><label><input type="checkbox" id="pag-fatti"> mostra fatti</label><span class="small muted" id="pag-fatti-n"></span></div>
     <div class="scroll"><table>
       <thead><tr><th>Sito</th><th>Pagina</th><th class="num">Impr.</th><th class="num">Clic</th><th class="num">Pos.</th><th>Consiglio</th></tr></thead>
       <tbody id="pagine-body"></tbody>
@@ -560,6 +573,7 @@
 
   <section class="card" id="ai">
     <div class="card-head"><div><h2><span class="tag">GEO</span> La critica AI</h2><p><b>Le citazioni nei motori AI.</b> Le domande del pubblico ripetute su ChatGPT, Perplexity e simili: "sì" vuol dire che il sito viene citato. Accanto, chi citano oggi e cosa fare per entrare. Il controllo gira con la cadenza della routine settimanale.</p></div></div>
+    <div class="toolbar"><label><input type="checkbox" id="ai-fatti"> mostra fatti</label><span class="small muted" id="ai-fatti-n"></span></div>
     <div class="scroll"><table>
       <thead><tr><th>Sito</th><th>Motore</th><th>Domanda</th><th>Citato</th><th>Chi citano</th><th>Consiglio</th></tr></thead>
       <tbody id="ai-body"></tbody>
@@ -635,7 +649,7 @@
     for (const q of state.interventi) if (q.progetto === pid && isFinite(parseFloat(q.costo_usd)) && ok(q.quando)) { usd += parseFloat(q.costo_usd); cr += Number(q.crediti_openseo) || 0; n++; }
     return { usd, cr, n };
   }
-  const state = { progetti: [], metriche: [], piano: [], pagine: [], aeo: [], interazioni: [], salute: [], keyword: [], idee: [], consigli: [], richieste: [], pr: [], zoom: '', editor: [], interventi: [], serie: [], costi: [], conversioni: [], logTutti: false,
+  const state = { progetti: [], metriche: [], piano: [], pagine: [], aeo: [], interazioni: [], salute: [], keyword: [], idee: [], consigli: [], richieste: [], pr: [], controlli: [], zoom: '', editor: [], interventi: [], serie: [], costi: [], conversioni: [], logTutti: false,
     vista: 'main', costiPasso: 'settimana', costiValuta: 'EUR',
     filtro: 'tutti', calTipo: '', calStato: '', calPassate: false, consTipo: '', consFatti: false, sel: new Set(), db: null, mcp: null, canWrite: true };
   try { state.filtro = localStorage.getItem('eic-filtro') || 'tutti'; } catch (e) {}
@@ -662,6 +676,9 @@
   /* ---------- Richieste: il lavoro che parte dai pulsanti ---------- */
   const ultima = (fn) => state.richieste.filter(fn).sort((a, b) => String(b.creata_il || '').localeCompare(String(a.creata_il || '')))[0];
   const inCorso = (r) => r && (r.stato === 'In coda' || r.stato === 'In lavorazione');
+  /* Una riga è fatta quando l ultimo lavoro partito da lei è Fatto: senza la spunta "mostra fatti" sparisce. */
+  const fattaRif = (rif) => { const r = ultima((x) => x.rif === rif); return !!r && r.stato === 'Fatto'; };
+  const nascosti = (id, n) => { const e = $(id + '-n'); if (e) e.textContent = n && !$(id).checked ? ' ' + n + (n === 1 ? ' fatta nascosta' : ' fatte nascoste') : ''; };
 
   async function avvia(id) {
     const ref = state.db.collection('richieste').doc(id);
@@ -1046,6 +1063,23 @@
     }
     return rows.sort((a, b) => String(a.aperta_il || '').localeCompare(String(b.aperta_il || '')));
   }
+  /* Controlli falliti: quelli sulla PR (campo controlli_ko) e quelli della collezione controlli con stato Fallito. */
+  const koDi = (p) => (Array.isArray(p.controlli_ko) ? p.controlli_ko : []).concat(state.controlli.filter((k) => k.stato === 'Fallito' && k.repo === p.repo && Number(k.pr) === Number(p.numero)));
+  function renderKo() {
+    const rows = [];
+    for (const p of prAperte()) for (const k of koDi(p)) rows.push({ progetto: p.progetto, dove: String(p.repo || '').split('/').pop() + ' PR #' + p.numero, nome: k.nome, url: k.url, quando: k.quando });
+    for (const k of state.controlli) if (k.stato === 'Fallito' && !k.pr && vis(k.progetto)) rows.push({ progetto: k.progetto, dove: String(k.repo || '').split('/').pop() + (k.branch ? ' · ' + k.branch : ''), nome: k.nome, url: k.url, quando: k.quando });
+    const box = $('lav-ko'); box.hidden = !rows.length;
+    $('ko-t').textContent = rows.length + (rows.length === 1 ? ' controllo fallito su GitHub' : ' controlli falliti su GitHub');
+    $('ko-lista').replaceChildren(...rows.map((r) => {
+      const li = el('li', {}, [el('span', { className: 'k', textContent: '✕ ' + (r.nome || 'controllo') })]);
+      if (r.progetto && r.progetto !== 'tutti') li.append(sito(prog(r.progetto)));
+      li.append(el('span', { textContent: r.dove }));
+      if (r.quando) li.append(el('span', { className: 'muted', textContent: quando(r.quando) }));
+      if (/^https:\/\//.test(r.url || '')) li.append(el('a', { href: r.url, target: '_blank', rel: 'noopener', textContent: 'vedi il log' }));
+      return li;
+    }));
+  }
   function renderPr() {
     const rows = prAperte(), ul = $('mont-lista'); ul.replaceChildren();
     $('montaggio').classList.toggle('vuoto', !rows.length);
@@ -1059,6 +1093,7 @@
       meta.append(el('span', { textContent: String(p.repo || '').split('/').pop() }));
       if (p.aperta_il) meta.append(el('span', { textContent: 'aperta ' + daQuanto(p.aperta_il) }));
       const c = consiglioDi(p); if (c) meta.append(el('span', { className: 'tagc', textContent: c.stato }));
+      for (const k of koDi(p)) meta.append(/^https:\/\//.test(k.url || '') ? el('a', { className: 'tagc ko-t', href: k.url, target: '_blank', rel: 'noopener', textContent: '✕ ' + (k.nome || 'controllo fallito') }) : el('span', { className: 'tagc ko-t', textContent: '✕ ' + (k.nome || 'controllo fallito') }));
       const mid = el('div', {}, [el('div', { className: 'tt', textContent: p.titolo || '' })]);
       const perche = p.perche || (c && c.titolo !== p.titolo ? c.titolo : ''); if (perche) mid.append(el('div', { className: 'perche', textContent: perche }));
       mid.append(meta);
@@ -1289,6 +1324,7 @@
     renderRitmo();
     renderMano();
     renderCiclo();
+    renderKo();
     renderZoom();
     const te = (n.desk || 0) + (n.dec || 0), ko = (n.ext || 0) + u.err;
     const v = $('lav-verdetto');
@@ -1573,11 +1609,14 @@
   }
 
   /* ---------- Parole chiave ---------- */
+  $('kw-fatti').addEventListener('change', () => renderKeyword());
   function renderKeyword() {
     const tb = $('kw-body'); tb.replaceChildren();
     const ord = (id) => (prog(id).ordine || 0);
-    const rows = state.keyword.filter((r) => visibile(r.progetto)).sort((a, b) => ord(a.progetto) - ord(b.progetto) || (b.volume || 0) - (a.volume || 0));
-    if (!rows.length) { tb.append(el('tr', {}, [el('td', { colSpan: 8, className: 'empty', textContent: 'Le parole chiave arrivano al primo aggiornamento.' })])); return; }
+    const kwTutte = state.keyword.filter((r) => visibile(r.progetto));
+    const rows = kwTutte.filter((r) => $('kw-fatti').checked || !fattaRif('keyword/' + r.id)); nascosti('kw-fatti', kwTutte.length - rows.length);
+    rows.sort((a, b) => ord(a.progetto) - ord(b.progetto) || (b.volume || 0) - (a.volume || 0));
+    if (!rows.length) { tb.append(el('tr', {}, [el('td', { colSpan: 8, className: 'empty', textContent: kwTutte.length ? 'Tutte fatte: spunta "mostra fatti" per rivederle.' : 'Le parole chiave arrivano al primo aggiornamento.' })])); return; }
     for (const r of rows) {
       const p = prog(r.progetto);
       const pos = r.nostra_posizione;
@@ -1611,10 +1650,13 @@
     return 'Rinforza: aggiorna al 2026, aggiungi dati reali e link interni dagli articoli.';
   }
 
+  $('pag-fatti').addEventListener('change', () => renderPagine());
   function renderPagine() {
     const tb = $('pagine-body'); tb.replaceChildren();
-    const rows = state.pagine.filter((r) => visibile(r.progetto)).sort((a, b) => ((b.azione !== 'nessuna') - (a.azione !== 'nessuna')) || (punteggio(b) - punteggio(a)) || ((b.impressioni || 0) - (a.impressioni || 0)));
-    if (!rows.length) { tb.append(el('tr', {}, [el('td', { colSpan: 6, className: 'empty', textContent: 'Arriva dal primo aggiornamento da Search Console.' })])); return; }
+    const pgTutte = state.pagine.filter((r) => visibile(r.progetto));
+    const rows = pgTutte.filter((r) => $('pag-fatti').checked || !fattaRif('pagine/' + r.id)); nascosti('pag-fatti', pgTutte.length - rows.length);
+    rows.sort((a, b) => ((b.azione !== 'nessuna') - (a.azione !== 'nessuna')) || (punteggio(b) - punteggio(a)) || ((b.impressioni || 0) - (a.impressioni || 0)));
+    if (!rows.length) { tb.append(el('tr', {}, [el('td', { colSpan: 6, className: 'empty', textContent: pgTutte.length ? 'Tutte fatte: spunta "mostra fatti" per rivederle.' : 'Arriva dal primo aggiornamento da Search Console.' })])); return; }
     for (const r of rows) {
       const p = prog(r.progetto); const c = r.consiglio || consiglioPagina(r);
       const pos = Number(r.posizione); const cls = isNaN(pos) ? 'muted' : pos <= 10 ? 'ok' : pos <= 30 ? 'warn' : 'bad';
@@ -1633,10 +1675,13 @@
       ]));
     }
   }
+  $('ai-fatti').addEventListener('change', () => renderAi());
   function renderAi() {
     const tb = $('ai-body'); tb.replaceChildren();
-    const rows = state.aeo.filter((r) => visibile(r.progetto)).sort((a, b) => (Number(a.citato) || 0) - (Number(b.citato) || 0) || String(a.motore).localeCompare(String(b.motore)));
-    if (!rows.length) { tb.append(el('tr', {}, [el('td', { colSpan: 6, className: 'empty', textContent: 'Arriva dal primo controllo delle risposte AI, se il modulo ai_visibility è attivo.' })])); return; }
+    const aiTutte = state.aeo.filter((r) => visibile(r.progetto));
+    const rows = aiTutte.filter((r) => $('ai-fatti').checked || !fattaRif('aeo/' + r.id)); nascosti('ai-fatti', aiTutte.length - rows.length);
+    rows.sort((a, b) => (Number(a.citato) || 0) - (Number(b.citato) || 0) || String(a.motore).localeCompare(String(b.motore)));
+    if (!rows.length) { tb.append(el('tr', {}, [el('td', { colSpan: 6, className: 'empty', textContent: aiTutte.length ? 'Tutte fatte: spunta "mostra fatti" per rivederle.' : 'Arriva dal primo controllo delle risposte AI, se il modulo ai_visibility è attivo.' })])); return; }
     for (const r of rows) {
       const p = prog(r.progetto); const si = Number(r.citato) > 0;
       const c = r.consiglio || (si ? 'Già citato: tieni aggiornata la pagina citata.' : 'Pubblica una risposta diretta a questa domanda, con dati reali, nella pagina più vicina del sito.');
@@ -1994,7 +2039,7 @@
     try { const user = await window.claude.use('user'); if (user && user.can) { const c = await user.can('data.write'); if (c === false) state.canWrite = false; } } catch (e) {}
     try { state.mcp = await window.claude.use('mcp'); } catch (e) { state.mcp = null; }
     const sub = (name) => db.collection(name).onSnapshot((snap) => { state[name] = snap.docs.map((d) => Object.assign({ id: d.id }, d.data())); if (name === 'progetti') state.progetti.sort((a, b) => (a.ordine || 0) - (b.ordine || 0)); pianifica(); }, () => say('Connessione ai dati interrotta: ricarica la pagina.'));
-    ['progetti', 'metriche', 'piano', 'pagine', 'aeo', 'interazioni', 'salute', 'keyword', 'idee', 'consigli', 'richieste', 'pr', 'editor', 'interventi', 'serie', 'costi', 'conversioni'].forEach(sub);
+    ['progetti', 'metriche', 'piano', 'pagine', 'aeo', 'interazioni', 'salute', 'keyword', 'idee', 'consigli', 'richieste', 'pr', 'controlli', 'editor', 'interventi', 'serie', 'costi', 'conversioni'].forEach(sub);
   })();
 })();
 </script>

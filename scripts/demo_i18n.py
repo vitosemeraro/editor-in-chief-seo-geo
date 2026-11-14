@@ -3,6 +3,16 @@
 # Status values are translated consistently in code and data, so the demo keeps working in every language.
 
 T = {
+    # ---------- failed checks + done filter on data tables (0.19.0) ----------
+    'Tutte fatte: spunta "mostra fatti" per rivederle.': ('All done: tick "show done" to see them again.', 'Todas hechas: marca "mostrar hechos" para volver a verlas.', 'Toutes faites : cochez "afficher les faits" pour les revoir.'),
+    'vedi il log': ('see the log', 'ver el registro', 'voir le journal'),
+    'mostra fatti': ('show done', 'mostrar hechos', 'afficher les faits'),
+    ' fatta nascosta': (' done item hidden', ' hecha oculta', ' faite masquée'),
+    ' fatte nascoste': (' done items hidden', ' hechas ocultas', ' faites masquées'),
+    ' controllo fallito su GitHub': (' failed check on GitHub', ' control fallido en GitHub', ' contrôle échoué sur GitHub'),
+    ' controlli falliti su GitHub': (' failed checks on GitHub', ' controles fallidos en GitHub', ' contrôles échoués sur GitHub'),
+    'controllo fallito': ('failed check', 'control fallido', 'contrôle échoué'),
+    'controllo': ('check', 'control', 'contrôle'),
     # ---------- done items hidden by default (0.18.0) ----------
     'mostra fatti (anche scartati)': ('show done (also dismissed)', 'mostrar hechos (también descartados)', 'afficher les faits (aussi écartés)'),
     'mostra fatti (anche annullati)': ('show done (also cancelled)', 'mostrar hechos (también cancelados)', 'afficher les faits (aussi annulés)'),

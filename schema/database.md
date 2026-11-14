@@ -188,6 +188,13 @@ what it is for), `rif` ("consigli/<id>", optional), `aperta_il`, `stato` (`Apert
 and `segnata_dalla_pagina: true` at once; the `sync-prs` job confirms or corrects it. `editor/stato.pr_controllo_il`
 is the time of the last check.
 
+## controlli/{repo}-{branch}-{check}: failed GitHub checks
+
+Written by the `sync-prs` job for the default branch of every site repository: `repo`, `progetto`, `branch`,
+`nome`, `url` (log), `commit`, `quando`, `stato` (`Fallito`, `Risolto`), optional `pr` (number) and `nota`.
+Failed checks of an open PR also go in `pr.controlli_ko` as a list of {nome, url}. The dashboard lists the
+`Fallito` ones in red at the top of the slate and tags the PR in "In the edit".
+
 ## interventi/{YYYYMMDD-HHMM}-{site_id}-{n}
 
 Log of work not started from a button (scheduled publishing, calendar autofill): `quando`, `progetto`,

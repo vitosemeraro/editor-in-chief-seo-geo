@@ -15,5 +15,12 @@ PRs, do not write to repositories, do not log to `interventi`.
    close the linked manual requests `Fatto`. If a step is still needed after the merge, leave it.
 5. For every open PR without a document, create `pr/<repo name>-<number>` as described in
    `schema/database.md`, with `progetto` from `sites[].repo` and a plain one-sentence `perche`.
+5b. Failed checks. For every open PR read the checks of its head commit (`gh api repos/<repo>/commits/<sha>/check-runs`
+   and `/status`) and write `controlli_ko` on the `pr` document: a list of {nome, url} for checks that ended in
+   failure, timed_out, cancelled or action_required (empty when all pass). Then read the checks of the latest
+   commit on the default branch of every site repository: for each failing one write
+   `controlli/<repo>-<branch>-<check name slug>` (repo, progetto, branch, nome, url, commit, quando, stato
+   `Fallito`, aggiornato_il); set `Risolto` on `Fallito` documents whose check now passes. The dashboard shows
+   them in red on the slate and on the PR.
 6. Always, at the end: update `editor/stato` with only `pr_controllo_il` = now (ISO). The dashboard shows
    it as the last check time.

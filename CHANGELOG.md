@@ -7,6 +7,13 @@ change to the database schema bumps the minor version, a fix bumps the patch.
 Every change comes from the private dashboard the author uses daily on 4 real sites, generalized before
 it lands here.
 
+## [0.22.0] - 2026-11-14
+
+### Added
+- Conversations that wait for an answer from the owner show up under manual work as "Stalled chat", with
+  how many days they have been waiting and a link to the conversation. `sync-prs` keeps them in step
+  (new step 5c, new request type `chat_ferma`).
+
 ## [0.21.0] - 2026-11-14
 
 ### Added
@@ -309,6 +316,7 @@ it lands here.
   schema, dashboard that starts empty, modular data sources (Search Console required), deploy examples
   for Firebase, Netlify, Vercel and FTPS, link checker, secret scan and config validator in CI.
 
+[0.22.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.21.0...v0.22.0
 [0.21.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.20.0...v0.21.0
 [0.20.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.19.0...v0.20.0
 [0.19.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.18.0...v0.19.0

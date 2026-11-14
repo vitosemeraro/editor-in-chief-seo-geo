@@ -22,5 +22,10 @@ PRs, do not write to repositories, do not log to `interventi`.
    `controlli/<repo>-<branch>-<check name slug>` (repo, progetto, branch, nome, url, commit, quando, stato
    `Fallito`, aggiornato_il); set `Risolto` on `Fallito` documents whose check now passes. The dashboard shows
    them in red on the slate and on the PR.
+5c. Stalled chats. If your environment can list the conversations that wait for an answer from the owner,
+   write one `richieste/thread-<id>` per conversation: tipo `chat_ferma`, progetto, testo = conversation title,
+   stato `Da fare a mano`, blocco `dec`, esito = one sentence on what it waits for, sessione = link to the
+   conversation, creata_il = its last activity, origine "chat ferma". When a conversation is no longer waiting,
+   set its row to `Fatto`. The dashboard lists them under manual work with the days they have been waiting.
 6. Always, at the end: update `editor/stato` with only `pr_controllo_il` = now (ISO). The dashboard shows
    it as the last check time.

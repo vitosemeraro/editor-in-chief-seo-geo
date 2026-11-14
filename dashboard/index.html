@@ -1004,7 +1004,8 @@
   }
   /* Una riga dell elenco filtrato: etichetta, sito, titolo, dettaglio e i link (chat, PR, pagina). */
   const RX_PR = /https:\/\/github\.com\/([\w.-]+\/[\w.-]+)\/pull\/(\d+)/;
-  const titoloDi = (q, c) => (c && c.titolo) || (q ? (TIPO_NOME[q.tipo] || q.tipo) + (q.testo ? ': ' + q.testo : '') : '');
+  const ferma = (q) => { const g = Math.floor((Date.now() - Date.parse(q.creata_il || '')) / 864e5); return g >= 1 ? ' (ferma da ' + g + (g === 1 ? ' giorno)' : ' giorni)') : ''; };
+  const titoloDi = (q, c) => (c && c.titolo) || (q ? (TIPO_NOME[q.tipo] || q.tipo) + (q.testo ? ': ' + q.testo : '') + (q.tipo === 'chat_ferma' ? ferma(q) : '') : '');
   const KNOME = { todo: 'da fare', run: 'in corso', desk: 'PC acceso', dec: 'tua decisione', ext: 'blocco esterno', rej: 'rifiutato', done: 'chiuso', claude: 'le chiude Claude', new: 'nuova', sched: 'programmata', err: 'in errore', pub: 'pubblicata', pausa: 'in pausa' };
   /* "Sono online, procedi": per i lavori che aspettano il PC acceso crea una richiesta fai_col_pc e la avvia subito. */
   const rifDi = (x) => (x.c ? 'consigli/' + x.c.id : x.q ? 'richieste/' + x.q.id : '');
@@ -1700,7 +1701,7 @@
   }
 
   /* ---------- Registro interventi ---------- */
-  const TIPO_NOME = { aggiorna_dati: 'Aggiorna dati', controllo_sito: 'Verifica e consiglia', applica_consiglio: 'Applica consiglio', implementa_nota: 'Implementa nota', crea_pagina: 'Crea pagina', verifica_manuale: 'Verifica lavoro fatto a mano', spiega_consiglio: 'Spiegami come', chat_consiglio: 'Chat sul consiglio', fai_col_pc: 'Col tuo PC' };
+  const TIPO_NOME = { aggiorna_dati: 'Aggiorna dati', controllo_sito: 'Verifica e consiglia', applica_consiglio: 'Applica consiglio', implementa_nota: 'Implementa nota', crea_pagina: 'Crea pagina', verifica_manuale: 'Verifica lavoro fatto a mano', spiega_consiglio: 'Spiegami come', chat_consiglio: 'Chat sul consiglio', fai_col_pc: 'Col tuo PC', chat_ferma: 'Chat ferma' };
   function quandoLog(iso) { if (!iso) return ''; const d = new Date(iso); if (isNaN(d)) return iso; return d.toLocaleString('it-IT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }); }
   function linkChat(u) { return u && /^https:\/\/claude\.ai\//.test(u) ? el('a', { href: u, target: '_blank', rel: 'noopener', textContent: 'Apri la chat' }) : null; }
   function consumo(r) {

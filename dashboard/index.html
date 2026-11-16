@@ -274,6 +274,24 @@
   .montaggio .scena.fatta { opacity: .55; }
   .prc[hidden] { display: none; }
 
+  /* Ordine del giorno: le attività programmate (routine fisse e una tantum) con la prossima esecuzione. */
+  .odg { background: var(--ink); color: var(--paper); border-radius: var(--r); border-left: 6px solid #7fb7ff; padding: 12px 16px; display: grid; gap: 8px; }
+  .odg.vuoto { border-left-color: #7d756a; }
+  .odg .sigira-h b i { background: #7fb7ff; border-radius: 50%; box-shadow: none; animation: none; }
+  .odg.vuoto .sigira-h b i { background: #7d756a; }
+  .odg .mont-tot { font: 800 48px/0.9 var(--font-display); color: #7fb7ff; }
+  .odg.vuoto .mont-tot { color: #7d756a; }
+  .odg .mont-tl { font: 800 18px/1.05 var(--font-display); text-transform: uppercase; letter-spacing: .03em; opacity: 1; }
+  .odg #odg-s { flex-basis: 100%; }
+  .odg .mont-f { font-size: 12.5px; opacity: .8; margin-left: auto; display: inline-flex; gap: 6px; align-items: center; }
+  .odg .scena .ora { font: 800 20px/1 var(--font-display); color: #7fb7ff; white-space: nowrap; text-align: right; min-width: 5.2em; }
+  .odg .scena .ora small { display: block; font: 500 10.5px var(--font-mono); letter-spacing: .06em; text-transform: uppercase; opacity: .75; color: var(--paper); margin-top: 3px; }
+  .odg .scena .perche { font-size: 13px; opacity: .85; margin-top: 3px; overflow-wrap: anywhere; }
+  .odg .scena.fatta { opacity: .55; }
+  .odg .scena.presto .ora { color: #ffb84d; }
+  .odg .tagc.ko-t { color: #ff8a7a; border-color: #ff8a7a; }
+  @media (max-width: 640px) { .odg .scena .ora { text-align: left; } }
+
   /* Controlli falliti su GitHub (build, deploy di anteprima): scritti dalla routine delle PR. */
   .ko { border: 2px solid #ff4b3a; border-radius: 8px; padding: 10px 14px; display: grid; gap: 6px; background: color-mix(in srgb, #ff4b3a 10%, transparent); }
   .ko[hidden] { display: none; }
@@ -394,6 +412,7 @@
     <ul class="menu" id="menu">
       <li><a href="#siti" data-go="siti"><span class="n">01</span>In scena</a></li>
       <li><a href="#lavagna" data-go="lavagna"><span class="n">02</span>Lavagna</a></li>
+      <li><a href="#odg" data-go="odg"><span class="n">&#9719;</span>Programmate</a></li>
       <li><a href="#salute" data-go="salute"><span class="n">03</span>Il polso</a></li>
       <li><a href="#consigli" data-go="consigli"><span class="n">04</span>Note di redazione</a></li>
       <li><a href="#idee" data-go="idee"><span class="n">05</span>Soggetti</a></li>
@@ -432,6 +451,11 @@
   <section class="montaggio vuoto" id="montaggio" aria-labelledby="mont-h">
     <div class="sigira-h"><b id="mont-h"><i></i>Al montaggio</b><span class="mont-tot" id="mont-tot">0</span><span class="mont-tl">PR da unire, aspettano te</span><label class="mont-f"><input type="checkbox" id="pr-fatti"> mostra fatti (unite e chiuse)</label><span id="mont-s">Nessuna PR da unire.</span></div>
     <ul class="scene" id="mont-lista"></ul>
+  </section>
+
+  <section class="odg vuoto" id="odg" aria-labelledby="odg-h">
+    <div class="sigira-h"><b id="odg-h"><i></i>Ordine del giorno</b><span class="mont-tot" id="odg-tot">0</span><span class="mont-tl">attività programmate</span><label class="mont-f"><input type="checkbox" id="odg-fatti"> mostra fatti (eseguite e spente)</label><span id="odg-s">Carico le attività programmate…</span></div>
+    <ul class="scene" id="odg-lista"></ul>
   </section>
 
   <section class="sites" id="siti" aria-label="Siti"></section>
@@ -603,6 +627,7 @@
       <li>Nei giorni di uscita scelti in configurazione le routine leggono il calendario, scrivono i contenuti "Programmato" del giorno, li pubblicano (o preparano la bozza) e li segnano.</li>
       <li>I pulsanti (Aggiorna dati, Verifica e consiglia, Applica, Crea pagina ora) mettono il lavoro in coda e lo avviano subito; lo stato accanto al pulsante si aggiorna da solo. Se l'avvio immediato non è disponibile, il lavoro parte al prossimo giro programmato.</li>
       <li>Ogni sito ha una modalità: "auto" pubblica direttamente, "draft" prepara una bozza da approvare.</li>
+      <li>"Ordine del giorno" elenca le attività che Claude fa da solo a orari fissi (giro del mattino, report, controlli) e quelle fissate una volta sola, con la prossima esecuzione. L'elenco si riallinea ogni 3 ore; quelle eseguite o spente compaiono solo con "mostra fatti".</li>
       <li>Per spostare un'uscita cambia la data; per fermarla metti "In pausa". Per cambiarne molte insieme selezionale.</li>
       <li>"Conversioni previste" su ogni sito è una stima per i prossimi 30 giorni: visite previste da Cloudflare per un tasso di conversione. Dove il sito non misura ancora le conversioni il tasso è un riferimento di settore dichiarato; quando arrivano dati reali da Google Analytics pesano sempre di più. È sempre un intervallo, con l'affidabilità accanto.</li>
       <li>Stato di salute, parole chiave e idee si aggiornano dalle fonti dati attive in configurazione (Search Console come base; Analytics, Cloudflare, visibilità AI opzionali). Le idee e i consigli che scarti non tornano.</li>
@@ -649,7 +674,7 @@
     for (const q of state.interventi) if (q.progetto === pid && isFinite(parseFloat(q.costo_usd)) && ok(q.quando)) { usd += parseFloat(q.costo_usd); cr += Number(q.crediti_openseo) || 0; n++; }
     return { usd, cr, n };
   }
-  const state = { progetti: [], metriche: [], piano: [], pagine: [], aeo: [], interazioni: [], salute: [], keyword: [], idee: [], consigli: [], richieste: [], pr: [], controlli: [], zoom: '', editor: [], interventi: [], serie: [], costi: [], conversioni: [], logTutti: false,
+  const state = { progetti: [], metriche: [], piano: [], pagine: [], aeo: [], interazioni: [], salute: [], keyword: [], idee: [], consigli: [], richieste: [], pr: [], controlli: [], schedule: [], zoom: '', editor: [], interventi: [], serie: [], costi: [], conversioni: [], logTutti: false,
     vista: 'main', costiPasso: 'settimana', costiValuta: 'EUR',
     filtro: 'tutti', calTipo: '', calStato: '', calPassate: false, consTipo: '', consFatti: false, sel: new Set(), db: null, mcp: null, canWrite: true };
   try { state.filtro = localStorage.getItem('eic-filtro') || 'tutti'; } catch (e) {}
@@ -1119,6 +1144,107 @@
     }
   }
   $('pr-fatti').addEventListener('change', (e) => { state.prFatti = e.target.checked; renderPr(); });
+
+  /* ---------- Ordine del giorno: attività programmate ----------
+     Collezione schedule/<id>: nome, cosa, progetto (o sito_nome), quando (testo), cron (anche "CRON_TZ=<fuso> m h dom mon dow"),
+     una_tantum, prossima (ISO), ultima (ISO), ultimo_esito (ok | errore), nota_esito, stato Attiva | Spenta | Fatta, chat, aggiornato_il.
+     Le righe le scrive la routine delle PR (ogni 3 ore) leggendo le attività programmate; la pagina ricalcola da sola
+     la prossima esecuzione dal cron quando quella salvata è già passata. */
+  function campoCron(f, min, max) {
+    const out = new Set();
+    for (const part of String(f).split(',')) {
+      const [r, st] = part.split('/'); const step = st ? parseInt(st, 10) : 1;
+      let a = min, b = max;
+      if (r !== '*') { const [x, y] = r.split('-').map((n) => parseInt(n, 10)); a = x; b = y != null && !isNaN(y) ? y : (st ? max : x); }
+      if (isNaN(a) || isNaN(b) || !(step > 0)) return null;
+      for (let i = a; i <= b; i += step) out.add(i);
+    }
+    return out;
+  }
+  const FMT_TZ = {};
+  function oraIn(tz, t) {
+    const f = FMT_TZ[tz] || (FMT_TZ[tz] = new Intl.DateTimeFormat('en-GB', { timeZone: tz, hourCycle: 'h23', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }));
+    const p = {}; for (const x of f.formatToParts(new Date(t))) p[x.type] = x.value;
+    return { y: +p.year, m: +p.month, d: +p.day, h: +p.hour % 24, mi: +p.minute };
+  }
+  function daOraLocale(tz, y, m, d, h, mi) {
+    const g = Date.UTC(y, m - 1, d, h, mi);
+    const off = (t) => { const o = oraIn(tz, t); return Date.UTC(o.y, o.m - 1, o.d, o.h, o.mi) - Math.floor(t / 6e4) * 6e4; };
+    let t = g - off(g); const o2 = off(t); if (o2 !== g - t) t = g - o2;
+    return t;
+  }
+  function prossimaCron(expr, da) {
+    try {
+      let tz = 'UTC', rest = String(expr || '').trim();
+      const m = /^CRON_TZ=(\S+)\s+(.*)$/.exec(rest); if (m) { tz = m[1]; rest = m[2]; }
+      const f = rest.split(/\s+/); if (f.length !== 5) return null;
+      const mins = campoCron(f[0], 0, 59), ore = campoCron(f[1], 0, 23), gg = campoCron(f[2], 1, 31), mesi = campoCron(f[3], 1, 12), sett = campoCron(f[4], 0, 7);
+      if (!mins || !ore || !gg || !mesi || !sett) return null;
+      if (sett.has(7)) sett.add(0);
+      const ml = [...mins].sort((a, b) => a - b), hl = [...ore].sort((a, b) => a - b);
+      const base = oraIn(tz, da);
+      for (let i = 0; i < 40; i++) {
+        const c = new Date(Date.UTC(base.y, base.m - 1, base.d + i));
+        const Y = c.getUTCFullYear(), M = c.getUTCMonth() + 1, D = c.getUTCDate(), W = c.getUTCDay();
+        if (!mesi.has(M)) continue;
+        const okG = gg.has(D), okS = sett.has(W);
+        if (f[2] !== '*' && f[4] !== '*' ? !(okG || okS) : !(okG && okS)) continue;
+        for (const h of hl) for (const mi of ml) { const t = daOraLocale(tz, Y, M, D, h, mi); if (t > da) return t; }
+      }
+    } catch (e) {}
+    return null;
+  }
+  function prossimaDi(r, ora) {
+    const p = Date.parse(r.prossima || '');
+    if (!r.una_tantum && r.cron && !(p > ora)) return prossimaCron(r.cron, ora);
+    return isNaN(p) ? null : p;
+  }
+  const odgFatta = (r, ora) => r.stato === 'Fatta' || r.stato === 'Spenta' || (r.una_tantum && !(Date.parse(r.prossima || '') > ora - 15 * 6e4));
+  function oraOdg(t, ora) {
+    const d = new Date(t), o = new Date(ora);
+    const hm = d.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit', timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone });
+    const giorno = (x) => x.toLocaleDateString('it-IT', { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone });
+    const dom = new Date(ora + 864e5);
+    const g = giorno(d) === giorno(o) ? 'oggi' : giorno(d) === giorno(dom) ? 'domani' : d.toLocaleDateString('it-IT', { weekday: 'short', day: 'numeric', month: 'short', timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone });
+    const min = Math.round((t - ora) / 6e4);
+    const tra = min < 0 ? 'adesso' : min < 60 ? 'tra ' + min + ' min' : min < 1440 ? 'tra ' + Math.round(min / 60) + ' h' : 'tra ' + Math.round(min / 1440) + ' g';
+    return { hm, g, tra, presto: min >= 0 && min < 180 };
+  }
+  function renderOdg() {
+    const ora = Date.now(), ul = $('odg-lista'); ul.replaceChildren();
+    const tutte = state.schedule.filter((r) => !r.progetto || r.progetto === 'tutti' || visibile(r.progetto));
+    const attive = tutte.filter((r) => !odgFatta(r, ora)).map((r) => ({ r, t: prossimaDi(r, ora) })).sort((a, b) => (a.t || 9e15) - (b.t || 9e15));
+    const fatte = tutte.filter((r) => odgFatta(r, ora));
+    $('odg').classList.toggle('vuoto', !attive.length);
+    $('odg-tot').textContent = String(attive.length);
+    const oggiN = attive.filter((x) => x.t && oraOdg(x.t, ora).g === 'oggi').length;
+    const agg = (state.editor.find((d) => d.id === 'stato') || {}).programmate_controllo_il || '';
+    const ko = attive.filter((x) => x.r.ultimo_esito === 'errore').length;
+    $('odg-s').textContent = (attive.length ? oggiN + (oggiN === 1 ? ' parte oggi' : ' partono oggi') + (attive[0].t ? ', la prossima ' + oraOdg(attive[0].t, ora).tra : '') + '.' + (ko ? ' ' + ko + (ko === 1 ? ' non è riuscita' : ' non sono riuscite') + " l'ultima volta." : '') : (state.schedule.length ? 'Nessuna attività in programma.' : 'Le attività programmate arrivano con il prossimo controllo.'))
+      + ' Orari nel tuo fuso. Elenco ricontrollato ogni 3 ore' + (agg ? ', ultimo alle ' + new Date(agg).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit', timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone }) : '') + '.';
+    const riga = (r, t, fatta) => {
+      const meta = el('div', { className: 'meta' });
+      if (r.progetto && r.progetto !== 'tutti') meta.append(sito(prog(r.progetto))); else meta.append(el('span', { textContent: r.sito_nome || 'tutti i siti' }));
+      meta.append(el('span', { className: 'tagc', textContent: r.una_tantum ? 'una volta' : 'ricorrente' }));
+      if (r.quando) meta.append(el('span', { textContent: r.quando }));
+      if (r.ultima) meta.append(el('span', { textContent: 'ultima ' + quando(r.ultima) }));
+      if (r.ultimo_esito === 'errore') meta.append(el('span', { className: 'tagc ko-t', textContent: '✕ ultima non riuscita', title: r.nota_esito || '' }));
+      if (fatta) meta.append(el('span', { className: 'tagc', textContent: r.stato === 'Spenta' ? 'spenta' : 'eseguita' }));
+      const mid = el('div', {}, [el('div', { className: 'tt', textContent: r.nome || r.id })]);
+      if (r.cosa) mid.append(el('div', { className: 'perche', textContent: r.cosa }));
+      if (r.ultimo_esito === 'errore' && r.nota_esito) mid.append(el('div', { className: 'perche', textContent: 'Ultima volta: ' + r.nota_esito }));
+      mid.append(meta);
+      const o = t ? oraOdg(t, ora) : null;
+      const left = el('span', { className: 'ora' }, o ? [document.createTextNode(o.hm), el('small', { textContent: o.g + ' · ' + o.tra })] : [document.createTextNode(fatta ? '—' : '?'), el('small', { textContent: fatta ? (r.stato === 'Spenta' ? 'spenta' : 'fatta') : 'orario non noto' })]);
+      const link = r.chat && /^https:\/\/claude\.ai\//.test(r.chat) ? el('a', { href: r.chat, target: '_blank', rel: 'noopener', textContent: 'apri la chat' }) : el('span');
+      return el('li', { className: 'scena' + (fatta ? ' fatta' : '') + (o && o.presto && !fatta ? ' presto' : '') }, [left, mid, link]);
+    };
+    for (const { r, t } of attive) ul.append(riga(r, t, false));
+    if (state.odgFatti) for (const r of fatte.sort((a, b) => String(b.prossima || b.ultima || '').localeCompare(String(a.prossima || a.ultima || ''))).slice(0, 30)) ul.append(riga(r, null, true));
+    if (state.odgFatti && fatte.length) $('odg').classList.remove('vuoto');
+  }
+  $('odg-fatti').addEventListener('change', (e) => { state.odgFatti = e.target.checked; renderOdg(); });
+  setInterval(() => { try { renderOdg(); } catch (e) {} }, 60e3);
   /* Elenco filtrato della lavagna: chiave tipo "lav:desk", "lav:todo:site1", "sito:site1", "usc:err", "mano:dec". */
   function uscitaK(r) {
     const st = r.stato || '';
@@ -2009,7 +2135,7 @@
   });
 
   function renderAll() {
-    renderVista(); renderCosti(); renderFiltro(); renderAggiorna(); renderSigira(); renderPr(); renderSiti(); renderLavagna(); renderSalute(); renderConsigli(); renderIdee(); renderCalToolbar(); renderPiano(); renderKeyword(); renderPagine(); renderAi(); renderLog(); renderInterazioni();
+    renderVista(); renderCosti(); renderFiltro(); renderAggiorna(); renderSigira(); renderPr(); renderOdg(); renderSiti(); renderLavagna(); renderSalute(); renderConsigli(); renderIdee(); renderCalToolbar(); renderPiano(); renderKeyword(); renderPagine(); renderAi(); renderLog(); renderInterazioni();
     const sel = $('add-progetto');
     if (sel.options.length !== state.progetti.length) { sel.replaceChildren(); for (const p of state.progetti) sel.append(el('option', { value: p.id, textContent: p.nome })); }
     if (state.filtro !== 'tutti') sel.value = state.filtro;
@@ -2041,7 +2167,7 @@
     try { const user = await window.claude.use('user'); if (user && user.can) { const c = await user.can('data.write'); if (c === false) state.canWrite = false; } } catch (e) {}
     try { state.mcp = await window.claude.use('mcp'); } catch (e) { state.mcp = null; }
     const sub = (name) => db.collection(name).onSnapshot((snap) => { state[name] = snap.docs.map((d) => Object.assign({ id: d.id }, d.data())); if (name === 'progetti') state.progetti.sort((a, b) => (a.ordine || 0) - (b.ordine || 0)); pianifica(); }, () => say('Connessione ai dati interrotta: ricarica la pagina.'));
-    ['progetti', 'metriche', 'piano', 'pagine', 'aeo', 'interazioni', 'salute', 'keyword', 'idee', 'consigli', 'richieste', 'pr', 'controlli', 'editor', 'interventi', 'serie', 'costi', 'conversioni'].forEach(sub);
+    ['progetti', 'metriche', 'piano', 'pagine', 'aeo', 'interazioni', 'salute', 'keyword', 'idee', 'consigli', 'richieste', 'pr', 'controlli', 'schedule', 'editor', 'interventi', 'serie', 'costi', 'conversioni'].forEach(sub);
   })();
 })();
 </script>

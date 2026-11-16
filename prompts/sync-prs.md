@@ -27,5 +27,12 @@ PRs, do not write to repositories, do not log to `interventi`.
    stato `Da fare a mano`, blocco `dec`, esito = one sentence on what it waits for, sessione = link to the
    conversation, creata_il = its last activity, origine "chat ferma". When a conversation is no longer waiting,
    set its row to `Fatto`. The dashboard lists them under manual work with the days they have been waiting.
+5d. Scheduled jobs. If your environment can list its scheduled jobs (routines, reminders, one-off runs), write one
+   `schedule/<job id>` per job that concerns the sites or this dashboard (never personal jobs, never the job's
+   prompt, e-mail addresses or file ids: the page may be shared by link). Fields: nome, cosa (one sentence),
+   progetto or sito_nome, quando (human text in your time zone), cron, una_tantum, prossima, ultima,
+   ultimo_esito (`ok` or `errore` with nota_esito), stato (`Attiva`, `Spenta`, `Fatta` for one-offs that ran),
+   chat (optional link), aggiornato_il. Update only what changed; set `Fatta` on rows whose job no longer
+   exists. Then update `editor/stato` with only `programmate_controllo_il` = now (ISO).
 6. Always, at the end: update `editor/stato` with only `pr_controllo_il` = now (ISO). The dashboard shows
    it as the last check time.

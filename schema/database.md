@@ -195,6 +195,17 @@ Written by the `sync-prs` job for the default branch of every site repository: `
 Failed checks of an open PR also go in `pr.controlli_ko` as a list of {nome, url}. The dashboard lists the
 `Fallito` ones in red at the top of the slate and tags the PR in "In the edit".
 
+## schedule/{job id}: scheduled jobs ("Run sheet")
+
+One document per scheduled job (recurring routines and one-off runs), written by the `sync-prs` job from your
+scheduler: `nome`, `cosa` (one sentence), `progetto` (site id or `tutti`) or `sito_nome` for a site not in
+`progetti`, `quando` (human text in your time zone), `cron` (5 fields, optionally prefixed `CRON_TZ=<zone>`;
+empty for one-offs), `una_tantum` (bool), `prossima` (next run, ISO), `ultima` (last run, ISO), `ultimo_esito`
+(`ok`, `errore`), `nota_esito`, `stato` (`Attiva`, `Spenta`, `Fatta`), optional `chat` (link), `aggiornato_il`.
+The dashboard sorts active jobs by next run and recomputes it from `cron` when the stored one is in the past;
+jobs that already ran or were switched off show only with "show done". `editor/stato.programmate_controllo_il`
+holds the time of the last refresh. Only list jobs about the sites: the page may be shared by link.
+
 ## interventi/{YYYYMMDD-HHMM}-{site_id}-{n}
 
 Log of work not started from a button (scheduled publishing, calendar autofill): `quando`, `progetto`,

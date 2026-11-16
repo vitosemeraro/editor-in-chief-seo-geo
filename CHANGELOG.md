@@ -7,6 +7,18 @@ change to the database schema bumps the minor version, a fix bumps the patch.
 Every change comes from the private dashboard the author uses daily on 4 real sites, generalized before
 it lands here.
 
+## [0.23.0] - 2026-11-16
+
+### Added
+- "Run sheet" strip under "In the edit": every scheduled job (recurring routines and one-off runs) with its
+  next run in your time zone, how often it runs, when it last ran and whether that run failed. Jobs due in
+  the next 3 hours are highlighted; the next run is recomputed from the cron expression when the stored one
+  is in the past. Jobs that already ran or were switched off show only with "show done".
+- `sync-prs` refreshes the list every 3 hours (new step 5d).
+
+### Schema
+- New collection `schedule/{job id}` and field `editor/stato.programmate_controllo_il`.
+
 ## [0.22.0] - 2026-11-14
 
 ### Added
@@ -316,6 +328,7 @@ it lands here.
   schema, dashboard that starts empty, modular data sources (Search Console required), deploy examples
   for Firebase, Netlify, Vercel and FTPS, link checker, secret scan and config validator in CI.
 
+[0.23.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.22.0...v0.23.0
 [0.22.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.21.0...v0.22.0
 [0.21.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.20.0...v0.21.0
 [0.20.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.19.0...v0.20.0

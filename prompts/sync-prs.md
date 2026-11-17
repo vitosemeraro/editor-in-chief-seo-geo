@@ -4,6 +4,9 @@ A short job, and only this: align the `pr` collection of the dashboard (tool Art
 `editor.dashboard_url`) with the real state of the pull requests on GitHub. Do no other work: do not open
 PRs, do not write to repositories, do not log to `interventi`.
 
+First read `editor/stato`: if `programmate_richiesto_il` is less than 20 minutes old and newer than
+`programmate_controllo_il`, the owner pressed "Refresh" on the run sheet: do ONLY step 5d and stop.
+
 1. Read every document in `pr`.
 2. Read the PRs with `gh api -X GET search/issues -f q='is:pr user:<owner> created:>=<21 days ago>' -f per_page=100`
    (state, pull_request.merged_at, closed_at).
@@ -31,8 +34,13 @@ PRs, do not write to repositories, do not log to `interventi`.
    `schedule/<job id>` per job that concerns the sites or this dashboard (never personal jobs, never the job's
    prompt, e-mail addresses or file ids: the page may be shared by link). Fields: nome, cosa (one sentence),
    progetto or sito_nome, quando (human text in your time zone), cron, una_tantum, prossima, ultima,
-   ultimo_esito (`ok` or `errore` with nota_esito), stato (`Attiva`, `Spenta`, `Fatta` for one-offs that ran),
+   ultimo_esito (`ok`; `errore` with nota_esito = the reason in one plain sentence; `in_corso` while the run is
+   still working, with iniziata_il = when it started: a "succeeded" status often only means the run was
+   delivered, so for runs of the last 6 hours check that the session really finished), ultima_chat (link to the
+   last run's conversation, optional), stato (`Attiva`, `Spenta`, `Fatta` for one-offs that ran),
    chat (optional link), aggiornato_il. Update only what changed; set `Fatta` on rows whose job no longer
-   exists. Then update `editor/stato` with only `programmate_controllo_il` = now (ISO).
+   exists. A row the dashboard marked `in_corso` with `rilanciata_il` (the "Run again" button) stays `in_corso`
+   until the new run shows up (3 hours at most); when you write the real result, delete `rilancio_msg`.
+   Then update `editor/stato` with only `programmate_controllo_il` = now (ISO).
 6. Always, at the end: update `editor/stato` with only `pr_controllo_il` = now (ISO). The dashboard shows
    it as the last check time.

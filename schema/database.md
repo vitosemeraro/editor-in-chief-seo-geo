@@ -31,6 +31,8 @@ One per site, synced from `sites[]` in the config.
 | Doc | Field | Notes |
 | --- | --- | --- |
 | config | trigger_id | id of the "run requests" routine, enables the buttons |
+| config | sync_trigger_id | id of the `sync-prs` routine, enables "Refresh" on the run sheet |
+| stato | programmate_richiesto_il | set by "Refresh" on the run sheet; sync-prs then does only step 5d |
 | stato | ultimo_aggiornamento | ISO time of the last data refresh |
 | stato | fonti_saltate | list of sources not read in the last run, with reason |
 | stato | crediti_openseo_residui, crediti_letti_il | optional, if OpenSEO is used |
@@ -201,10 +203,13 @@ One document per scheduled job (recurring routines and one-off runs), written by
 scheduler: `nome`, `cosa` (one sentence), `progetto` (site id or `tutti`) or `sito_nome` for a site not in
 `progetti`, `quando` (human text in your time zone), `cron` (5 fields, optionally prefixed `CRON_TZ=<zone>`;
 empty for one-offs), `una_tantum` (bool), `prossima` (next run, ISO), `ultima` (last run, ISO), `ultimo_esito`
-(`ok`, `errore`), `nota_esito`, `stato` (`Attiva`, `Spenta`, `Fatta`), optional `chat` (link), `aggiornato_il`.
+(`ok`, `errore`, `in_corso`), `nota_esito`, `iniziata_il`, `ultima_chat`, `stato` (`Attiva`, `Spenta`, `Fatta`), optional `chat` (link), `aggiornato_il`.
 The dashboard sorts active jobs by next run and recomputes it from `cron` when the stored one is in the past;
 jobs that already ran or were switched off show only with "show done". `editor/stato.programmate_controllo_il`
-holds the time of the last refresh. Only list jobs about the sites: the page may be shared by link.
+holds the time of the last refresh. Each row shows how its last run went (running, succeeded, failed) and a
+summary counts jobs running now, done today and failed. "Run again" on a failed job fires it from the page and
+writes `ultimo_esito: in_corso`, `iniziata_il`, `rilanciata_il`, `rilancio_msg`; if the start is refused it
+writes `rilancio_fallito: true` and links the scheduler page of that job. Only list jobs about the sites: the page may be shared by link.
 
 ## interventi/{YYYYMMDD-HHMM}-{site_id}-{n}
 

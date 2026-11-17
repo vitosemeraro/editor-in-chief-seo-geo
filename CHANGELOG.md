@@ -7,6 +7,23 @@ change to the database schema bumps the minor version, a fix bumps the patch.
 Every change comes from the private dashboard the author uses daily on 4 real sites, generalized before
 it lands here.
 
+## [0.24.0] - 2026-11-17
+
+### Added
+- Manual tips get their launch button back: "I'm online, go ahead" on every tip that cannot be applied from a
+  repository. It creates a `fai_col_pc` request and starts it, so the agent does the step from the browser
+  on the owner's PC.
+- Run sheet status: every job shows how its last run went (running, succeeded, failed) and a summary line
+  counts jobs running now, done today and failed.
+- "Run again" on failed jobs: restarts the job from the page and marks it running until the next check.
+  If the scheduler refuses, the row links the job's page to start it by hand.
+- "Refresh" on the run sheet: starts `sync-prs` right away; that run updates only the run sheet (step 5d).
+
+### Schema
+- `schedule`: `ultimo_esito` can be `in_corso`; new fields `iniziata_il`, `ultima_chat`, `rilanciata_il`,
+  `rilancio_msg`, `rilancio_fallito`.
+- `editor/config.sync_trigger_id`, `editor/stato.programmate_richiesto_il`.
+
 ## [0.23.0] - 2026-11-16
 
 ### Added
@@ -328,6 +345,7 @@ it lands here.
   schema, dashboard that starts empty, modular data sources (Search Console required), deploy examples
   for Firebase, Netlify, Vercel and FTPS, link checker, secret scan and config validator in CI.
 
+[0.24.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.23.0...v0.24.0
 [0.23.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.22.0...v0.23.0
 [0.22.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.21.0...v0.22.0
 [0.21.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.20.0...v0.21.0

@@ -291,6 +291,20 @@
   .odg .scena.presto .ora { color: #ffb84d; }
   .odg .tagc.ko-t { color: #ff8a7a; border-color: #ff8a7a; }
   @media (max-width: 640px) { .odg .scena .ora { text-align: left; } }
+  /* Stato dell ultima esecuzione: in corso, fatta, non riuscita. Rilancia sulle non riuscite. */
+  .odg .mont-f + .odg-agg { margin-left: 0; }
+  .odg-agg, .odg button.rilancia { font: 700 12px var(--font-display); letter-spacing: .05em; text-transform: uppercase; border-radius: 4px; padding: 5px 10px; cursor: pointer; white-space: nowrap; }
+  .odg-agg { background: transparent; color: #7fb7ff; border: 2px solid #7fb7ff; }
+  .odg-agg:hover { background: #7fb7ff; color: var(--ink); }
+  .odg button.rilancia { background: #ff8a7a; color: var(--ink); border: 0; }
+  .odg button:disabled { opacity: .55; cursor: default; }
+  .odg-stato { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 13px; border-top: 1px dashed color-mix(in srgb, var(--paper) 22%, transparent); padding-top: 8px; }
+  .odg-stato b { font: 800 18px/1 var(--font-display); margin-right: 4px; }
+  .odg-stato .s-run b { color: #ffb84d; } .odg-stato .s-ok b { color: #5fd49a; } .odg-stato .s-ko b { color: #ff8a7a; }
+  .odg .tagc.run-t { color: #ffb84d; border-color: #ffb84d; }
+  .odg .tagc.ok-t { color: #5fd49a; border-color: #5fd49a; }
+  .odg .azioni { display: grid; gap: 6px; justify-items: end; }
+  @media (max-width: 640px) { .odg .azioni { justify-items: start; grid-auto-flow: column; justify-content: start; } }
 
   /* Controlli falliti su GitHub (build, deploy di anteprima): scritti dalla routine delle PR. */
   .ko { border: 2px solid #ff4b3a; border-radius: 8px; padding: 10px 14px; display: grid; gap: 6px; background: color-mix(in srgb, #ff4b3a 10%, transparent); }
@@ -454,7 +468,8 @@
   </section>
 
   <section class="odg vuoto" id="odg" aria-labelledby="odg-h">
-    <div class="sigira-h"><b id="odg-h"><i></i>Ordine del giorno</b><span class="mont-tot" id="odg-tot">0</span><span class="mont-tl">attività programmate</span><label class="mont-f"><input type="checkbox" id="odg-fatti"> mostra fatti (eseguite e spente)</label><span id="odg-s">Carico le attività programmate…</span></div>
+    <div class="sigira-h"><b id="odg-h"><i></i>Ordine del giorno</b><span class="mont-tot" id="odg-tot">0</span><span class="mont-tl">attività programmate</span><label class="mont-f"><input type="checkbox" id="odg-fatti"> mostra fatti (eseguite e spente)</label><button type="button" class="odg-agg" id="odg-agg" title="Ricontrolla adesso le attività: cosa è in corso, cosa è finito e com'è andata">Aggiorna</button><span id="odg-s">Carico le attività programmate…</span></div>
+    <div class="odg-stato" id="odg-stato" hidden></div>
     <ul class="scene" id="odg-lista"></ul>
   </section>
 
@@ -526,7 +541,7 @@
   </section>
 
   <section class="card" id="consigli">
-    <div class="card-head"><div><h2>Note di redazione</h2><p><b>I consigli per migliorare.</b> Azioni concrete tratte dai dati, dalla più utile. "Applica ora" fa la modifica sul sito: i siti in modalità automatica vengono pubblicati direttamente, gli altri ricevono una bozza da approvare. I consigli "a mano" richiedono un tuo accesso (per esempio Google Business). Su ogni consiglio: "Spiegami come" scrive qui i passi, "Apri la chat" apre una conversazione solo su quel consiglio, "L'ho fatto" chiede a Claude di verificarlo.</p></div><span class="status" id="cons-stato" aria-live="polite"></span></div>
+    <div class="card-head"><div><h2>Note di redazione</h2><p><b>I consigli per migliorare.</b> Azioni concrete tratte dai dati, dalla più utile. "Applica ora" fa la modifica sul sito: i siti in modalità automatica vengono pubblicati direttamente, gli altri ricevono una bozza da approvare. Sui consigli "a mano" c'è "Sono online, procedi": Claude fa il passo dal browser del tuo PC, dove sei già collegato (per esempio Google Business). Su ogni consiglio: "Spiegami come" scrive qui i passi, "Apri la chat" apre una conversazione solo su quel consiglio, "L'ho fatto" chiede a Claude di verificarlo.</p></div><span class="status" id="cons-stato" aria-live="polite"></span></div>
     <div class="toolbar"><div class="chips" id="cons-tipo" role="group" aria-label="Filtra per tipo"></div><label><input type="checkbox" id="cons-fatti"> mostra fatti (anche scartati)</label><span id="cons-conta"></span></div>
     <div class="tips" id="cons-box"><p class="empty">Carico i consigli…</p></div>
   </section>
@@ -627,7 +642,7 @@
       <li>Nei giorni di uscita scelti in configurazione le routine leggono il calendario, scrivono i contenuti "Programmato" del giorno, li pubblicano (o preparano la bozza) e li segnano.</li>
       <li>I pulsanti (Aggiorna dati, Verifica e consiglia, Applica, Crea pagina ora) mettono il lavoro in coda e lo avviano subito; lo stato accanto al pulsante si aggiorna da solo. Se l'avvio immediato non è disponibile, il lavoro parte al prossimo giro programmato.</li>
       <li>Ogni sito ha una modalità: "auto" pubblica direttamente, "draft" prepara una bozza da approvare.</li>
-      <li>"Ordine del giorno" elenca le attività che Claude fa da solo a orari fissi (giro del mattino, report, controlli) e quelle fissate una volta sola, con la prossima esecuzione. L'elenco si riallinea ogni 3 ore; quelle eseguite o spente compaiono solo con "mostra fatti".</li>
+      <li>"Ordine del giorno" elenca le attività che Claude fa da solo a orari fissi (giro del mattino, report, controlli) e quelle fissate una volta sola, con la prossima esecuzione e l'esito dell'ultima (in corso, riuscita, non riuscita). L'elenco si riallinea ogni 3 ore; "Aggiorna" lo ricontrolla subito e "Rilancia" fa ripartire un'attività non riuscita. Quelle eseguite o spente compaiono solo con "mostra fatti".</li>
       <li>Per spostare un'uscita cambia la data; per fermarla metti "In pausa". Per cambiarne molte insieme selezionale.</li>
       <li>"Conversioni previste" su ogni sito è una stima per i prossimi 30 giorni: visite previste da Cloudflare per un tasso di conversione. Dove il sito non misura ancora le conversioni il tasso è un riferimento di settore dichiarato; quando arrivano dati reali da Google Analytics pesano sempre di più. È sempre un intervallo, con l'affidabilità accanto.</li>
       <li>Stato di salute, parole chiave e idee si aggiornano dalle fonti dati attive in configurazione (Search Console come base; Analytics, Cloudflare, visibilità AI opzionali). Le idee e i consigli che scarti non tornano.</li>
@@ -1222,27 +1237,99 @@
     const ko = attive.filter((x) => x.r.ultimo_esito === 'errore').length;
     $('odg-s').textContent = (attive.length ? oggiN + (oggiN === 1 ? ' parte oggi' : ' partono oggi') + (attive[0].t ? ', la prossima ' + oraOdg(attive[0].t, ora).tra : '') + '.' + (ko ? ' ' + ko + (ko === 1 ? ' non è riuscita' : ' non sono riuscite') + " l'ultima volta." : '') : (state.schedule.length ? 'Nessuna attività in programma.' : 'Le attività programmate arrivano con il prossimo controllo.'))
       + ' Orari nel tuo fuso. Elenco ricontrollato ogni 3 ore' + (agg ? ', ultimo alle ' + new Date(agg).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit', timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone }) : '') + '.';
+    /* Stato aggiornato: quante sono in corso, quante finite oggi e quante non riuscite l'ultima volta. */
+    const giornoRoma = (x) => new Date(x).toLocaleDateString('it-IT', { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone });
+    const nRun = tutte.filter((r) => runDi(r, ora) === 'run').length;
+    const nOk = tutte.filter((r) => runDi(r, ora) === 'ok' && r.ultima && giornoRoma(r.ultima) === giornoRoma(ora)).length;
+    const nKo = tutte.filter((r) => runDi(r, ora) === 'ko' && r.stato !== 'Spenta').length;
+    const sb = $('odg-stato'); sb.hidden = !state.schedule.length;
+    sb.replaceChildren(
+      el('span', { className: 's-run' }, [el('b', { textContent: String(nRun) }), document.createTextNode('in corso adesso')]),
+      el('span', { className: 's-ok' }, [el('b', { textContent: String(nOk) }), document.createTextNode(nOk === 1 ? 'fatta oggi' : 'fatte oggi')]),
+      el('span', { className: 's-ko' }, [el('b', { textContent: String(nKo) }), document.createTextNode(nKo === 1 ? "non riuscita l'ultima volta: rilanciala qui sotto" : nKo ? "non riuscite l'ultima volta: rilanciale qui sotto" : "non riuscite")]));
+    renderOdgAgg();
     const riga = (r, t, fatta) => {
       const meta = el('div', { className: 'meta' });
+      const run = runDi(r, ora);
       if (r.progetto && r.progetto !== 'tutti') meta.append(sito(prog(r.progetto))); else meta.append(el('span', { textContent: r.sito_nome || 'tutti i siti' }));
       meta.append(el('span', { className: 'tagc', textContent: r.una_tantum ? 'una volta' : 'ricorrente' }));
       if (r.quando) meta.append(el('span', { textContent: r.quando }));
-      if (r.ultima) meta.append(el('span', { textContent: 'ultima ' + quando(r.ultima) }));
-      if (r.ultimo_esito === 'errore') meta.append(el('span', { className: 'tagc ko-t', textContent: '✕ ultima non riuscita', title: r.nota_esito || '' }));
+      if (run === 'run') {
+        const da = r.iniziata_il || r.rilanciata_il || r.ultima;
+        const vecchia = da && ora - Date.parse(da) > 3 * 3600e3;
+        meta.append(el('span', { className: 'tagc run-t', textContent: '● in corso' + (da ? ' ' + daQuanto(da) : '') + (vecchia ? ' (forse ferma)' : '') }));
+      } else if (run === 'ok') meta.append(el('span', { className: 'tagc ok-t', textContent: '✓ ultima riuscita · ' + quando(r.ultima) }));
+      else if (run === 'ko') meta.append(el('span', { className: 'tagc ko-t', textContent: '✕ ultima non riuscita · ' + quando(r.ultima), title: r.nota_esito || '' }));
+      else if (!fatta) meta.append(el('span', { className: 'tagc', textContent: 'mai partita finora' }));
       if (fatta) meta.append(el('span', { className: 'tagc', textContent: r.stato === 'Spenta' ? 'spenta' : 'eseguita' }));
       const mid = el('div', {}, [el('div', { className: 'tt', textContent: r.nome || r.id })]);
       if (r.cosa) mid.append(el('div', { className: 'perche', textContent: r.cosa }));
-      if (r.ultimo_esito === 'errore' && r.nota_esito) mid.append(el('div', { className: 'perche', textContent: 'Ultima volta: ' + r.nota_esito }));
+      if (run === 'ko' && r.nota_esito) mid.append(el('div', { className: 'perche', textContent: 'Ultima volta: ' + r.nota_esito }));
+      else if (run === 'ok' && r.nota_esito) mid.append(el('div', { className: 'perche', textContent: 'Esito: ' + r.nota_esito }));
+      if (r.rilancio_msg && r.rilanciata_il && ora - Date.parse(r.rilanciata_il) < 6 * 3600e3) mid.append(el('div', { className: 'perche', textContent: r.rilancio_msg }));
       mid.append(meta);
       const o = t ? oraOdg(t, ora) : null;
       const left = el('span', { className: 'ora' }, o ? [document.createTextNode(o.hm), el('small', { textContent: o.g + ' · ' + o.tra })] : [document.createTextNode(fatta ? '—' : '?'), el('small', { textContent: fatta ? (r.stato === 'Spenta' ? 'spenta' : 'fatta') : 'orario non noto' })]);
-      const link = r.chat && /^https:\/\/claude\.ai\//.test(r.chat) ? el('a', { href: r.chat, target: '_blank', rel: 'noopener', textContent: 'apri la chat' }) : el('span');
-      return el('li', { className: 'scena' + (fatta ? ' fatta' : '') + (o && o.presto && !fatta ? ' presto' : '') }, [left, mid, link]);
+      const azioni = el('div', { className: 'azioni' });
+      if (run === 'ko' && r.stato !== 'Spenta' && /^trig_/.test(r.id) && state.db && state.canWrite) {
+        const b = el('button', { type: 'button', className: 'rilancia', textContent: 'Rilancia', title: 'Fa ripartire adesso questa attività' });
+        b.addEventListener('click', async () => { b.disabled = true; b.textContent = 'Rilancio…'; const ok = await rilancia(r); if (!ok) { b.disabled = false; b.textContent = 'Rilancia'; } });
+        azioni.append(b);
+        if (r.rilancio_fallito) azioni.append(el('a', { href: 'https://claude.ai/code/routines/' + r.id, target: '_blank', rel: 'noopener', textContent: 'avviala da qui' }));
+      }
+      const chat = [r.ultima_chat, r.chat].find((u) => u && /^https:\/\/claude\.ai\//.test(u));
+      if (chat) azioni.append(el('a', { href: chat, target: '_blank', rel: 'noopener', textContent: 'apri la chat' }));
+      return el('li', { className: 'scena' + (fatta ? ' fatta' : '') + (o && o.presto && !fatta ? ' presto' : '') }, [left, mid, azioni]);
     };
     for (const { r, t } of attive) ul.append(riga(r, t, false));
     if (state.odgFatti) for (const r of fatte.sort((a, b) => String(b.prossima || b.ultima || '').localeCompare(String(a.prossima || a.ultima || ''))).slice(0, 30)) ul.append(riga(r, null, true));
     if (state.odgFatti && fatte.length) $('odg').classList.remove('vuoto');
   }
+  /* Esito dell ultima esecuzione: run (in corso), ok, ko (non riuscita) o vuoto (mai partita).
+     ultimo_esito "in_corso" lo scrivono la routine delle PR (esecuzione ancora aperta) e il pulsante Rilancia. */
+  function runDi(r, ora) {
+    if (r.ultimo_esito === 'in_corso') { const da = Date.parse(r.iniziata_il || r.rilanciata_il || r.ultima || ''); if (!(ora - da > 12 * 3600e3)) return 'run'; }
+    if (r.ultimo_esito === 'errore') return 'ko';
+    if (r.ultimo_esito === 'ok' || (r.ultima && r.ultimo_esito !== 'in_corso')) return 'ok';
+    return '';
+  }
+  const SYNC_TRIGGER = () => ((state.editor.find((d) => d.id === 'config') || {}).sync_trigger_id || '');
+  const motivoAvvio = (code) => code === 'approval_required' ? 'serve il tuo permesso: riprova e consenti l avvio.'
+    : code === 'server_not_connected' || code === 'needs_reauth' ? 'il connettore Claude Code Remote non è collegato: ricollegalo nelle impostazioni dei connettori.'
+    : code === 'not_in_manifest' ? 'da questa vista non si può avviare: apri la dashboard da claude.ai.'
+    : 'avvio non riuscito, riprova tra poco.';
+  /* Rilancia: fa ripartire subito l attività non riuscita e la segna in corso finché il controllo non legge l esito vero. */
+  async function rilancia(r) {
+    const ref = state.db.collection('programmate').doc(r.id);
+    if (!state.mcp || !TRIGGER()) { try { await ref.update({ rilancio_msg: 'Rilancio non partito: ' + motivoAvvio('server_not_connected') }); } catch (e) {} return false; }
+    try {
+      await state.mcp.callTool('Claude Code Remote', 'fire_trigger', { trigger_id: r.id });
+      const ora = new Date().toISOString();
+      await ref.update({ ultimo_esito: 'in_corso', iniziata_il: ora, rilanciata_il: ora, rilancio_fallito: false, rilancio_msg: 'Rilanciata dalla dashboard alle ' + new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit', timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone }) + '. L esito compare qui con il prossimo controllo (premi Aggiorna per averlo prima).' });
+      return true;
+    } catch (e) {
+      try { await ref.update({ rilanciata_il: new Date().toISOString(), rilancio_fallito: true, rilancio_msg: 'Rilancio dalla dashboard non partito (' + (e && (e.code || e.message) || 'errore') + '): avviala con un clic dal link qui accanto.' }); } catch (x) {}
+      try { window.open('https://claude.ai/code/routines/' + r.id, '_blank', 'noopener'); } catch (x) {}
+      return false;
+    }
+  }
+  /* Aggiorna: fa girare subito il controllo delle attività (la stessa routine che gira ogni 3 ore). */
+  function renderOdgAgg() {
+    const st = state.editor.find((d) => d.id === 'stato') || {}, b = $('odg-agg');
+    const chiesto = Date.parse(st.programmate_richiesto_il || ''), fatto = Date.parse(st.programmate_controllo_il || '');
+    const attesa = chiesto && !(fatto >= chiesto) && Date.now() - chiesto < 20 * 6e4;
+    b.disabled = !state.db || !state.canWrite || attesa;
+    b.textContent = attesa ? 'Aggiorno… (qualche minuto)' : 'Aggiorna';
+  }
+  $('odg-agg').addEventListener('click', async () => {
+    const b = $('odg-agg'); if (!state.db) return;
+    b.disabled = true; b.textContent = 'Avvio…';
+    try {
+      if (!state.mcp || !SYNC_TRIGGER()) throw { code: 'server_not_connected' };
+      await state.mcp.callTool('Claude Code Remote', 'fire_trigger', { trigger_id: SYNC_TRIGGER() });
+      await state.db.collection('editor').doc('stato').update({ programmate_richiesto_il: new Date().toISOString() });
+    } catch (e) { b.disabled = false; b.textContent = 'Aggiorna'; $('odg-s').textContent = 'Aggiornamento non partito: ' + motivoAvvio(e && e.code); }
+  });
   $('odg-fatti').addEventListener('change', (e) => { state.odgFatti = e.target.checked; renderOdg(); });
   setInterval(() => { try { renderOdg(); } catch (e) {} }, 60e3);
   /* Elenco filtrato della lavagna: chiave tipo "lav:desk", "lav:todo:site1", "sito:site1", "usc:err", "mano:dec". */
@@ -1597,6 +1684,13 @@
         const campi = { progetto: r.progetto, rif: 'consigli/' + r.id, testo: r.titolo };
         const mio = (x) => x.rif === 'consigli/' + r.id;
         if (r.come !== 'A mano' && r.stato !== 'Da fare a mano') acts.append(azione('Applica ora', 'applica_consiglio', campi, mio, { primary: true, statusId: 'cons-stato', noBadge: true, costo: stima(r.sforzo, 'applica_consiglio') }));
+        else {
+          /* Consigli "a mano": Claude fa il passo dal tuo PC (Chrome dove sei già loggato). Crea una richiesta fai_col_pc e la avvia subito. */
+          const run = pcInCorso('consigli/' + r.id);
+          const pb = el('button', { className: 'btn sm primary', type: 'button', textContent: run ? 'In corso col tuo PC' : 'Sono online, procedi', disabled: !state.canWrite || !!run, title: 'Claude fa il passo al posto tuo, dal browser del tuo PC dove sei già collegato. Se serve una tua scelta te la chiede qui.' });
+          pb.addEventListener('click', async () => { pb.disabled = true; pb.textContent = 'Avvio…'; try { await procedi([{ c: r }]); } catch (e) { pb.disabled = false; pb.textContent = 'Non partito: riprova'; } });
+          acts.append(pb);
+        }
         acts.append(segnaFatto(r));
         acts.append(apriChat(r, campi));
         acts.append(azione('Spiegami come', 'spiega_consiglio', campi, mio, { statusId: 'cons-stato', noBadge: true, again: 'Spiegami di nuovo' }));

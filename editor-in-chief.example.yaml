@@ -8,6 +8,7 @@ editor:
   timezone: Europe/Rome
   dashboard_url: ""                  # https://claude.ai/artifact/... once you publish dashboard/index.html
   trigger_id: ""                     # id of the "run requests" routine (trig_...), enables the dashboard buttons
+  sync_trigger_id: ""                # id of the "sync-prs" routine, enables "Refresh" on the run sheet
   cadence:
     publish_days: [mon, thu]         # days when scheduled content goes out
     weeks_ahead: 8                   # how far ahead the routine fills empty slots with ideas

@@ -16,6 +16,7 @@ Setup:
    connectors listed in `sources/README.md` for the modules you use.
 2. Paste the prompt from the line `---` down, and replace `{{CONFIG_REPO}}` with `owner/name`.
 3. Copy the id of "Run requests" (`trig_...`) into `editor.trigger_id`.
+4. Optional: copy the id of "Sync pull requests" into `editor.sync_trigger_id` to enable "Refresh" on the run sheet.
 
 Keep the prompts generic: site facts go in `sites[].facts`, rules in `rules`, strategy in
 `sites[].editorial_plan`. If you need behaviour that only one site has, add a field to the config and a

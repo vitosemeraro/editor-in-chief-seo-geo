@@ -76,6 +76,9 @@ Health card. `periodo`, `clic_28g`, `clic_prev`, `impressioni_28g`, `impressioni
 `sessioni_28g`, `sessioni_prev`, `utenti_28g`, `pagine_viste_28g`, `sessioni_organiche`,
 `sessioni_organiche_prev`, `conversioni_28g` (GA4 key events in the same 28 days); `visite_7g_cloudflare` when
 Cloudflare is on.
+Search Console CTR and position, both periods: `posizione_28g`, `posizione_prev` (average position weighted by
+impressions), `ctr_28g`, `ctr_prev` (clicks / impressions × 100). The dashboard computes CTR from clicks and
+impressions when the `ctr_*` fields are missing; omit the `_prev` fields when the previous period has no impressions.
 `stato` is `Buono`, `Attenzione`, `Critico` or `Appena collegato`; `voto` is one line; `note` is a list of
 3-5 sentences with numbers; `aggiornato_il`, `controllato_il`.
 

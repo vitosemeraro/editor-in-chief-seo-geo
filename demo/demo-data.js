@@ -50,6 +50,8 @@
     const i28 = sum(impr, days - 28, days), iPrev = sum(impr, days - 56, days - 28);
     put('salute', s.id, {
       progetto: s.id, periodo: 'ultimi 28 giorni', clic_28g: c28, clic_prev: cPrev, impressioni_28g: i28, impressioni_prev: iPrev,
+      posizione_28g: s.id === 'trips' ? 7.4 : s.id === 'saas' ? 21.6 : 12.8, posizione_prev: s.id === 'trips' ? 8.1 : s.id === 'saas' ? 14.2 : 15.5,
+      ctr_28g: Math.round(c28 / i28 * 1e4) / 100, ctr_prev: Math.round(cPrev / iPrev * 1e4) / 100,
       sessioni_28g: Math.round(c28 * 3.1), sessioni_prev: Math.round(cPrev * 3.1), pagine_viste_28g: Math.round(c28 * 5.2),
       sessioni_organiche: Math.round(c28 * 1.1), sessioni_organiche_prev: Math.round(cPrev * 1.1), visite_7g_cloudflare: Math.round(sum(clic, days - 7, days) * 2.6),
       stato: s.id === 'saas' ? 'Attenzione' : 'Buono',

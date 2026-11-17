@@ -44,7 +44,12 @@ For each site, using only the modules enabled in `sources` (see `sources/*.md` f
 Extend `serie/<site>` with the daily Search Console clicks and impressions since the last stored day
 (see the schema). Write `metriche/<site>-<monday of this week>` (update, or set if new) and update `salute/<site>` with the
 fields of the schema (including `conversioni_28g`, the GA4 key events of the 28 days, when GA4 is on), a `stato` (Buono, Attenzione, Critico), a one-line `voto` and 3-5 `note` with real
-numbers on what changed and what to do. If a source fails, skip it and add it to
+numbers on what changed and what to do. Always include CTR and position against the previous 28 days
+(`posizione_28g`, `posizione_prev`, `ctr_28g`, `ctr_prev`; one note like "CTR 1.6% vs 2.9% in the previous 28 days,
+position 30.4 vs 9.0") and say why CTR moved: if it drops while position worsens by more than 3 points, the
+problem is position (new impressions on far-away searches), not titles; if it is below 60% of the typical CTR
+for that position (about 25% at 1, 14% at 2, 9% at 3, 6% at 4-5, 3% at 6-10, 1% at 11-20), the problem is
+title and description. If a source fails, skip it and add it to
 `editor/stato.fonti_saltate`.
 
 If the site has `conversions` in the config, keep `conversioni/<site>` in step with it (set): `obiettivo` = goal,

@@ -535,7 +535,7 @@
   </section>
 
   <section class="card" id="salute">
-    <div class="card-head"><div><h2>Il polso</h2><p><b>Lo stato di salute dei siti.</b> Visite e pagine viste da Google Analytics, ricerche da Search Console e cosa vogliono dire i numeri. Sotto, le tre azioni più utili per ogni sito: "Applica ora" fa la modifica sul sito. "Verifica e consiglia" rilegge i dati e aggiunge consigli nuovi.</p></div><span class="per" id="salute-per"></span></div>
+    <div class="card-head"><div><h2>Il polso</h2><p><b>Lo stato di salute dei siti.</b> Visite e pagine viste da Google Analytics, ricerche da Search Console (con CTR e posizione contro i 28 giorni prima) e cosa vogliono dire i numeri. Sotto, le tre azioni più utili per ogni sito: "Applica ora" fa la modifica sul sito. "Verifica e consiglia" rilegge i dati e aggiunge consigli nuovi.</p></div><span class="per" id="salute-per"></span></div>
     <div class="light" id="semaforo" aria-live="polite"><span class="muted">Controllo lo stato…</span></div>
     <div class="health" id="salute-box"><p class="empty">Carico lo stato dei siti…</p></div>
   </section>
@@ -602,10 +602,10 @@
   </section>
 
   <section class="card" id="pagine">
-    <div class="card-head"><div><h2><span class="tag">SEO</span> Cartellone</h2><p><b>Le pagine su Google.</b> Da Search Console, le pagine con più impressioni negli ultimi 28 giorni, ognuna con la mossa più utile.</p></div></div>
+    <div class="card-head"><div><h2><span class="tag">SEO</span> Cartellone</h2><p><b>Le pagine su Google.</b> Da Search Console, le pagine con più impressioni negli ultimi 28 giorni, con il CTR (in rosso se basso per la posizione) e la mossa più utile.</p></div></div>
     <div class="toolbar"><label><input type="checkbox" id="pag-fatti"> mostra fatti</label><span class="small muted" id="pag-fatti-n"></span></div>
     <div class="scroll"><table>
-      <thead><tr><th>Sito</th><th>Pagina</th><th class="num">Impr.</th><th class="num">Clic</th><th class="num">Pos.</th><th>Consiglio</th></tr></thead>
+      <thead><tr><th>Sito</th><th>Pagina</th><th class="num">Impr.</th><th class="num">Clic</th><th class="num">CTR</th><th class="num">Pos.</th><th>Consiglio</th></tr></thead>
       <tbody id="pagine-body"></tbody>
     </table></div>
   </section>
@@ -645,6 +645,7 @@
       <li>"Ordine del giorno" elenca le attività che Claude fa da solo a orari fissi (giro del mattino, report, controlli) e quelle fissate una volta sola, con la prossima esecuzione e l'esito dell'ultima (in corso, riuscita, non riuscita). L'elenco si riallinea ogni 3 ore; "Aggiorna" lo ricontrolla subito e "Rilancia" fa ripartire un'attività non riuscita. Quelle eseguite o spente compaiono solo con "mostra fatti".</li>
       <li>Per spostare un'uscita cambia la data; per fermarla metti "In pausa". Per cambiarne molte insieme selezionale.</li>
       <li>"Conversioni previste" su ogni sito è una stima per i prossimi 30 giorni: visite previste da Cloudflare per un tasso di conversione. Dove il sito non misura ancora le conversioni il tasso è un riferimento di settore dichiarato; quando arrivano dati reali da Google Analytics pesano sempre di più. È sempre un intervallo, con l'affidabilità accanto.</li>
+      <li>CTR = clic diviso impressioni su Google negli ultimi 28 giorni, sempre "contro" i 28 giorni prima (verde se migliora, rosso se peggiora). Nel Polso c'è anche la lettura: se il CTR è basso per la posizione vanno riscritti title e description; se scende perché la posizione è peggiorata conta salire, non i titoli. Nel Cartellone il CTR in rosso segna le pagine in prima pagina che prendono pochi clic.</li>
       <li>Stato di salute, parole chiave e idee si aggiornano dalle fonti dati attive in configurazione (Search Console come base; Analytics, Cloudflare, visibilità AI opzionali). Le idee e i consigli che scarti non tornano.</li>
     </ul>
   </section>
@@ -811,6 +812,39 @@
     catch (e) { b.disabled = false; $('agg-stato').textContent = e && e.code === 'not_granted' ? 'Solo chi modifica la dashboard può aggiornare.' : 'Non avviato: riprova.'; }
   });
 
+  /* CTR = clic / impressioni, in percentuale con un decimale. */
+  const ctrDi = (clic, impr) => (Number(impr) > 0 && clic != null && !isNaN(clic) ? 100 * Number(clic) / Number(impr) : null);
+  const fmtCtr = (v) => (v == null || isNaN(v) ? '—' : Number(v).toLocaleString('it-IT', { maximumFractionDigits: 1 }) + '%');
+  /* "contro X nei 28 giorni prima": verde se meglio, rosso se peggio. Posizione: più bassa è meglio. */
+  function contro(cur, prev, f, lowerIsBetter) {
+    if (cur == null || prev == null || isNaN(cur) || isNaN(prev)) return null;
+    const d = Number(cur) - Number(prev);
+    const c = Math.abs(d) < 1e-9 ? 'muted' : (lowerIsBetter ? d < 0 : d > 0) ? 'ok' : 'bad';
+    return { t: 'contro ' + f(prev) + ' nei 28 giorni prima', c };
+  }
+  /* I numeri Google di un sito: 28 giorni e 28 prima da salute; CTR calcolato da clic e impressioni. */
+  function gsc28(sal, cur) {
+    const clic = sal.clic_28g != null ? Number(sal.clic_28g) : cur ? Number(cur.clic) : null;
+    const impr = sal.impressioni_28g != null ? Number(sal.impressioni_28g) : cur ? Number(cur.impressioni) : null;
+    const clic_prev = sal.clic_prev != null ? Number(sal.clic_prev) : null, impr_prev = sal.impressioni_prev != null ? Number(sal.impressioni_prev) : null;
+    const pos = sal.posizione_28g != null ? Number(sal.posizione_28g) : cur && cur.posizione != null ? Number(cur.posizione) : null;
+    const pos_prev = sal.posizione_prev != null && Number(impr_prev) > 0 ? Number(sal.posizione_prev) : null;
+    return { clic, impr, clic_prev, impr_prev, pos, pos_prev, ctr: ctrDi(clic, impr), ctr_prev: ctrDi(clic_prev, impr_prev) };
+  }
+
+  /* CTR atteso per posizione media (curve pubbliche di settore 2025-26, valori prudenti): serve solo a dire se il CTR è basso per dove siamo. */
+  const ctrAtteso = (pos) => (pos == null ? null : pos <= 1.5 ? 25 : pos <= 2.5 ? 14 : pos <= 3.5 ? 9 : pos <= 5.5 ? 6 : pos <= 10.5 ? 3 : pos <= 20 ? 1 : 0.4);
+  function letturaCtr(g) {
+    if (g.ctr == null || !(g.impr >= 50) || g.pos == null) return null;
+    const att = ctrAtteso(g.pos), pos = fmtPos(g.pos);
+    if (g.ctr_prev != null && g.ctr < g.ctr_prev && g.pos_prev != null && g.pos > g.pos_prev + 3)
+      return { c: 'warn', t: 'CTR giù per la posizione, non per i titoli', d: ' La posizione media è passata da ' + fmtPos(g.pos_prev) + ' a ' + pos + ': le impressioni nuove arrivano da ricerche dove siamo lontani. Conta portare quelle pagine in prima pagina.' };
+    if (g.ctr < att * 0.6 && g.pos <= 15)
+      return { c: 'bad', t: 'CTR basso per la posizione', d: ' ' + fmtCtr(g.ctr) + ' in posizione ' + pos + ', dove di solito si arriva intorno al ' + fmtCtr(att) + ': title e description vanno riscritti con un beneficio o un prezzo concreto.' };
+    if (g.ctr >= att) return { c: 'ok', t: 'CTR buono per la posizione', d: ' ' + fmtCtr(g.ctr) + ' in posizione ' + pos + ', sopra il ' + fmtCtr(att) + ' tipico: i titoli funzionano, ora serve salire.' };
+    return { c: 'muted', t: 'CTR nella media', d: ' ' + fmtCtr(g.ctr) + ' in posizione ' + pos + ' (tipico intorno al ' + fmtCtr(att) + ').' };
+  }
+
   function delta(cur, prev, lowerIsBetter) {
     if (cur == null || prev == null || isNaN(cur) || isNaN(prev)) return null;
     const d = Number(cur) - Number(prev); if (!d) return { t: '=', c: 'muted' };
@@ -951,12 +985,15 @@
       if (nota) testa.append(el('div', { className: 'site-note', textContent: nota }));
       card.append(el('div', { className: 'site-top' }, [testa, auto].filter(Boolean)));
       const kp = el('div', { className: 'kpis' });
-      const k = (label, v, d) => { const n = el('div', { className: 'kpi' }, [el('div', { className: 'l', textContent: label }), el('div', { className: 'v', textContent: v })]); if (d) n.append(el('div', { className: 'd ' + d.c, textContent: d.t + ' vs sett. prima' })); return n; };
+      const k = (label, v, d) => { const n = el('div', { className: 'kpi' }, [el('div', { className: 'l', textContent: label }), el('div', { className: 'v', textContent: v })]); if (d) n.append(el('div', { className: 'd ' + d.c, textContent: d.t })); return n; };
       const sal = state.salute.find((s) => s.id === p.id) || {};
+      /* Google: ultimi 28 giorni contro i 28 prima (da salute, scritta dalle routine); se manca, l'ultima settimana di metriche. */
+      const g = gsc28(sal, cur);
       kp.append(
-        k('Clic Google 28 gg', fmt(cur ? cur.clic : sal.clic_28g), cur && prev ? delta(cur.clic, prev.clic) : null),
-        k('Impressioni 28 gg', fmt(cur ? cur.impressioni : sal.impressioni_28g), cur && prev ? delta(cur.impressioni, prev.impressioni) : null),
-        k('Posizione media', fmtPos(cur && cur.posizione), cur && prev ? delta(cur.posizione, prev.posizione, true) : null),
+        k('Clic Google 28 gg', fmt(g.clic), contro(g.clic, g.clic_prev, fmt)),
+        k('Impressioni 28 gg', fmt(g.impr), contro(g.impr, g.impr_prev, fmt)),
+        k('CTR', fmtCtr(g.ctr), contro(g.ctr, g.ctr_prev, fmtCtr)),
+        k('Posizione media', fmtPos(g.pos), contro(g.pos, g.pos_prev, fmtPos, true)),
         k('Citazioni AI', cur && cur.domande_ai ? `${fmt(cur.citazioni_ai)}/${fmt(cur.domande_ai)}` : '—'),
         k('Visite 7 gg', fmt(cur && cur.visite_7g != null ? cur.visite_7g : sal.visite_7g_cloudflare)),
         k('Articoli usciti', fmt(usciti))
@@ -1585,7 +1622,13 @@
       const hk = el('div', { className: 'hk' });
       const k = (l, v, prev) => { const n = el('div', {}, [el('div', { className: 'l', textContent: l }), el('div', { className: 'v', textContent: fmt(v) })]); const d = prev != null && v != null ? delta(v, prev) : null; if (d) n.append(el('div', { className: 'd ' + d.c, textContent: d.t })); return n; };
       hk.append(k('Visite', s.sessioni_28g, s.sessioni_prev), k('Pagine viste', s.pagine_viste_28g), k('Visite da Google', s.sessioni_organiche, s.sessioni_organiche_prev), k('Clic Google', s.clic_28g, s.clic_prev), k('Impressioni', s.impressioni_28g, s.impressioni_prev), k('Visite 7 gg (CF)', s.visite_7g_cloudflare));
+      /* CTR e posizione nello stile dello specchietto: valore e "contro X nei 28 giorni prima", verde o rosso. */
+      const g = gsc28(s, null);
+      const k2 = (l, v, d) => { const n = el('div', {}, [el('div', { className: 'l', textContent: l }), el('div', { className: 'v', textContent: v })]); if (d) n.append(el('div', { className: 'd ' + d.c, textContent: d.t })); return n; };
+      hk.append(k2('CTR Google', fmtCtr(g.ctr), contro(g.ctr, g.ctr_prev, fmtCtr)), k2('Posizione media', fmtPos(g.pos), contro(g.pos, g.pos_prev, fmtPos, true)));
       c.append(hk);
+      const lettura = letturaCtr(g);
+      if (lettura) c.append(el('div', { className: 'esito', style: '--ec:var(--' + lettura.c + ')' }, [el('b', { textContent: lettura.t }), document.createTextNode(lettura.d)]));
       if (Array.isArray(s.note) && s.note.length) {
         c.append(el('div', { className: 'l small', textContent: 'Cosa dicono i numeri' }));
         c.append(el('ul', { className: 'notes' }, s.note.map((t) => el('li', {}, [el('span', { textContent: t })]))));
@@ -1878,7 +1921,7 @@
     const pgTutte = state.pagine.filter((r) => visibile(r.progetto));
     const rows = pgTutte.filter((r) => $('pag-fatti').checked || !fattaRif('pagine/' + r.id)); nascosti('pag-fatti', pgTutte.length - rows.length);
     rows.sort((a, b) => ((b.azione !== 'nessuna') - (a.azione !== 'nessuna')) || (punteggio(b) - punteggio(a)) || ((b.impressioni || 0) - (a.impressioni || 0)));
-    if (!rows.length) { tb.append(el('tr', {}, [el('td', { colSpan: 6, className: 'empty', textContent: pgTutte.length ? 'Tutte fatte: spunta "mostra fatti" per rivederle.' : 'Arriva dal primo aggiornamento da Search Console.' })])); return; }
+    if (!rows.length) { tb.append(el('tr', {}, [el('td', { colSpan: 7, className: 'empty', textContent: pgTutte.length ? 'Tutte fatte: spunta "mostra fatti" per rivederle.' : 'Arriva dal primo aggiornamento da Search Console.' })])); return; }
     for (const r of rows) {
       const p = prog(r.progetto); const c = r.consiglio || consiglioPagina(r);
       const pos = Number(r.posizione); const cls = isNaN(pos) ? 'muted' : pos <= 10 ? 'ok' : pos <= 30 ? 'warn' : 'bad';
@@ -1892,6 +1935,7 @@
         el('td', { className: 'url', textContent: r.url || '' }),
         el('td', { className: 'num', textContent: fmt(r.impressioni) }),
         el('td', { className: 'num', textContent: fmt(r.clic) }),
+        (() => { const v = ctrDi(r.clic, r.impressioni), att = ctrAtteso(Number(r.posizione) || null); const basso = v != null && att != null && Number(r.impressioni) >= 20 && Number(r.posizione) <= 15 && v < att * 0.6; return el('td', { className: 'num' + (basso ? ' bad' : ''), title: basso ? 'CTR basso per la posizione: di solito qui si arriva intorno al ' + fmtCtr(att) : '', textContent: fmtCtr(v) }); })(),
         el('td', { className: 'num' }, [el('span', { className: 'pos ' + cls, textContent: fmtPos(r.posizione) })]),
         cell
       ]));

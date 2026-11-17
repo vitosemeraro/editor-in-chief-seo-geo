@@ -7,6 +7,21 @@ change to the database schema bumps the minor version, a fix bumps the patch.
 Every change comes from the private dashboard the author uses daily on 4 real sites, generalized before
 it lands here.
 
+## [0.25.0] - 2026-11-17
+
+### Added
+- CTR in every analysis. Site cards show Google clicks, impressions, CTR and average position for the last 28
+  days, each "vs X in the previous 28 days" in green (better) or red (worse).
+- Health cards add CTR and position with the same comparison, plus a one-line reading: CTR low for the
+  position (rewrite title and description), CTR down because position got worse (climb, not titles), or CTR
+  good for the position.
+- Pages table: CTR column, red when a page-one page gets few clicks for its position.
+- Prompts: the weekly review and `aggiorna_dati` write CTR and position for both periods and explain CTR in the
+  notes; `controllo_sito` writes a CTR tip when a page is below the typical CTR for its position.
+
+### Schema
+- `salute`: `posizione_28g`, `posizione_prev`, `ctr_28g`, `ctr_prev`.
+
 ## [0.24.0] - 2026-11-17
 
 ### Added
@@ -345,6 +360,7 @@ it lands here.
   schema, dashboard that starts empty, modular data sources (Search Console required), deploy examples
   for Firebase, Netlify, Vercel and FTPS, link checker, secret scan and config validator in CI.
 
+[0.25.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.24.0...v0.25.0
 [0.24.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.23.0...v0.24.0
 [0.23.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.22.0...v0.23.0
 [0.22.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.21.0...v0.22.0

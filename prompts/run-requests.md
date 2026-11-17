@@ -114,6 +114,10 @@ session of its own.
   `A mano` if it needs the owner's access. Give each tip `impatto` (Alto, Medio, Basso) and `sforzo`:
   Basso (1-2 files or a few minutes by hand), Medio (a new page or several pages), Alto (a new section or
   hours of work). The dashboard sorts by impact divided by effort: be honest on both.
+  Always look at CTR: when a page with 20+ impressions in position 1-15 has a CTR below 60% of the typical CTR
+  for its position, at least one tip rewrites that page's title and description, with the number in the
+  detail ("CTR 0% on 88 impressions at position 8.2"). If the site CTR drops only because average position
+  got worse, the tip is about climbing, not titles.
   Do not repeat existing tips, including `Fatto` or `Scartato`.
   Set `salute/<site>.controllato_il` = now.
 - **applica_consiglio** (rif = `consigli/<id>`): apply the tip to the site as in "Where to publish". If it

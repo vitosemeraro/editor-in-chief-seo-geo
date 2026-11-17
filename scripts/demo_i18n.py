@@ -3,6 +3,24 @@
 # Status values are translated consistently in code and data, so the demo keeps working in every language.
 
 T = {
+    # ---------- CTR in the analyses (0.25.0) ----------
+    'contro ': ('vs ', 'frente a ', 'contre '),
+    ' nei 28 giorni prima': (' in the previous 28 days', ' en los 28 días anteriores', ' les 28 jours précédents'),
+    'CTR Google': ('Google CTR', 'CTR Google', 'CTR Google'),
+    'CTR basso per la posizione': ('CTR low for the position', 'CTR bajo para la posición', 'CTR faible pour la position'),
+    'CTR buono per la posizione': ('CTR good for the position', 'CTR bueno para la posición', 'CTR bon pour la position'),
+    'CTR nella media': ('CTR about average', 'CTR en la media', 'CTR dans la moyenne'),
+    'CTR giù per la posizione, non per i titoli': ('CTR down because of position, not titles', 'CTR bajo por la posición, no por los títulos', 'CTR en baisse à cause de la position, pas des titres'),
+    ' La posizione media è passata da ': (' Average position went from ', ' La posición media pasó de ', ' La position moyenne est passée de '),
+    ': le impressioni nuove arrivano da ricerche dove siamo lontani. Conta portare quelle pagine in prima pagina.': (': the new impressions come from searches where we rank far down. What matters is getting those pages onto page one.', ': las impresiones nuevas llegan de búsquedas donde estamos lejos. Lo que cuenta es llevar esas páginas a la primera página.', ': les nouvelles impressions viennent de recherches où nous sommes loin. Il faut amener ces pages en première page.'),
+    ' in posizione ': (' at position ', ' en posición ', ' en position '),
+    ', dove di solito si arriva intorno al ': (', where it is usually around ', ', donde suele rondar el ', ", où l'on est d'habitude autour de "),
+    ': title e description vanno riscritti con un beneficio o un prezzo concreto.': (': rewrite title and description with a concrete benefit or price.', ': hay que reescribir title y description con un beneficio o un precio concreto.', ': réécrivez title et description avec un bénéfice ou un prix concret.'),
+    ', sopra il ': (', above the ', ', por encima del ', ', au-dessus des '),
+    ' tipico: i titoli funzionano, ora serve salire.': (' typical: titles work, now it needs to climb.', ' típico: los títulos funcionan, ahora hay que subir.', ' habituels : les titres marchent, il faut maintenant monter.'),
+    ' (tipico intorno al ': (' (typical around ', ' (típico en torno al ', ' (habituel autour de '),
+    'CTR basso per la posizione: di solito qui si arriva intorno al ': ('CTR low for the position: usually around ', 'CTR bajo para la posición: aquí suele rondar el ', "CTR faible pour la position : d'habitude autour de "),
+    'CTR = clic diviso impressioni su Google negli ultimi 28 giorni, sempre "contro" i 28 giorni prima (verde se migliora, rosso se peggiora). Nel Polso c\'è anche la lettura: se il CTR è basso per la posizione vanno riscritti title e description; se scende perché la posizione è peggiorata conta salire, non i titoli. Nel Cartellone il CTR in rosso segna le pagine in prima pagina che prendono pochi clic.': ('CTR = Google clicks divided by impressions over the last 28 days, always shown "vs" the previous 28 days (green if better, red if worse). Health also reads it: if CTR is low for the position, rewrite title and description; if it drops because the position got worse, what matters is climbing, not titles. In the pages table a red CTR marks page-one pages that get few clicks.', 'CTR = clics de Google divididos por impresiones en los últimos 28 días, siempre "frente a" los 28 días anteriores (verde si mejora, rojo si empeora). En Salud también se interpreta: si el CTR es bajo para la posición hay que reescribir title y description; si baja porque la posición empeoró, lo que cuenta es subir, no los títulos. En la tabla de páginas el CTR en rojo marca páginas de primera página con pocos clics.', 'CTR = clics Google divisés par les impressions sur les 28 derniers jours, toujours "contre" les 28 jours précédents (vert si mieux, rouge si pire). La Santé le lit aussi : si le CTR est faible pour la position, réécrivez title et description ; s\'il baisse parce que la position a empiré, il faut monter, pas changer les titres. Dans le tableau des pages, un CTR rouge signale les pages en première page qui prennent peu de clics.'),
     # ---------- run sheet status, Refresh, Run again, manual tips via PC (0.24.0) ----------
     'Aggiorna': ('Refresh', 'Actualizar', 'Actualiser'),
     'Rilancia': ('Run again', 'Relanzar', 'Relancer'),
@@ -369,10 +387,10 @@ T = {
     "Tutti": ("All", "Todos", "Tous"),
     "tutti": ("all", "todos", "tous"),
     "Stato di salute": ("Health", "Estado de salud", "État de santé"),
-    "Visite e pagine viste da Google Analytics, ricerche da Search Console e cosa vogliono dire i numeri. Sotto, le tre azioni più utili per ogni sito: \"Applica ora\" fa la modifica sul sito. \"Verifica e consiglia\" rilegge i dati e aggiunge consigli nuovi.":
-        ("Visits and page views from Google Analytics, searches from Search Console and what the numbers mean. Below, the three most useful actions for each site: \"Apply now\" makes the change on the site. \"Check and advise\" re-reads the data and adds new tips.",
-         "Visitas y páginas vistas de Google Analytics, búsquedas de Search Console y qué significan los números. Debajo, las tres acciones más útiles para cada sitio: \"Aplicar ahora\" hace el cambio en el sitio. \"Revisar y aconsejar\" vuelve a leer los datos y añade consejos nuevos.",
-         "Visites et pages vues de Google Analytics, recherches de Search Console et ce que disent les chiffres. En dessous, les trois actions les plus utiles pour chaque site : « Appliquer » fait la modification sur le site. « Vérifier et conseiller » relit les données et ajoute de nouveaux conseils."),
+    "Visite e pagine viste da Google Analytics, ricerche da Search Console (con CTR e posizione contro i 28 giorni prima) e cosa vogliono dire i numeri. Sotto, le tre azioni più utili per ogni sito: \"Applica ora\" fa la modifica sul sito. \"Verifica e consiglia\" rilegge i dati e aggiunge consigli nuovi.":
+        ("Visits and page views from Google Analytics, searches from Search Console (with CTR and position against the previous 28 days) and what the numbers mean. Below, the three most useful actions for each site: \"Apply now\" makes the change on the site. \"Check and advise\" re-reads the data and adds new tips.",
+         "Visitas y páginas vistas de Google Analytics, búsquedas de Search Console (con CTR y posición frente a los 28 días anteriores) y qué significan los números. Debajo, las tres acciones más útiles para cada sitio: \"Aplicar ahora\" hace el cambio en el sitio. \"Revisar y aconsejar\" vuelve a leer los datos y añade consejos nuevos.",
+         "Visites et pages vues de Google Analytics, recherches de Search Console (avec CTR et position face aux 28 jours précédents) et ce que disent les chiffres. En dessous, les trois actions les plus utiles pour chaque site : « Appliquer » fait la modification sur le site. « Vérifier et conseiller » relit les données et ajoute de nouveaux conseils."),
     "Controllo lo stato…": ("Checking status…", "Comprobando el estado…", "Vérification de l'état…"),
     "Carico lo stato dei siti…": ("Loading site health…", "Cargando el estado de los sitios…", "Chargement de l'état des sites…"),
     "Consigli per migliorare": ("Tips to improve", "Consejos para mejorar", "Conseils pour progresser"),
@@ -433,9 +451,9 @@ T = {
     "Risposta AI": ("AI answer", "Respuesta IA", "Réponse IA"),
     "Cosa notare": ("What to note", "Qué observar", "À noter"),
     "Pagine su Google": ("Pages on Google", "Páginas en Google", "Pages sur Google"),
-    "Da Search Console, le pagine con più impressioni negli ultimi 28 giorni, ognuna con la mossa più utile.":
-        ("From Search Console, the pages with the most impressions in the last 28 days, each with its most useful move.",
-         "De Search Console, las páginas con más impresiones en los últimos 28 días, cada una con su movimiento más útil.",
+    "Da Search Console, le pagine con più impressioni negli ultimi 28 giorni, con il CTR (in rosso se basso per la posizione) e la mossa più utile.":
+        ("From Search Console, the pages with the most impressions in the last 28 days, with CTR (red when low for the position) and the most useful move.",
+         "De Search Console, las páginas con más impresiones en los últimos 28 días, con el CTR (en rojo si es bajo para la posición) y el movimiento más útil.",
          "Depuis Search Console, les pages avec le plus d'impressions sur les 28 derniers jours, chacune avec l'action la plus utile."),
     "Pagina": ("Page", "Página", "Page"),
     "Impr.": ("Impr.", "Impr.", "Impr."),

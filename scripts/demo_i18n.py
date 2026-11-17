@@ -3,6 +3,31 @@
 # Status values are translated consistently in code and data, so the demo keeps working in every language.
 
 T = {
+    # ---------- Task force (0.26.0) ----------
+    'Avvia task force': ('Start task force', 'Iniciar task force', 'Lancer une task force'),
+    'Task force in corso': ('Task force running', 'Task force en curso', 'Task force en cours'),
+    'Task force': ('Task force', 'Task force', 'Task force'),
+    'task force': ('task force', 'task force', 'task force'),
+    'Avvio la task force…': ('Starting the task force…', 'Iniciando la task force…', 'Lancement de la task force…'),
+    'Non partita: riprova': ('Not started: try again', 'No iniciada: reinténtalo', 'Pas lancée : réessayez'),
+    'problema grave segnalato dalla dashboard': ('serious problem flagged from the dashboard', 'problema grave señalado desde el panel', 'problème grave signalé depuis le tableau de bord'),
+    'Segnala un problema grave su questo sito: Claude apre una sessione dedicata che trova la causa nei dati e applica le correzioni. Stato ed esito nell Ordine del giorno.': ('Flag a serious problem on this site: Claude opens a dedicated session that finds the cause in the data and applies the fixes. Status and result in the Run sheet.', 'Señala un problema grave en este sitio: Claude abre una sesión dedicada que encuentra la causa en los datos y aplica las correcciones. Estado y resultado en el Orden del día.', 'Signale un problème grave sur ce site : Claude ouvre une session dédiée qui trouve la cause dans les données et applique les corrections. Statut et résultat dans l\'Ordre du jour.'),
+    'Riapre la task force con gli stessi numeri': ('Reopens the task force with the same numbers', 'Reabre la task force con los mismos números', 'Rouvre la task force avec les mêmes chiffres'),
+    'attività programmate e task force': ('scheduled jobs and task forces', 'tareas programadas y task forces', 'tâches programmées et task forces'),
+    'mostra fatti (eseguite, spente e task force chiuse)': ('show done (ran, switched off and closed task forces)', 'mostrar hechos (ejecutadas, apagadas y task forces cerradas)', 'afficher les faits (exécutées, arrêtées et task forces closes)'),
+    ' task force aperta. ': (' task force open. ', ' task force abierta. ', ' task force ouverte. '),
+    ' task force aperte. ': (' task forces open. ', ' task forces abiertas. ', ' task forces ouvertes. '),
+    '✕ non riuscita · ': ('✕ failed · ', '✕ fallida · ', '✕ échouée · '),
+    '✓ chiusa · ': ('✓ closed · ', '✓ cerrada · ', '✓ close · '),
+    'Adesso: ': ('Now: ', 'Ahora: ', 'Maintenant : '),
+    'Parte entro un paio di minuti.': ('Starts within a couple of minutes.', 'Empieza en un par de minutos.', 'Démarre dans quelques minutes.'),
+    'aperta ': ('opened ', 'abierta ', 'ouverte '),
+    'ultima: ': ('last: ', 'última: ', 'dernière : '),
+    'in coda': ('queued', 'en cola', 'en file'),
+    'in corso': ('running', 'en curso', 'en cours'),
+    'risultato': ('result', 'resultado', 'résultat'),
+    'Stato ': ('Status ', 'Estado ', 'Statut '),
+    '"Avvia task force" (sulle schede dei siti in Attenzione o Critico, e in fondo a ogni scheda del Polso) segnala un problema grave: Claude apre una sessione dedicata con i numeri della scheda, cerca la causa nei dati, applica subito le correzioni che si fanno dal sito e lascia il resto come consigli. Stato ed esito sono in cima all\'Ordine del giorno; le task force chiuse compaiono solo con "mostra fatti". Una sola task force alla volta per sito.': ('"Start task force" (on site cards in Attention or Critical, and at the bottom of every Health card) flags a serious problem: Claude opens a dedicated session with the card\'s numbers, looks for the cause in the data, applies right away the fixes that can be made on the site and leaves the rest as tips. Status and result are at the top of the Run sheet; closed task forces show only with "show done". One task force at a time per site.', '"Iniciar task force" (en las fichas de los sitios en Atención o Crítico, y al pie de cada ficha de Salud) señala un problema grave: Claude abre una sesión dedicada con los números de la ficha, busca la causa en los datos, aplica enseguida las correcciones que se hacen en el sitio y deja el resto como consejos. Estado y resultado están arriba en el Orden del día; las task forces cerradas solo aparecen con "mostrar hechos". Una sola task force a la vez por sitio.', '"Lancer une task force" (sur les fiches des sites en Attention ou Critique, et en bas de chaque fiche Santé) signale un problème grave : Claude ouvre une session dédiée avec les chiffres de la fiche, cherche la cause dans les données, applique tout de suite les corrections faisables sur le site et laisse le reste en conseils. Statut et résultat sont en haut de l\'Ordre du jour ; les task forces closes n\'apparaissent qu\'avec "afficher les faits". Une seule task force à la fois par site.'),
     # ---------- CTR in the analyses (0.25.0) ----------
     'contro ': ('vs ', 'frente a ', 'contre '),
     ' nei 28 giorni prima': (' in the previous 28 days', ' en los 28 días anteriores', ' les 28 jours précédents'),

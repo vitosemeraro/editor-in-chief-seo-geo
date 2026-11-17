@@ -7,6 +7,22 @@ change to the database schema bumps the minor version, a fix bumps the patch.
 Every change comes from the private dashboard the author uses daily on 4 real sites, generalized before
 it lands here.
 
+## [0.26.0] - 2026-11-17
+
+### Added
+- "Start task force" for a site in serious trouble. The button sits on site cards in Attention or Critical
+  (red) and at the bottom of every Health card. It creates a `task_force` request with the card's numbers
+  and starts it: a dedicated session diagnoses the cause from the data (pages and queries vs the previous 28
+  days, indexing, recent repository changes, analytics, path to contact), fixes what can be fixed from the
+  repository and leaves the rest as tips. One running task force per site.
+- Run sheet: task forces at the top with live step, status (queued, running, closed, failed) and result,
+  "open the chat", "Run again" on failed ones. Closed task forces show only with "show done".
+- Prompt: `task_force` request type in `run-requests.md`.
+
+### Schema
+- `richieste`: `tipo` `task_force`, fields `contesto` and `diagnosi`. `salute`: `task_force_il`,
+  `task_force_esito`.
+
 ## [0.25.0] - 2026-11-17
 
 ### Added
@@ -360,6 +376,7 @@ it lands here.
   schema, dashboard that starts empty, modular data sources (Search Console required), deploy examples
   for Firebase, Netlify, Vercel and FTPS, link checker, secret scan and config validator in CI.
 
+[0.26.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.25.0...v0.26.0
 [0.25.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.24.0...v0.25.0
 [0.24.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.23.0...v0.24.0
 [0.23.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.22.0...v0.23.0

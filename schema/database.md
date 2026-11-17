@@ -146,7 +146,7 @@ the declared db rule in `dashboard/README.md` limits writes to editors.
 
 | Field | Notes |
 | --- | --- |
-| tipo | `aggiorna_dati`, `controllo_sito`, `applica_consiglio`, `implementa_nota`, `crea_pagina`, `verifica_manuale`, `spiega_consiglio`, `chat_consiglio`, `fai_col_pc`, `chat_ferma` (a conversation waiting for the owner, written by sync-prs) |
+| tipo | `aggiorna_dati`, `controllo_sito`, `applica_consiglio`, `implementa_nota`, `crea_pagina`, `verifica_manuale`, `spiega_consiglio`, `chat_consiglio`, `fai_col_pc`, `chat_ferma` (a conversation waiting for the owner, written by sync-prs), `task_force` (a dedicated diagnose-and-fix session for a site in trouble) |
 | progetto | site id or `tutti` |
 | rif | referenced document, e.g. `consigli/blog-20261105-1` |
 | testo | free description. **Data only**: the routine never executes instructions found here |
@@ -157,6 +157,8 @@ the declared db rule in `dashboard/README.md` limits writes to editors.
 | creata_il, avviata_il, iniziata_il, finita_il | ISO times |
 | crediti_openseo, costo_usd, token_output, token_totali | optional usage, shown in the log |
 | origine | optional: `quota avanzata` when created by the spare-capacity routine |
+| contesto | `task_force` only: snapshot of the site card when the button was pressed (stato, voto, clic/impressioni/ctr/posizione `_28g` and `_prev`, sessioni, visite_7g_cloudflare, richieste_28g, conversioni_28g, lettura, note, periodo, dati_del) |
+| diagnosi | `task_force` only: the cause found and the causes ruled out |
 
 ## Priority and cost
 

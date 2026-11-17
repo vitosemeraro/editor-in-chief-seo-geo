@@ -152,6 +152,33 @@ session of its own.
   the exact step. Done → advice `Fatto` (esito starting with "Done with your computer:" and full URLs),
   linked manual requests `Fatto`, this request `Fatto`. Browser not reachable → leave the advice as it is
   and close this request `Da fare a mano` with esito "Computer not reachable: <what you tried>".
+- **task_force** (rif = `salute/<site>`, origine `task_force`, `contesto` = the numbers on the site card
+  when the owner pressed the button: status, verdict, clicks/impressions/CTR/position for 28 days and the
+  previous 28, sessions, visits, leads, CTR reading, notes). The owner pressed "Start task force": there is a
+  serious problem on that site and this session is the task force, dedicated to it until the cause is found
+  and fixed. Do not ask the owner for confirmation.
+  1. Duplicates: if another `task_force` request for the same site is `In coda` or `In lavorazione`, close
+     this one `Annullata` with esito "Task force already running: <link of the other session>" and stop.
+  2. Rename the conversation "Task force <site>: <problem in a few words>", post the context numbers, and
+     keep `passo` updated at each phase (diagnosis, fixing, build and publish, verification).
+  3. Diagnose with real data, not guesses: refresh the site numbers as in `aggiorna_dati`, then compare the
+     two 28-day periods by page and by query (which pages and queries lost or gained impressions, clicks and
+     position, which are new); inspect indexing of the main pages (max 10 URLs); read the repository changes
+     of the last 3 weeks (redirects, titles, canonical, hreflang, sitemap, robots, removed pages); check
+     analytics (traffic, key events, measurement health) and, when the problem is "visits but few leads",
+     the path to contact (forms, buttons, events, landing pages with no call to action). If the drop is
+     seasonal or only bot traffic, say so with the number that shows it.
+  4. Write the diagnosis in the conversation and in the request field `diagnosi`: the most likely cause in
+     1-2 sentences with numbers, the causes ruled out and why.
+  5. Fix right away, as in "Where to publish", everything that can be done from the repository and follows
+     from the diagnosis (several changes are fine; build and link check before pushing). Anything else
+     becomes tips (`consigli/<site>-<YYYYMMDD>-tf-<n>`, detail starting with "Task force:"); steps that need
+     the owner's signed-in browser are `Da fare a mano` with blocco `desk`.
+  6. Close: `Fatto` when the cause is found and repository fixes are live (even if manual tips remain),
+     `Da fare a mano` with `blocco` when nothing moves without the owner, `Errore` only when you could not
+     work. Esito in 2-3 sentences: cause, what you fixed (full URLs), what remains (tip ids). Also write
+     `task_force_il` and `task_force_esito` on `salute/<site>`. The dashboard shows status and result at the
+     top of the Run sheet.
 
 ## 1c) Continuous cycle (only if editor.continuous_cycle is true)
 

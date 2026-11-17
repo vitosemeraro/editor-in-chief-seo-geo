@@ -306,6 +306,16 @@
   .odg .azioni { display: grid; gap: 6px; justify-items: end; }
   @media (max-width: 640px) { .odg .azioni { justify-items: start; grid-auto-flow: column; justify-content: start; } }
 
+  /* Task force: un problema grave su un sito, con una sessione dedicata di diagnosi e correzioni. */
+  .btn.tf { border-color: var(--bad); color: var(--bad); font-weight: 600; }
+  .btn.tf.grave { background: var(--bad); color: var(--bg); }
+  .btn.tf:disabled { background: transparent; color: var(--muted); border-color: var(--line); }
+  .tfbox { border: 1px dashed var(--bad); border-radius: 6px; padding: 8px 10px; display: grid; gap: 6px; font-size: 12.5px; }
+  .tfbox .l { color: var(--bad); }
+  .tfbox a, .hacts a { color: var(--accent); }
+  .odg .scena .ora.tf-l { color: #ff8a7a; }
+  .odg .tagc.tf-t { color: #ff8a7a; border-color: #ff8a7a; }
+
   /* Controlli falliti su GitHub (build, deploy di anteprima): scritti dalla routine delle PR. */
   .ko { border: 2px solid #ff4b3a; border-radius: 8px; padding: 10px 14px; display: grid; gap: 6px; background: color-mix(in srgb, #ff4b3a 10%, transparent); }
   .ko[hidden] { display: none; }
@@ -468,7 +478,7 @@
   </section>
 
   <section class="odg vuoto" id="odg" aria-labelledby="odg-h">
-    <div class="sigira-h"><b id="odg-h"><i></i>Ordine del giorno</b><span class="mont-tot" id="odg-tot">0</span><span class="mont-tl">attività programmate</span><label class="mont-f"><input type="checkbox" id="odg-fatti"> mostra fatti (eseguite e spente)</label><button type="button" class="odg-agg" id="odg-agg" title="Ricontrolla adesso le attività: cosa è in corso, cosa è finito e com'è andata">Aggiorna</button><span id="odg-s">Carico le attività programmate…</span></div>
+    <div class="sigira-h"><b id="odg-h"><i></i>Ordine del giorno</b><span class="mont-tot" id="odg-tot">0</span><span class="mont-tl">attività programmate e task force</span><label class="mont-f"><input type="checkbox" id="odg-fatti"> mostra fatti (eseguite, spente e task force chiuse)</label><button type="button" class="odg-agg" id="odg-agg" title="Ricontrolla adesso le attività: cosa è in corso, cosa è finito e com'è andata">Aggiorna</button><span id="odg-s">Carico le attività programmate…</span></div>
     <div class="odg-stato" id="odg-stato" hidden></div>
     <ul class="scene" id="odg-lista"></ul>
   </section>
@@ -643,6 +653,7 @@
       <li>I pulsanti (Aggiorna dati, Verifica e consiglia, Applica, Crea pagina ora) mettono il lavoro in coda e lo avviano subito; lo stato accanto al pulsante si aggiorna da solo. Se l'avvio immediato non è disponibile, il lavoro parte al prossimo giro programmato.</li>
       <li>Ogni sito ha una modalità: "auto" pubblica direttamente, "draft" prepara una bozza da approvare.</li>
       <li>"Ordine del giorno" elenca le attività che Claude fa da solo a orari fissi (giro del mattino, report, controlli) e quelle fissate una volta sola, con la prossima esecuzione e l'esito dell'ultima (in corso, riuscita, non riuscita). L'elenco si riallinea ogni 3 ore; "Aggiorna" lo ricontrolla subito e "Rilancia" fa ripartire un'attività non riuscita. Quelle eseguite o spente compaiono solo con "mostra fatti".</li>
+      <li>"Avvia task force" (sulle schede dei siti in Attenzione o Critico, e in fondo a ogni scheda del Polso) segnala un problema grave: Claude apre una sessione dedicata con i numeri della scheda, cerca la causa nei dati, applica subito le correzioni che si fanno dal sito e lascia il resto come consigli. Stato ed esito sono in cima all'Ordine del giorno; le task force chiuse compaiono solo con "mostra fatti". Una sola task force alla volta per sito.</li>
       <li>Per spostare un'uscita cambia la data; per fermarla metti "In pausa". Per cambiarne molte insieme selezionale.</li>
       <li>"Conversioni previste" su ogni sito è una stima per i prossimi 30 giorni: visite previste da Cloudflare per un tasso di conversione. Dove il sito non misura ancora le conversioni il tasso è un riferimento di settore dichiarato; quando arrivano dati reali da Google Analytics pesano sempre di più. È sempre un intervallo, con l'affidabilità accanto.</li>
       <li>CTR = clic diviso impressioni su Google negli ultimi 28 giorni, sempre "contro" i 28 giorni prima (verde se migliora, rosso se peggiora). Nel Polso c'è anche la lettura: se il CTR è basso per la posizione vanno riscritti title e description; se scende perché la posizione è peggiorata conta salire, non i titoli. Nel Cartellone il CTR in rosso segna le pagine in prima pagina che prendono pochi clic.</li>
@@ -777,6 +788,41 @@
     return wrap;
   }
 
+  /* ---------- Task force ----------
+     Un problema grave su un sito: crea una richiesta task_force con i numeri della scheda (contesto) e la avvia.
+     La routine apre una sessione dedicata: diagnosi sui dati, correzioni applicate, il resto come consigli.
+     Una sola task force in corso per sito: finché è In coda o In lavorazione il pulsante è spento. */
+  const tfDi = (pid) => ultima((x) => x.tipo === 'task_force' && x.progetto === pid);
+  function contestoTf(s) {
+    const g = gsc28(s, null), l = letturaCtr(g);
+    const n = (v) => (v == null || v === '' || isNaN(v) ? null : Math.round(Number(v) * 100) / 100);
+    return { stato: s.stato || '', voto: s.voto || '', clic_28g: n(g.clic), clic_prev: n(g.clic_prev), impressioni_28g: n(g.impr), impressioni_prev: n(g.impr_prev),
+      ctr_28g: n(g.ctr), ctr_prev: n(g.ctr_prev), posizione_28g: n(g.pos), posizione_prev: n(g.pos_prev), sessioni_28g: n(s.sessioni_28g), sessioni_prev: n(s.sessioni_prev),
+      visite_7g_cloudflare: n(s.visite_7g_cloudflare), richieste_28g: n(s.richieste_28g), conversioni_28g: n(s.conversioni_28g),
+      lettura: l ? l.t + '.' + l.d : '', note: Array.isArray(s.note) ? s.note.slice(0, 6) : [], periodo: s.periodo || '', dati_del: s.aggiornato_il || '' };
+  }
+  async function avviaTf(pid, ctx, testo) {
+    return richiedi('task_force', { progetto: pid, rif: 'salute/' + pid, testo, contesto: ctx, origine: 'task_force' });
+  }
+  function bottoneTf(p, s) {
+    const wrap = el('span', { className: 'act' });
+    const r = tfDi(p.id), run = inCorso(r);
+    const grave = s && s.stato && s.stato !== 'Buono';
+    const b = el('button', { className: 'btn sm tf' + (grave ? ' grave' : ''), type: 'button', disabled: !state.db || !state.canWrite || run,
+      textContent: run ? 'Task force in corso' : 'Avvia task force',
+      title: 'Segnala un problema grave su questo sito: Claude apre una sessione dedicata che trova la causa nei dati e applica le correzioni. Stato ed esito nell Ordine del giorno.' });
+    b.addEventListener('click', async () => {
+      b.disabled = true; b.textContent = 'Avvio la task force…';
+      const ctx = contestoTf(s || {});
+      const testo = p.nome + ': ' + (ctx.voto || (ctx.lettura ? ctx.lettura.split('.')[0] : '') || 'problema grave segnalato dalla dashboard');
+      try { await avviaTf(p.id, ctx, testo); } catch (e) { b.disabled = false; b.textContent = 'Non partita: riprova'; }
+    });
+    wrap.append(b);
+    if (r && run) { wrap.append(el('span', { className: 'muted', textContent: (r.passo || r.stato) + ' · ' + daQuanto(r.iniziata_il || r.avviata_il || r.creata_il) })); if (r.sessione && /^https:\/\/claude\.ai\//.test(r.sessione)) wrap.append(el('a', { href: r.sessione, target: '_blank', rel: 'noopener', textContent: 'apri la chat' })); }
+    else if (r && r.stato) wrap.append(el('span', { className: 'pill ' + (RQ_CLS[r.stato] || 'muted'), textContent: 'ultima: ' + r.stato.toLowerCase() + (r.finita_il ? ' ' + quando(r.finita_il) : '') }));
+    return wrap;
+  }
+
   /* ---------- Testata ---------- */
   function renderFiltro() {
     const box = $('filtro'); box.replaceChildren();
@@ -812,7 +858,7 @@
     catch (e) { b.disabled = false; $('agg-stato').textContent = e && e.code === 'not_granted' ? 'Solo chi modifica la dashboard può aggiornare.' : 'Non avviato: riprova.'; }
   });
 
-  /* CTR = clic / impressioni, in percentuale con un decimale. */
+  /* CTR = clic / impressioni, in percentuale con un decimale (come lo specchietto del Cruscotto). */
   const ctrDi = (clic, impr) => (Number(impr) > 0 && clic != null && !isNaN(clic) ? 100 * Number(clic) / Number(impr) : null);
   const fmtCtr = (v) => (v == null || isNaN(v) ? '—' : Number(v).toLocaleString('it-IT', { maximumFractionDigits: 1 }) + '%');
   /* "contro X nei 28 giorni prima": verde se meglio, rosso se peggio. Posizione: più bassa è meglio. */
@@ -1001,6 +1047,7 @@
       card.append(kp);
       const gr = grafico(p.id); if (gr) card.append(gr); else { const sp = spark(serie); if (sp) card.append(sp); }
       const pv = boxPrevisione(p.id); if (pv) card.append(pv);
+      if ((sal.stato && sal.stato !== 'Buono') || inCorso(tfDi(p.id))) card.append(el('div', { className: 'tfbox' }, [el('div', { className: 'l small', textContent: sal.stato && sal.stato !== 'Buono' ? 'Stato ' + sal.stato.toLowerCase() + (sal.voto ? ': ' + sal.voto : '') : 'Task force' }), bottoneTf(p, sal)]));
       const nx = el('div', { className: 'next' }, [el('div', { className: 'l', textContent: 'Prossima uscita' })]);
       nx.append(prossimo ? el('div', {}, [el('b', { textContent: dataIt(prossimo.data) + ' · ' }), prossimo.tema]) : el('div', { className: 'muted', textContent: 'Niente in calendario' }));
       card.append(nx);
@@ -1267,18 +1314,23 @@
     const tutte = state.schedule.filter((r) => !r.progetto || r.progetto === 'tutti' || visibile(r.progetto));
     const attive = tutte.filter((r) => !odgFatta(r, ora)).map((r) => ({ r, t: prossimaDi(r, ora) })).sort((a, b) => (a.t || 9e15) - (b.t || 9e15));
     const fatte = tutte.filter((r) => odgFatta(r, ora));
-    $('odg').classList.toggle('vuoto', !attive.length);
-    $('odg-tot').textContent = String(attive.length);
+    /* Task force: richieste task_force. Aperte sempre in cima; Fatte o annullate solo con "mostra fatti". */
+    const tfTutte = state.richieste.filter((q) => q.tipo === 'task_force' && vis(q.progetto));
+    const tfChiusa = (q) => q.stato === 'Fatto' || q.stato === 'Annullata';
+    const tfAperte = tfTutte.filter((q) => !tfChiusa(q)).sort((a, b) => String(b.creata_il || '').localeCompare(String(a.creata_il || '')));
+    const tfChiuse = tfTutte.filter(tfChiusa).sort((a, b) => String(b.finita_il || b.creata_il || '').localeCompare(String(a.finita_il || a.creata_il || '')));
+    $('odg').classList.toggle('vuoto', !attive.length && !tfAperte.length);
+    $('odg-tot').textContent = String(attive.length + tfAperte.length);
     const oggiN = attive.filter((x) => x.t && oraOdg(x.t, ora).g === 'oggi').length;
     const agg = (state.editor.find((d) => d.id === 'stato') || {}).programmate_controllo_il || '';
     const ko = attive.filter((x) => x.r.ultimo_esito === 'errore').length;
-    $('odg-s').textContent = (attive.length ? oggiN + (oggiN === 1 ? ' parte oggi' : ' partono oggi') + (attive[0].t ? ', la prossima ' + oraOdg(attive[0].t, ora).tra : '') + '.' + (ko ? ' ' + ko + (ko === 1 ? ' non è riuscita' : ' non sono riuscite') + " l'ultima volta." : '') : (state.schedule.length ? 'Nessuna attività in programma.' : 'Le attività programmate arrivano con il prossimo controllo.'))
+    $('odg-s').textContent = (tfAperte.length ? tfAperte.length + (tfAperte.length === 1 ? ' task force aperta. ' : ' task force aperte. ') : '') + (attive.length ? oggiN + (oggiN === 1 ? ' parte oggi' : ' partono oggi') + (attive[0].t ? ', la prossima ' + oraOdg(attive[0].t, ora).tra : '') + '.' + (ko ? ' ' + ko + (ko === 1 ? ' non è riuscita' : ' non sono riuscite') + " l'ultima volta." : '') : (state.schedule.length ? 'Nessuna attività in programma.' : 'Le attività programmate arrivano con il prossimo controllo.'))
       + ' Orari nel tuo fuso. Elenco ricontrollato ogni 3 ore' + (agg ? ', ultimo alle ' + new Date(agg).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit', timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone }) : '') + '.';
     /* Stato aggiornato: quante sono in corso, quante finite oggi e quante non riuscite l'ultima volta. */
     const giornoRoma = (x) => new Date(x).toLocaleDateString('it-IT', { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone });
-    const nRun = tutte.filter((r) => runDi(r, ora) === 'run').length;
-    const nOk = tutte.filter((r) => runDi(r, ora) === 'ok' && r.ultima && giornoRoma(r.ultima) === giornoRoma(ora)).length;
-    const nKo = tutte.filter((r) => runDi(r, ora) === 'ko' && r.stato !== 'Spenta').length;
+    const nRun = tutte.filter((r) => runDi(r, ora) === 'run').length + tfAperte.filter(inCorso).length;
+    const nOk = tutte.filter((r) => runDi(r, ora) === 'ok' && r.ultima && giornoRoma(r.ultima) === giornoRoma(ora)).length + tfChiuse.filter((q) => q.stato === 'Fatto' && q.finita_il && giornoRoma(q.finita_il) === giornoRoma(ora)).length;
+    const nKo = tutte.filter((r) => runDi(r, ora) === 'ko' && r.stato !== 'Spenta').length + tfAperte.filter((q) => q.stato === 'Errore').length;
     const sb = $('odg-stato'); sb.hidden = !state.schedule.length;
     sb.replaceChildren(
       el('span', { className: 's-run' }, [el('b', { textContent: String(nRun) }), document.createTextNode('in corso adesso')]),
@@ -1318,7 +1370,35 @@
       if (chat) azioni.append(el('a', { href: chat, target: '_blank', rel: 'noopener', textContent: 'apri la chat' }));
       return el('li', { className: 'scena' + (fatta ? ' fatta' : '') + (o && o.presto && !fatta ? ' presto' : '') }, [left, mid, azioni]);
     };
+    const rigaTf = (q, fatta) => {
+      const meta = el('div', { className: 'meta' });
+      if (q.progetto && q.progetto !== 'tutti') meta.append(sito(prog(q.progetto)));
+      meta.append(el('span', { className: 'tagc tf-t', textContent: 'task force' }));
+      if (inCorso(q)) {
+        const da = q.iniziata_il || q.avviata_il || q.creata_il;
+        meta.append(el('span', { className: 'tagc run-t', textContent: '● ' + (q.stato === 'In coda' ? 'in coda' : 'in corso') + (da ? ' ' + daQuanto(da) : '') }));
+      } else if (q.stato === 'Fatto') meta.append(el('span', { className: 'tagc ok-t', textContent: '✓ chiusa · ' + quando(q.finita_il) }));
+      else if (q.stato === 'Errore') meta.append(el('span', { className: 'tagc ko-t', textContent: '✕ non riuscita · ' + quando(q.finita_il || q.creata_il) }));
+      else meta.append(el('span', { className: 'tagc', textContent: (q.stato || '').toLowerCase() }));
+      const mid = el('div', {}, [el('div', { className: 'tt', textContent: q.testo || 'Task force' })]);
+      const txt = inCorso(q) ? (q.passo && q.passo !== 'In coda' ? 'Adesso: ' + q.passo : 'Parte entro un paio di minuti.') : (q.esito || q.passo || '');
+      if (txt) mid.append(el('div', { className: 'perche', textContent: txt.length > 400 ? txt.slice(0, 397) + '…' : txt }));
+      mid.append(meta);
+      const left = el('span', { className: 'ora tf-l' }, [document.createTextNode('SOS'), el('small', { textContent: 'aperta ' + quando(q.creata_il) })]);
+      const azioni = el('div', { className: 'azioni' });
+      if (q.stato === 'Errore' && state.db && state.canWrite && !inCorso(tfDi(q.progetto))) {
+        const b = el('button', { type: 'button', className: 'rilancia', textContent: 'Rilancia', title: 'Riapre la task force con gli stessi numeri' });
+        b.addEventListener('click', async () => { b.disabled = true; b.textContent = 'Rilancio…'; try { await avviaTf(q.progetto, q.contesto || {}, q.testo || prog(q.progetto).nome); } catch (e) { b.disabled = false; b.textContent = 'Rilancia'; } });
+        azioni.append(b);
+      }
+      if (q.sessione && /^https:\/\/claude\.ai\//.test(q.sessione)) azioni.append(el('a', { href: q.sessione, target: '_blank', rel: 'noopener', textContent: 'apri la chat' }));
+      if (q.link && /^https:\/\//.test(q.link)) azioni.append(el('a', { href: q.link, target: '_blank', rel: 'noopener', textContent: 'risultato' }));
+      return el('li', { className: 'scena' + (fatta ? ' fatta' : '') }, [left, mid, azioni]);
+    };
+    for (const q of tfAperte) ul.append(rigaTf(q, false));
     for (const { r, t } of attive) ul.append(riga(r, t, false));
+    if (state.odgFatti) for (const q of tfChiuse.slice(0, 20)) ul.append(rigaTf(q, true));
+    if (state.odgFatti && tfChiuse.length) $('odg').classList.remove('vuoto');
     if (state.odgFatti) for (const r of fatte.sort((a, b) => String(b.prossima || b.ultima || '').localeCompare(String(a.prossima || a.ultima || ''))).slice(0, 30)) ul.append(riga(r, null, true));
     if (state.odgFatti && fatte.length) $('odg').classList.remove('vuoto');
   }
@@ -1639,7 +1719,9 @@
         c.append(el('ul', { className: 'notes' }, top.map((x) => el('li', {}, [el('b', { textContent: x.titolo }), azione('Applica ora', 'applica_consiglio', { progetto: x.progetto, rif: 'consigli/' + x.id, testo: x.titolo }, (q) => q.rif === 'consigli/' + x.id, { primary: x.stato !== 'Da fare a mano', costo: stima(x.sforzo, 'applica_consiglio') }), segnaFatto(x)]))));
       }
       const act = el('div', { className: 'hacts' });
+      if (s.stato && s.stato !== 'Buono') act.append(bottoneTf(p, s));
       act.append(azione('Verifica e consiglia', 'controllo_sito', { progetto: p.id }, (x) => x.progetto === p.id, { primary: true, again: 'Verifica di nuovo' }));
+      if (!s.stato || s.stato === 'Buono') act.append(bottoneTf(p, s));
       act.append(el('span', { textContent: s.controllato_il ? 'Ultimo controllo ' + quando(s.controllato_il) : 'Dati del ' + (quando(s.aggiornato_il) || '—') }));
       c.append(act);
       box.append(c);
@@ -1965,7 +2047,7 @@
   }
 
   /* ---------- Registro interventi ---------- */
-  const TIPO_NOME = { aggiorna_dati: 'Aggiorna dati', controllo_sito: 'Verifica e consiglia', applica_consiglio: 'Applica consiglio', implementa_nota: 'Implementa nota', crea_pagina: 'Crea pagina', verifica_manuale: 'Verifica lavoro fatto a mano', spiega_consiglio: 'Spiegami come', chat_consiglio: 'Chat sul consiglio', fai_col_pc: 'Col tuo PC', chat_ferma: 'Chat ferma' };
+  const TIPO_NOME = { aggiorna_dati: 'Aggiorna dati', controllo_sito: 'Verifica e consiglia', applica_consiglio: 'Applica consiglio', implementa_nota: 'Implementa nota', crea_pagina: 'Crea pagina', verifica_manuale: 'Verifica lavoro fatto a mano', spiega_consiglio: 'Spiegami come', chat_consiglio: 'Chat sul consiglio', fai_col_pc: 'Col tuo PC', chat_ferma: 'Chat ferma', task_force: 'Task force' };
   function quandoLog(iso) { if (!iso) return ''; const d = new Date(iso); if (isNaN(d)) return iso; return d.toLocaleString('it-IT', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }); }
   function linkChat(u) { return u && /^https:\/\/claude\.ai\//.test(u) ? el('a', { href: u, target: '_blank', rel: 'noopener', textContent: 'Apri la chat' }) : null; }
   function consumo(r) {

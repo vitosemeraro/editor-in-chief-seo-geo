@@ -49,7 +49,10 @@ numbers on what changed and what to do. Always include CTR and position against 
 position 30.4 vs 9.0") and say why CTR moved: if it drops while position worsens by more than 3 points, the
 problem is position (new impressions on far-away searches), not titles; if it is below 60% of the typical CTR
 for that position (about 25% at 1, 14% at 2, 9% at 3, 6% at 4-5, 3% at 6-10, 1% at 11-20), the problem is
-title and description. If a source fails, skip it and add it to
+title and description. When one country brings many impressions with 0 clicks (tool traffic, as seen from the US on
+some sites), also write the clean CTR fields of the schema (`ctr_28g_no_usa`, `ctr_prev_no_usa`, `quota_usa_28g`,
+`ctr_prima_pagina_*`): total minus a `country equals` read, never `notEquals`; above 30% share, comment the clean CTR,
+not the raw one. If a source fails, skip it and add it to
 `editor/stato.fonti_saltate`.
 
 If the site has `conversions` in the config, keep `conversioni/<site>` in step with it (set): `obiettivo` = goal,

@@ -79,6 +79,11 @@ Cloudflare is on.
 Search Console CTR and position, both periods: `posizione_28g`, `posizione_prev` (average position weighted by
 impressions), `ctr_28g`, `ctr_prev` (clicks / impressions × 100). The dashboard computes CTR from clicks and
 impressions when the `ctr_*` fields are missing; omit the `_prev` fields when the previous period has no impressions.
+Optional "clean" CTR (0.28.0), shown next to the raw CTR on the site card and in Health when present:
+`ctr_28g_no_usa`, `ctr_prev_no_usa` (CTR without one country of tool traffic, total minus a `country equals` filter, never
+`notEquals`, which drops anonymous queries), `quota_usa_28g` (that country's share of impressions, %; above 30 the card warns
+that the raw CTR is skewed), `ctr_prima_pagina_28g`, `ctr_prima_pagina_prev`, `clic_prima_pagina_28g`,
+`impressioni_prima_pagina_28g` (only pages with average position 1-10, without that country).
 `stato` is `Buono`, `Attenzione`, `Critico` or `Appena collegato`; `voto` is one line; `note` is a list of
 3-5 sentences with numbers; `aggiornato_il`, `controllato_il`.
 

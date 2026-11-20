@@ -656,7 +656,7 @@
       <li>"Avvia task force" (sulle schede dei siti in Attenzione o Critico, e in fondo a ogni scheda del Polso) segnala un problema grave: Claude apre una sessione dedicata con i numeri della scheda, cerca la causa nei dati, applica subito le correzioni che si fanno dal sito e lascia il resto come consigli. Stato ed esito sono in cima all'Ordine del giorno; le task force chiuse compaiono solo con "mostra fatti". Una sola task force alla volta per sito.</li>
       <li>Per spostare un'uscita cambia la data; per fermarla metti "In pausa". Per cambiarne molte insieme selezionale.</li>
       <li>"Conversioni previste" su ogni sito è una stima per i prossimi 30 giorni: visite previste da Cloudflare per un tasso di conversione. Dove il sito non misura ancora le conversioni il tasso è un riferimento di settore dichiarato; quando arrivano dati reali da Google Analytics pesano sempre di più. È sempre un intervallo, con l'affidabilità accanto.</li>
-      <li>CTR = clic diviso impressioni su Google negli ultimi 28 giorni, sempre "contro" i 28 giorni prima (verde se migliora, rosso se peggiora). Nel Polso c'è anche la lettura: se il CTR è basso per la posizione vanno riscritti title e description; se scende perché la posizione è peggiorata conta salire, non i titoli. Nel Cartellone il CTR in rosso segna le pagine in prima pagina che prendono pochi clic.</li>
+      <li>CTR = clic diviso impressioni su Google negli ultimi 28 giorni, sempre "contro" i 28 giorni prima (verde se migliora, rosso se peggiora). Nel Polso c'è anche la lettura: se il CTR è basso per la posizione vanno riscritti title e description; se scende perché la posizione è peggiorata conta salire, non i titoli. Nel Cartellone il CTR in rosso segna le pagine in prima pagina che prendono pochi clic. Dove la routine li scrive compaiono anche il "CTR senza USA" (impressioni USA tolte: sono traffico di tool con 0 clic) e il "CTR in prima pagina" (solo pagine in posizione 1-10); se gli USA superano il 30% delle impressioni la scheda lo dice.</li>
       <li>Stato di salute, parole chiave e idee si aggiornano dalle fonti dati attive in configurazione (Search Console come base; Analytics, Cloudflare, visibilità AI opzionali). Le idee e i consigli che scarti non tornano.</li>
     </ul>
   </section>
@@ -797,7 +797,7 @@
     const g = gsc28(s, null), l = letturaCtr(g);
     const n = (v) => (v == null || v === '' || isNaN(v) ? null : Math.round(Number(v) * 100) / 100);
     return { stato: s.stato || '', voto: s.voto || '', clic_28g: n(g.clic), clic_prev: n(g.clic_prev), impressioni_28g: n(g.impr), impressioni_prev: n(g.impr_prev),
-      ctr_28g: n(g.ctr), ctr_prev: n(g.ctr_prev), posizione_28g: n(g.pos), posizione_prev: n(g.pos_prev), sessioni_28g: n(s.sessioni_28g), sessioni_prev: n(s.sessioni_prev),
+      ctr_28g: n(g.ctr), ctr_prev: n(g.ctr_prev), ctr_28g_no_usa: n(s.ctr_28g_no_usa), ctr_prima_pagina_28g: n(s.ctr_prima_pagina_28g), quota_usa_28g: n(s.quota_usa_28g), posizione_28g: n(g.pos), posizione_prev: n(g.pos_prev), sessioni_28g: n(s.sessioni_28g), sessioni_prev: n(s.sessioni_prev),
       visite_7g_cloudflare: n(s.visite_7g_cloudflare), richieste_28g: n(s.richieste_28g), conversioni_28g: n(s.conversioni_28g),
       lettura: l ? l.t + '.' + l.d : '', note: Array.isArray(s.note) ? s.note.slice(0, 6) : [], periodo: s.periodo || '', dati_del: s.aggiornato_il || '' };
   }
@@ -876,6 +876,19 @@
     const pos = sal.posizione_28g != null ? Number(sal.posizione_28g) : cur && cur.posizione != null ? Number(cur.posizione) : null;
     const pos_prev = sal.posizione_prev != null && Number(impr_prev) > 0 ? Number(sal.posizione_prev) : null;
     return { clic, impr, clic_prev, impr_prev, pos, pos_prev, ctr: ctrDi(clic, impr), ctr_prev: ctrDi(clic_prev, impr_prev) };
+  }
+  /* CTR "pulito" (dal 20/11/2026, per i siti con traffico di tool dagli USA): senza USA (totale meno country = usa, traffico di tool) e solo pagine in prima pagina (posizione 1-10).
+     Compaiono solo se la routine scrive i campi in salute; quota_usa_28g sopra 30 aggiunge l'avviso. */
+  const numOk = (v) => (v == null || v === '' || isNaN(v) ? null : Number(v));
+  function ctrPuliti(sal) {
+    const out = [];
+    const nu = numOk(sal.ctr_28g_no_usa);
+    if (nu != null) out.push({ l: 'CTR senza USA', v: fmtCtr(nu), d: contro(nu, numOk(sal.ctr_prev_no_usa), fmtCtr) });
+    const pp = numOk(sal.ctr_prima_pagina_28g);
+    if (pp != null) out.push({ l: 'CTR in prima pagina', v: fmtCtr(pp), d: contro(pp, numOk(sal.ctr_prima_pagina_prev), fmtCtr) });
+    const qu = numOk(sal.quota_usa_28g);
+    const avviso = qu != null && qu > 30 ? 'Il ' + Math.round(qu) + '% delle impressioni viene dagli USA con 0 clic (traffico di tool): il CTR grezzo è più basso del vero, guarda quello senza USA' + (pp != null ? ' e quello in prima pagina' + (numOk(sal.impressioni_prima_pagina_28g) != null ? ' (' + fmt(sal.impressioni_prima_pagina_28g) + ' impressioni)' : '') : '') + '.' : '';
+    return { kpi: out, avviso };
   }
 
   /* CTR atteso per posizione media (curve pubbliche di settore 2025-26, valori prudenti): serve solo a dire se il CTR è basso per dove siamo. */
@@ -1039,12 +1052,14 @@
         k('Clic Google 28 gg', fmt(g.clic), contro(g.clic, g.clic_prev, fmt)),
         k('Impressioni 28 gg', fmt(g.impr), contro(g.impr, g.impr_prev, fmt)),
         k('CTR', fmtCtr(g.ctr), contro(g.ctr, g.ctr_prev, fmtCtr)),
+        ...ctrPuliti(sal).kpi.map((x) => k(x.l, x.v, x.d)),
         k('Posizione media', fmtPos(g.pos), contro(g.pos, g.pos_prev, fmtPos, true)),
         k('Citazioni AI', cur && cur.domande_ai ? `${fmt(cur.citazioni_ai)}/${fmt(cur.domande_ai)}` : '—'),
         k('Visite 7 gg', fmt(cur && cur.visite_7g != null ? cur.visite_7g : sal.visite_7g_cloudflare)),
         k('Articoli usciti', fmt(usciti))
       );
       card.append(kp);
+      { const av = ctrPuliti(sal).avviso; if (av) card.append(el('div', { className: 'site-note warn', textContent: av })); }
       const gr = grafico(p.id); if (gr) card.append(gr); else { const sp = spark(serie); if (sp) card.append(sp); }
       const pv = boxPrevisione(p.id); if (pv) card.append(pv);
       if ((sal.stato && sal.stato !== 'Buono') || inCorso(tfDi(p.id))) card.append(el('div', { className: 'tfbox' }, [el('div', { className: 'l small', textContent: sal.stato && sal.stato !== 'Buono' ? 'Stato ' + sal.stato.toLowerCase() + (sal.voto ? ': ' + sal.voto : '') : 'Task force' }), bottoneTf(p, sal)]));
@@ -1705,8 +1720,10 @@
       /* CTR e posizione nello stile dello specchietto: valore e "contro X nei 28 giorni prima", verde o rosso. */
       const g = gsc28(s, null);
       const k2 = (l, v, d) => { const n = el('div', {}, [el('div', { className: 'l', textContent: l }), el('div', { className: 'v', textContent: v })]); if (d) n.append(el('div', { className: 'd ' + d.c, textContent: d.t })); return n; };
-      hk.append(k2('CTR Google', fmtCtr(g.ctr), contro(g.ctr, g.ctr_prev, fmtCtr)), k2('Posizione media', fmtPos(g.pos), contro(g.pos, g.pos_prev, fmtPos, true)));
+      const cp = ctrPuliti(s);
+      hk.append(k2('CTR Google', fmtCtr(g.ctr), contro(g.ctr, g.ctr_prev, fmtCtr)), ...cp.kpi.map((x) => k2(x.l, x.v, x.d)), k2('Posizione media', fmtPos(g.pos), contro(g.pos, g.pos_prev, fmtPos, true)));
       c.append(hk);
+      if (cp.avviso) c.append(el('div', { className: 'esito', style: '--ec:var(--warn)' }, [el('b', { textContent: 'CTR gonfiato dagli USA' }), document.createTextNode(' ' + cp.avviso)]));
       const lettura = letturaCtr(g);
       if (lettura) c.append(el('div', { className: 'esito', style: '--ec:var(--' + lettura.c + ')' }, [el('b', { textContent: lettura.t }), document.createTextNode(lettura.d)]));
       if (Array.isArray(s.note) && s.note.length) {

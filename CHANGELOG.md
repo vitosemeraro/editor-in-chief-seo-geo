@@ -7,6 +7,18 @@ change to the database schema bumps the minor version, a fix bumps the patch.
 Every change comes from the private dashboard the author uses daily on 4 real sites, generalized before
 it lands here.
 
+## [0.28.0] - 2026-11-20
+
+### Added
+- "CTR without USA" and "Page-one CTR" next to the raw CTR on the site card and in Health, each "vs the previous
+  28 days". When one country brings more than 30% of impressions with 0 clicks (tool traffic), the card warns that
+  the raw CTR is skewed and points to the clean ones. Task force context carries the same numbers.
+- `weekly-review.md`: how to compute them (total minus a `country equals` read, never `notEquals`).
+
+### Schema
+- `salute`: optional `ctr_28g_no_usa`, `ctr_prev_no_usa`, `quota_usa_28g`, `ctr_prima_pagina_28g`,
+  `ctr_prima_pagina_prev`, `clic_prima_pagina_28g`, `impressioni_prima_pagina_28g`.
+
 ## [0.27.0] - 2026-11-20
 
 ### Added
@@ -392,6 +404,7 @@ it lands here.
   schema, dashboard that starts empty, modular data sources (Search Console required), deploy examples
   for Firebase, Netlify, Vercel and FTPS, link checker, secret scan and config validator in CI.
 
+[0.28.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.27.0...v0.28.0
 [0.27.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.26.0...v0.27.0
 [0.26.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.25.0...v0.26.0
 [0.25.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.24.0...v0.25.0

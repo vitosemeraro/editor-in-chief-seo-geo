@@ -117,7 +117,11 @@ also draws `metriche.visite_7g` as dots when Cloudflare is on.
 
 Top 15 pages by impressions in the last 28 days: `progetto`, `url` (path), `impressioni`, `clic`,
 `posizione`, `periodo`, `consiglio` (the move for that page, max 160 chars), `impatto`, `sforzo`,
-`azione` (`auto` or `nessuna`). Rows with an action are sorted by priority and get an "Applica" button.
+`azione` (`auto` or `nessuna`), `consiglio_id` (optional: the tip in `consigli` that covers this page).
+Each row shows its status: "Nelle note di redazione" with a link to the open tip, "Fatto, in osservazione"
+with a link to the done tip, "In osservazione", "Pochi dati" (under 10 impressions), or "Da fare" with an
+"Applica" button only when `azione` = `auto` and no tip covers the page. The linked tip is found by
+`consiglio_id`, then by a tip id quoted in `consiglio`, then by a tip whose `rif` is `pagine/<id>`.
 
 ## keyword/{site_id}-{n}
 
@@ -139,7 +143,8 @@ Ideas from data: `progetto`, `tema`, `keyword`, `volume`, `perche` (the data poi
 Improvement tips: `progetto`, `titolo` (max 80 chars), `dettaglio`, `tipo` (`SEO`, `AEO`, `GEO`, `Tecnico`,
 `Conversioni`), `impatto` (`Alto`, `Medio`, `Basso`), `sforzo` (`Basso`, `Medio`, `Alto`), `come` (`Automatico` or `A mano`), `stato`
 (`Da fare`, `Da verificare`, `Da fare a mano`, `Fatto`, `Scartato`), `esito`, `link`, `creato_il`,
-`aggiornato_il`.
+`aggiornato_il`, optional `rif` (e.g. `pagine/<site>-<n>` when the tip comes from a Billboard row) and
+`origine`. Each tip card has the anchor `#nota-<id>`: the Billboard and the Board link straight to it.
 
 "A mano" tips are tasks only the owner can do (DNS, Google Business, GA4 settings). The owner presses
 "L'ho fatto" and the routine verifies it against the data sources (`verifica_manuale`).

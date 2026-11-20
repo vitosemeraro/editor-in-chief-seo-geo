@@ -120,6 +120,14 @@ session of its own.
     impressions or clicks; max 160 characters), `impatto`, `sforzo` and `azione` (`auto` if it is a repo
     change, `nessuna` if the page is already on top, was rewritten less than 3 weeks ago, answers
     301/410 or has fewer than 5 impressions). Never the same generic tip on several rows;
+  - the Notes (`consigli`) are the single to-do list; the Billboard (`pagine`) is the results board. When
+    a page needs a repo change, do not leave it only on the Billboard: if an open tip already covers that
+    page, write its id in the row's `consiglio_id` and set `azione` = `nessuna`; otherwise create the tip
+    `consigli/<site>-YYYYMMDD-pN` (`Automatico`, `Da fare`, `rif` = `pagine/<site>-<n>`, `origine` =
+    `cartellone`) and write `consiglio_id` on the row, `azione` = `nessuna`. That way the continuous cycle
+    applies it too. Once the tip is `Fatto`, keep `consiglio_id` and write in `consiglio` what was done
+    and when to check again: the row shows "Done, watching" with a link to the tip. Use `azione` = `auto`
+    only as a fallback when you cannot write the tip;
   - extend the daily series `serie/<site>` for the chart: Search Console by date from the day after the
     last one stored; fields `inizio` (YYYY-MM-DD), `clic[]`, `impressioni[]` (one value per day), keep at
     most 400 days, `aggiornato_il`.

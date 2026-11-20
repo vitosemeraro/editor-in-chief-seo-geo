@@ -7,6 +7,23 @@ change to the database schema bumps the minor version, a fix bumps the patch.
 Every change comes from the private dashboard the author uses daily on 4 real sites, generalized before
 it lands here.
 
+## [0.29.0] - 2026-11-20
+
+### Changed
+- The Billboard ("Cartellone") is now the results board and the Notes are the single to-do list. Every page
+  row shows where its work stands: "Nelle note di redazione" (open tip, with "vai alla nota"), "Fatto, in
+  osservazione" (done tip, with "cosa è stato fatto"), "In osservazione", "Pochi dati", or "Da fare" with
+  "Applica" only when the move is not a tip yet. Before, "Applica" appeared only on the few rows marked
+  `azione: auto`, the rest looked inert, and a move left on the Billboard was invisible to the continuous
+  cycle and could be done twice (once as a page request, once as a tip).
+- "vai alla nota" / "vai al consiglio" (Billboard and Board) scroll to the exact tip card and highlight it,
+  turning on "mostra fatti" and clearing filters when the tip would be hidden.
+- `run-requests.md` (`aggiorna_dati`): a page that needs a repo change becomes a tip (`origine: cartellone`,
+  `rif: pagine/<id>`) and the row gets `consiglio_id`; `azione: auto` stays only as a fallback.
+
+### Schema
+- `pagine`: optional `consiglio_id`. `consigli`: optional `rif`, `origine`.
+
 ## [0.28.0] - 2026-11-20
 
 ### Added
@@ -404,6 +421,7 @@ it lands here.
   schema, dashboard that starts empty, modular data sources (Search Console required), deploy examples
   for Firebase, Netlify, Vercel and FTPS, link checker, secret scan and config validator in CI.
 
+[0.29.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.28.0...v0.29.0
 [0.28.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.27.0...v0.28.0
 [0.27.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.26.0...v0.27.0
 [0.26.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.25.0...v0.26.0

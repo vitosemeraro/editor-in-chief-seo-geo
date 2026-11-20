@@ -125,6 +125,10 @@
   .idea .clash { font-size: 12px; color: var(--warn); }
   .idea .acts, .tip .acts { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; border-top: 1px dashed var(--line); padding-top: 10px; }
   .tip.done { opacity: .7; }
+  .tip.flash { outline: 3px solid var(--accent); outline-offset: 2px; }
+  /* Cartellone: lo stato di ogni pagina (cosa si aspetta, dove sta il lavoro). */
+  .cstato { display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: center; margin-top: 4px; font-size: 12px; }
+  .cstato a { color: var(--accent); }
   .esito { font-size: 13px; border-left: 3px solid var(--ec, var(--muted)); padding: 6px 10px; border-radius: 4px; background: color-mix(in srgb, var(--ec, var(--muted)) 10%, transparent); }
   .esito b { display: block; color: var(--ec, var(--fg)); margin-bottom: 2px; }
   .toolbar { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; font-size: 12px; color: var(--muted); }
@@ -612,10 +616,10 @@
   </section>
 
   <section class="card" id="pagine">
-    <div class="card-head"><div><h2><span class="tag">SEO</span> Cartellone</h2><p><b>Le pagine su Google.</b> Da Search Console, le pagine con più impressioni negli ultimi 28 giorni, con il CTR (in rosso se basso per la posizione) e la mossa più utile.</p></div></div>
+    <div class="card-head"><div><h2><span class="tag">SEO</span> Cartellone</h2><p><b>Il tabellone dei risultati.</b> Da Search Console, le pagine con più impressioni negli ultimi 28 giorni, con il CTR (in rosso se basso per la posizione): qui guardi se il lavoro fatto rende. Le modifiche si fanno in <b>Note di redazione</b>, l'unica lista di cose da fare, che anche il ciclo continuo applica da solo. Accanto a ogni pagina: "In osservazione" (già lavorata, si aspetta l'effetto), "Pochi dati", "Nelle note di redazione" con il link alla nota, oppure "Applica" se la mossa non è ancora tra le note.</p></div></div>
     <div class="toolbar"><label><input type="checkbox" id="pag-fatti"> mostra fatti</label><span class="small muted" id="pag-fatti-n"></span></div>
     <div class="scroll"><table>
-      <thead><tr><th>Sito</th><th>Pagina</th><th class="num">Impr.</th><th class="num">Clic</th><th class="num">CTR</th><th class="num">Pos.</th><th>Consiglio</th></tr></thead>
+      <thead><tr><th>Sito</th><th>Pagina</th><th class="num">Impr.</th><th class="num">Clic</th><th class="num">CTR</th><th class="num">Pos.</th><th>Stato e prossima mossa</th></tr></thead>
       <tbody id="pagine-body"></tbody>
     </table></div>
   </section>
@@ -654,6 +658,7 @@
       <li>Ogni sito ha una modalità: "auto" pubblica direttamente, "draft" prepara una bozza da approvare.</li>
       <li>"Ordine del giorno" elenca le attività che Claude fa da solo a orari fissi (giro del mattino, report, controlli) e quelle fissate una volta sola, con la prossima esecuzione e l'esito dell'ultima (in corso, riuscita, non riuscita). L'elenco si riallinea ogni 3 ore; "Aggiorna" lo ricontrolla subito e "Rilancia" fa ripartire un'attività non riuscita. Quelle eseguite o spente compaiono solo con "mostra fatti".</li>
       <li>"Avvia task force" (sulle schede dei siti in Attenzione o Critico, e in fondo a ogni scheda del Polso) segnala un problema grave: Claude apre una sessione dedicata con i numeri della scheda, cerca la causa nei dati, applica subito le correzioni che si fanno dal sito e lascia il resto come consigli. Stato ed esito sono in cima all'Ordine del giorno; le task force chiuse compaiono solo con "mostra fatti". Una sola task force alla volta per sito.</li>
+      <li>Note di redazione e Cartellone: le Note di redazione sono la lista di cosa fare (con "Applica ora", e il ciclo continuo le applica da sole); il Cartellone è il tabellone dei risultati pagina per pagina e dice in che stato è ognuna. Quando una pagina ha bisogno di una mossa, la routine la scrive come nota di redazione e il Cartellone la collega; "Applica" nel Cartellone resta solo per le mosse che non sono ancora diventate una nota.</li>
       <li>Per spostare un'uscita cambia la data; per fermarla metti "In pausa". Per cambiarne molte insieme selezionale.</li>
       <li>"Conversioni previste" su ogni sito è una stima per i prossimi 30 giorni: visite previste da Cloudflare per un tasso di conversione. Dove il sito non misura ancora le conversioni il tasso è un riferimento di settore dichiarato; quando arrivano dati reali da Google Analytics pesano sempre di più. È sempre un intervallo, con l'affidabilità accanto.</li>
       <li>CTR = clic diviso impressioni su Google negli ultimi 28 giorni, sempre "contro" i 28 giorni prima (verde se migliora, rosso se peggiora). Nel Polso c'è anche la lettura: se il CTR è basso per la posizione vanno riscritti title e description; se scende perché la posizione è peggiorata conta salire, non i titoli. Nel Cartellone il CTR in rosso segna le pagine in prima pagina che prendono pochi clic. Dove la routine li scrive compaiono anche il "CTR senza USA" (impressioni USA tolte: sono traffico di tool con 0 clic) e il "CTR in prima pagina" (solo pagine in posizione 1-10); se gli USA superano il 30% delle impressioni la scheda lo dice.</li>
@@ -1117,6 +1122,18 @@
   const aMano = (x) => x.stato === 'Da fare a mano' || x.stato === 'Da approvare';
   const vis = (id) => !id || id === 'tutti' || visibile(id);
   const consiglioDi = (q) => { const m = /^consigli\/(.+)$/.exec((q && q.rif) || ''); return m ? state.consigli.find((x) => x.id === m[1]) : null; };
+  /* Porta alla nota di redazione: la mostra anche se è chiusa o filtrata, la scorre in vista e la evidenzia. */
+  function vaiNota(c) {
+    if (!c) return;
+    const chiusa = c.stato === 'Fatto' || c.stato === 'Scartato';
+    if (chiusa && !state.consFatti) { state.consFatti = true; $('cons-fatti').checked = true; }
+    if (state.consTipo && c.tipo !== state.consTipo) state.consTipo = '';
+    if (state.filtro !== 'tutti' && state.filtro !== c.progetto) { state.filtro = 'tutti'; try { localStorage.setItem('eic-filtro', 'tutti'); } catch (e) {} renderAll(); } else renderConsigli();
+    const t = $('nota-' + c.id) || $('consigli');
+    t.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    if (t.id !== 'consigli') { t.classList.add('flash'); setTimeout(() => t.classList.remove('flash'), 2400); }
+  }
+  const linkNota = (c, testo) => { const a = el('a', { href: '#nota-' + c.id, textContent: testo }); a.addEventListener('click', (e) => { e.preventDefault(); vaiNota(c); }); return a; };
   /* Lasciati a mano: le richieste e i consigli "Da fare a mano" o "Da approvare", senza contare due volte lo stesso lavoro. */
   function manoRows() {
     const rows = state.richieste.filter((q) => aMano(q) && vis(q.progetto)).map((q) => ({ q, c: consiglioDi(q), k: chiSblocca(q) }));
@@ -1185,7 +1202,7 @@
       pb.addEventListener('click', async (e) => { e.stopPropagation(); pb.disabled = true; pb.textContent = 'Avvio…'; try { await procedi([{ q, c }]); } catch (x) { pb.disabled = false; pb.textContent = 'Non partito: riprova'; } });
       ln.append(pb);
     }
-    if (c && c.id) { const b = el('a', { href: '#consigli', textContent: 'vai al consiglio' }); b.addEventListener('click', (e) => { e.preventDefault(); const t = $('consigli'); if (t) t.scrollIntoView({ block: 'start' }); }); ln.append(b); }
+    if (c && c.id) ln.append(linkNota(c, 'vai al consiglio'));
     if (ln.childNodes.length) li.append(ln);
     return li;
   }
@@ -1804,7 +1821,7 @@
     for (const r of rows) {
       const p = prog(r.progetto);
       const rq = ultima((x) => x.rif === 'consigli/' + r.id);
-      const c = el('article', { className: 'tip' + (aperti(r) || recente(r) ? '' : ' done') }); c.style.setProperty('--c', p.colore);
+      const c = el('article', { className: 'tip' + (aperti(r) || recente(r) ? '' : ' done'), id: 'nota-' + r.id }); c.style.setProperty('--c', p.colore);
       const meta = el('div', { className: 'meta' }, [sito(p), tag(r.tipo || 'SEO', true), el('span', { className: 'pill ' + (r.impatto === 'Alto' ? 'bad' : r.impatto === 'Medio' ? 'warn' : 'muted'), textContent: 'impatto ' + (r.impatto || '—').toLowerCase() }), el('span', { className: 'pill muted', textContent: 'sforzo ' + (r.sforzo || 'medio').toLowerCase() }), el('span', { textContent: r.come === 'A mano' ? 'a mano' : 'automatico' })]);
       if (aperti(r) && punteggio(r) >= 3) meta.prepend(el('span', { className: 'pill ok', textContent: '★ Priorità alta' }));
       if (r.stato && r.stato !== 'Da fare') meta.append(el('span', { className: 'pill ' + (RQ_CLS[r.stato] || 'muted'), textContent: r.stato }));
@@ -2015,20 +2032,42 @@
   }
 
   $('pag-fatti').addEventListener('change', () => renderPagine());
+  /* La nota di redazione collegata a una pagina: campo consiglio_id, rif della nota sulla pagina, oppure un id citato nel testo ("site1-20261113-2"). */
+  const RX_ID_NOTA = /\b[a-z][a-z0-9]*-\d{8}-[a-z0-9]+(?:-[a-z0-9]+)*\b/gi;
+  function notaDiPagina(r) {
+    const ids = [r.consiglio_id].concat(String(r.consiglio || '').match(RX_ID_NOTA) || []).filter(Boolean);
+    for (const id of ids) { const c = state.consigli.find((x) => x.id === id); if (c) return c; }
+    return state.consigli.find((x) => x.rif === 'pagine/' + r.id) || null;
+  }
+  /* Stato di una riga del Cartellone: dove sta il lavoro su quella pagina. */
+  function statoPagina(r) {
+    const c = notaDiPagina(r), aperta = c && !['Fatto', 'Scartato'].includes(c.stato);
+    if (aperta) return { k: 'nota', c, t: 'Nelle note di redazione', cls: 'warn', d: c.stato === 'Da fare' ? 'da fare' : String(c.stato || '').toLowerCase() };
+    if (r.azione && r.azione !== 'nessuna' && !c) return { k: 'applica', t: 'Da fare', cls: 'bad' };
+    if (c && c.stato === 'Fatto') return { k: 'oss', c, t: 'Fatto, in osservazione', cls: 'ok' };
+    if ((Number(r.impressioni) || 0) < 10) return { k: 'pochi', t: 'Pochi dati', cls: 'muted' };
+    return { k: 'oss', t: 'In osservazione', cls: 'muted' };
+  }
+  const ORD_PAG = { applica: 0, nota: 1, oss: 2, pochi: 3 };
   function renderPagine() {
     const tb = $('pagine-body'); tb.replaceChildren();
     const pgTutte = state.pagine.filter((r) => visibile(r.progetto));
     const rows = pgTutte.filter((r) => $('pag-fatti').checked || !fattaRif('pagine/' + r.id)); nascosti('pag-fatti', pgTutte.length - rows.length);
-    rows.sort((a, b) => ((b.azione !== 'nessuna') - (a.azione !== 'nessuna')) || (punteggio(b) - punteggio(a)) || ((b.impressioni || 0) - (a.impressioni || 0)));
+    const st = new Map(rows.map((r) => [r.id, statoPagina(r)]));
+    rows.sort((a, b) => (ORD_PAG[st.get(a.id).k] - ORD_PAG[st.get(b.id).k]) || (punteggio(b) - punteggio(a)) || ((b.impressioni || 0) - (a.impressioni || 0)));
     if (!rows.length) { tb.append(el('tr', {}, [el('td', { colSpan: 7, className: 'empty', textContent: pgTutte.length ? 'Tutte fatte: spunta "mostra fatti" per rivederle.' : 'Arriva dal primo aggiornamento da Search Console.' })])); return; }
     for (const r of rows) {
-      const p = prog(r.progetto); const c = r.consiglio || consiglioPagina(r);
+      const p = prog(r.progetto); const c = r.consiglio || consiglioPagina(r), s = st.get(r.id);
       const pos = Number(r.posizione); const cls = isNaN(pos) ? 'muted' : pos <= 10 ? 'ok' : pos <= 30 ? 'warn' : 'bad';
-      const cell = el('td', { className: 'advice' }, [el('div', { textContent: c })]);
-      if (r.azione !== 'nessuna') {
-        const m = el('div', { className: 'small' }, [el('span', { className: 'pill ' + (punteggio(r) >= 3 ? 'ok' : 'muted'), textContent: PRIO(r) }), document.createTextNode(' impatto ' + String(r.impatto || 'medio').toLowerCase() + ' · sforzo ' + String(r.sforzo || 'medio').toLowerCase() + ' ')]);
-        cell.append(m, azione('Applica', 'implementa_nota', { progetto: r.progetto, rif: 'pagine/' + r.id, testo: 'Pagina ' + r.url + ': ' + c }, (x) => x.rif === 'pagine/' + r.id, { costo: stima(r.sforzo, 'implementa_nota') }));
-      } else cell.classList.add('muted');
+      const cell = el('td', { className: 'advice' }, [el('div', { className: s.k === 'applica' || s.k === 'nota' ? '' : 'muted', textContent: c })]);
+      const riga = el('div', { className: 'cstato' }, [el('span', { className: 'pill ' + s.cls, textContent: s.t })]);
+      if (s.k === 'nota') { riga.append(el('span', { className: 'muted', textContent: s.d + ' · ' + s.c.titolo })); riga.append(linkNota(s.c, 'vai alla nota')); }
+      else if (s.k === 'oss' && s.c) riga.append(linkNota(s.c, 'cosa è stato fatto'));
+      else if (s.k === 'applica') {
+        riga.append(el('span', { className: 'pill ' + (punteggio(r) >= 3 ? 'ok' : 'muted'), textContent: PRIO(r) }), el('span', { className: 'muted', textContent: 'impatto ' + String(r.impatto || 'medio').toLowerCase() + ' · sforzo ' + String(r.sforzo || 'medio').toLowerCase() }));
+        riga.append(azione('Applica', 'implementa_nota', { progetto: r.progetto, rif: 'pagine/' + r.id, testo: 'Pagina ' + r.url + ': ' + c }, (x) => x.rif === 'pagine/' + r.id, { primary: true, costo: stima(r.sforzo, 'implementa_nota') }));
+      }
+      cell.append(riga);
       tb.append(el('tr', {}, [
         el('td', {}, [sito(p)]),
         el('td', { className: 'url', textContent: r.url || '' }),

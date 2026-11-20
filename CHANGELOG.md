@@ -7,6 +7,22 @@ change to the database schema bumps the minor version, a fix bumps the patch.
 Every change comes from the private dashboard the author uses daily on 4 real sites, generalized before
 it lands here.
 
+## [0.27.0] - 2026-11-20
+
+### Added
+- Quality check before every push, mandatory in `run-requests.md` (step 4b) and `spare-capacity.md`.
+  `scripts/quality_check.cjs` renders each new or changed page with Playwright on a phone (390 px) and a
+  computer (1280 px), saves full-page screenshots and fails on: the same title twice on a page, placeholder
+  text left in, broken images, blurry photos (shown larger than the file), stretched or rotated photos,
+  pages wider than the screen, headings covered by other elements. Warnings for missing alt text and a main
+  photo under 1600 px. The session looks at the screenshots too, fixes and runs it again; it never pushes
+  with errors.
+- Photo rule in the drafts of `weekly-review.md` and in the example config: photos that fit the topic and
+  season, main photo at least 1600 px, own or freely licensed with credits.
+
+### Schema
+- Config: `sites[].check.build_dir`, the folder with the built pages the quality check reads.
+
 ## [0.26.0] - 2026-11-17
 
 ### Added
@@ -376,6 +392,7 @@ it lands here.
   schema, dashboard that starts empty, modular data sources (Search Console required), deploy examples
   for Firebase, Netlify, Vercel and FTPS, link checker, secret scan and config validator in CI.
 
+[0.27.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.26.0...v0.27.0
 [0.26.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.25.0...v0.26.0
 [0.25.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.24.0...v0.25.0
 [0.24.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.23.0...v0.24.0

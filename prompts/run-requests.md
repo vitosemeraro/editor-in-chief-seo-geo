@@ -22,9 +22,23 @@ For each site in the config:
 1. Add `sites[].repo` with add_repo (write access).
 2. Write the content in `content.dir` with `content.format` and `content.filename`. If `content.guide`
    exists, read it first and follow its front matter and style.
-3. Run `build` (if any) and `check`. If either fails, do not push: set the request to `Errore` with the
+3. Run `build` (if any) and `check`. If either fails (or the quality check in 4b), do not push: set the request to `Errore` with the
    reason.
 4. Update `sitemap` and `llms_txt` when you add a page, if they are configured.
+4b. **Quality check before the push (mandatory).** The owner must never be the first to see a mistake on a
+   page. After `build` and `check`, run
+   `node scripts/quality_check.cjs --dir <sites[].build_dir> --out /tmp/qa <path> <path> ...` (from the
+   config repo, or a copy in the site repo) with every new or changed page in every language, plus the list
+   pages you touched. Add `--domain <sites[].url>` if pages use absolute URLs to their own site. It renders
+   each page at 390 px and 1280 px, saves full-page screenshots and flags duplicated headings or boxes,
+   more than one H1, placeholder text, broken, blurry (upscaled), stretched or rotated images, horizontal
+   scroll and elements that overflow the screen. It exits with 1 on errors. Then open the screenshots and
+   check by eye what a script cannot see: a crooked, badly cropped or off-topic photo (wrong season or
+   subject), repeated boxes, stacked blocks, buttons in different styles, untranslated text, broken menus.
+   If anything is wrong, fix it and run steps 3-4b again until it is clean. Never push with errors. If a
+   problem cannot be fixed from the repository, do not publish that page (or remove the faulty element) and
+   create a tip for the rest. Write one line in the esito: "Quality check: <n> pages × 2 screens, ok" or
+   what you fixed.
 5. `publish_mode: auto` → commit on `branch` and push: the deploy workflow publishes.
    `publish_mode: draft` → do not push. Write the content as a Claude Doc, set the request (or the
    calendar row) to `Da approvare` with the link, and stop there for that item.

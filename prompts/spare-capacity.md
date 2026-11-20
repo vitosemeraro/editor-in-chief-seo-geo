@@ -18,6 +18,8 @@ You run the nightly "spare capacity" pass of an Editor-in-Chief dashboard.
 - Do not work the tips yourself: create requests and fire `editor.trigger_id` (the "run requests"
   routine), exactly like the dashboard buttons, so each tip gets its own conversation.
 - If there is nothing to do, end without messaging the owner.
+- Every page the requests change goes through the quality check of `run-requests.md` (step 4b of "Where
+  to publish") before the push.
 
 ## 1) Settings
 

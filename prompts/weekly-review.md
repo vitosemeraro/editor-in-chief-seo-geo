@@ -74,7 +74,8 @@ leader_dominio, top3, ai_overview, domande_correlate. If credits are under
 For sites with `publish_mode: draft`: take `piano` rows with stato `Programmato` and a date between
 today + 7 and today + 13 days. For each, write a complete draft as a Claude Doc (title = tema), following
 `editorial_plan` and the rules. Missing real data becomes `[DA COMPLETARE: ...]`. Then set the row to
-`Scritto` with `bozza` = link of the doc. Never publish draft-mode sites.
+`Scritto` with `bozza` = link of the doc. Never publish draft-mode sites. Pick photos on topic and in season already in the
+draft: when it is published, the quality check of `run-requests.md` (step 4b) renders it again.
 
 ## 6) Ideas
 

@@ -19,6 +19,8 @@ editor:
     enabled: true                    # one experiment per site per results day, on the page with the most clicks
     min_clicks: 3                    # clicks in the last 14 days a page needs to host an experiment
     window_days: 14                  # how long an experiment runs before it is kept or rolled back
+    cycle_daily_cap: 0               # experiments/campaigns the continuous cycle may start per day (0 = only on
+                                     # results days); can be overridden from editor/stato.esperimenti_tetto_giorno
   spare_capacity:                    # optional nightly routine (prompts/spare-capacity.md)
     max_per_night: 3                 # automatic tips applied per night; the nightly caps are your reserve
     max_per_week: 15                 # weekly cap across all sites
@@ -26,7 +28,9 @@ editor:
                                      # and empty slots get the best new idea. false = you confirm.
   continuous_cycle: false            # true = when the queue is empty the agent applies the next automatic
                                      # advice and starts itself again. On/off switch on the dashboard slate.
-  cycle_daily_cap: 12                # max requests the cycle creates per day
+  cycle_daily_cap: 12                # max requests the cycle creates per day (editor/stato.ciclo_tetto_giorno overrides it)
+  quota_slowdown_pct: 80             # weekly AI plan used above this % → cycle cap drops to 8
+  quota_stop_pct: 90                 # above this % the cycle stops until the weekly reset
 
 # Editorial rules applied to every site. Add your own; keep them short and testable.
 rules:
@@ -86,6 +90,10 @@ sites:
     deploy: "GitHub Action on push to main"         # informational: see deploy/*.yml
     editorial_plan: ""               # optional link (doc) or repo path with strategy, tone, audience
     facts: []                        # site-specific facts the writer may use, e.g. "9 apartments", "15% fee"
+    campaigns:                       # optional: content campaigns the cycle runs for this site (run-requests 3b)
+      audiences: []                  # e.g. ["students arriving for the spring semester", "workers on 3-month assignments"]
+      max_credits: 100               # keyword-tool credits per campaign
+      window_days: 21                # when a campaign is reviewed
     conversions:                     # optional: "Expected conversions · 30 days" on the site card
       goal: "quote requests"         # what counts as a conversion
       measured: false                # true only if a GA4 key event counts exactly this

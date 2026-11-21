@@ -37,6 +37,7 @@ One per site, synced from `sites[]` in the config.
 | stato | fonti_saltate | list of sources not read in the last run, with reason |
 | stato | crediti_openseo_residui, crediti_letti_il | optional, if OpenSEO is used |
 | stato | ciclo_attivo, ciclo_cambiato_il | continuous-cycle switch from the slate (missing = on); see prompts/run-requests.md 1c |
+| stato | ciclo_tetto_giorno, esperimenti_tetto_giorno, quota_settimana_pct, quota_letta_il | optional overrides of the daily cycle caps and the share of the weekly AI plan used (1c step 3) |
 | quota | attiva, max_notte, max_settimana | spare-capacity switch and caps, editable by the owner |
 | quota | settimana, usate_settimana, pausa_fino_al, ultima_notte, note | written by the spare-capacity routine |
 | costi | usd_eur | exchange rate used by the Costs view (default 0.86), editable from the page |
@@ -236,7 +237,7 @@ Log of work not started from a button (scheduled publishing, calendar autofill):
 One change on a page that already performs, measured before and after (`prompts/run-requests.md`, step 3):
 `progetto`, `url`, `ipotesi` (one sentence), `modifica`, `base` (object: period, clicks, impressions, ctr,
 position, key events), `avviato_il`, `stato` (`Da pubblicare`, `In corso`, `Tenuto`, `Tolto`), `esito`,
-`commit`.
+`commit`, `tipo` (`a`-`d` or `campagna`; campaigns also have `pubblico` and `keyword`).
 
 ## interazioni, traffico_pagine (optional)
 

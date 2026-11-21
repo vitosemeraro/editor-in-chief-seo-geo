@@ -174,6 +174,25 @@ session of its own.
   the exact step. Done → advice `Fatto` (esito starting with "Done with your computer:" and full URLs),
   linked manual requests `Fatto`, this request `Fatto`. Browser not reachable → leave the advice as it is
   and close this request `Da fare a mano` with esito "Computer not reachable: <what you tried>".
+- **esperimento** (progetto, rif = full page URL, origine `ciclo`): one experiment on that page, as in
+  "Experiments" (step 3) but on any day. First close that site's experiments older than `window_days`.
+  Then pick ONE change: (a) clicks but no key events → conversion box; (b) impressions on queries the page
+  does not cover → question H2 with a short answer; (c) CTR under 60% of the typical CTR for its position →
+  new title and description; (d) a map or table the query asks for (e.g. walking times to a place the page
+  names). Add, do not rewrite the existing text. Quality check before pushing. Store it in `esperimenti`
+  with `tipo` = a|b|c|d. Esito: what changed, full URL, review date (avviato_il + window_days).
+- **campagna** (progetto, testo = an audience from `sites[].campaigns.audiences`, origine `ciclo`): a content
+  campaign for one audience. No paid ads unless the owner asks and writes a budget.
+  1. Research 5-15 real searches of that audience (keyword tool within `campaigns.max_credits`, else Search
+     Console and the questions in the site facts) and the pages that already cover them. Never a duplicate.
+  2. ONE new page (article or landing page) for the best uncovered search, in the languages that audience
+     uses, with verifiable facts only, fitting photos and the contact box. Add a link to it from the closest
+     existing page (a sentence or a box, not a rewrite).
+  3. If the site has a business profile, a ready-to-post update for that audience as a manual tip (`Da fare
+     a mano`, blocco `desk`).
+  4. Quality check, build, link check, push. Store it in `esperimenti` (doc_id `<site>-<YYYYMMDD>-camp-<n>`,
+     tipo `campagna`, `pubblico`, page URLs, keywords, base = clicks and impressions on those keywords in the
+     last 28 days, stato `In corso`, reviewed after `campaigns.window_days`).
 - **task_force** (rif = `salute/<site>`, origine `task_force`, `contesto` = the numbers on the site card
   when the owner pressed the button: status, verdict, clicks/impressions/CTR/position for 28 days and the
   previous 28, sessions, visits, leads, CTR reading, notes). The owner pressed "Start task force": there is a
@@ -209,7 +228,25 @@ schedule and found nothing queued), before the final message:
 1. If `editor/stato.ciclo_attivo` is `false` (the switch on the dashboard slate), skip this section.
 2. Query `richieste`: if any request is `In coda`, or `In lavorazione` for less than 2 hours, do nothing:
    another session is already moving.
-3. Count today's requests with `origine: "ciclo"`. If they reach `editor.cycle_daily_cap` (default 12), stop.
+3. Count today's requests with `origine: "ciclo"` (in the owner's time zone). The cap is
+   `editor/stato.ciclo_tetto_giorno` if set (the owner can raise it when there is spare plan quota),
+   otherwise `editor.cycle_daily_cap` (default 12). If the count reaches it, stop. Weekly quota margin: if
+   `editor/stato.quota_settimana_pct` (the share of the weekly AI plan already used, written by the owner
+   or by a session that reads it) is above `editor.quota_slowdown_pct` (default 80) use a cap of 8; above
+   `editor.quota_stop_pct` (default 90) stop. Also stop if one of the last 3 cycle requests failed for a usage
+   or rate limit.
+3b. Experiments and campaigns (only if `editor.experiments.enabled`). If today's cycle requests of tipo
+   `esperimento` or `campagna` are fewer than `editor/stato.esperimenti_tetto_giorno` (otherwise
+   `editor.experiments.cycle_daily_cap`, default 0) and neither of the last 2 cycle requests was one of them
+   (so the cycle alternates: tip, tip, experiment), create ONE of these instead of a tip:
+   a. A campaign, for a site with `campaigns.audiences`, if it has none `In corso` started less than 3 days
+      ago: doc_id `<site>-<YYYYMMDD>-campagna-<n>`, tipo `campagna`, testo = the audience whose last
+      campaign is oldest (never run comes first).
+   b. An experiment on the page with the most impressions in the last 28 days (`pagine` rows) that has at
+      least `min_clicks` clicks or at least 100 impressions at position 1-15, and no experiment `In corso`
+      younger than `window_days`: doc_id `<site>-<YYYYMMDD>-esp-<n>`, tipo `esperimento`, rif = full URL.
+   Both with stato `In coda`, creata_il = now, origine `ciclo`. Call fire_trigger once and stop. No candidate:
+   go on to step 4.
 4. Pick from `consigli` the advice with stato `Da fare`, come `Automatico`, no open request naming it in rif,
    highest priority (impact divided by effort: Alto=3, Medio=2, Basso=1; ties go to the oldest). Skip advice
    that waits for external data not out yet.

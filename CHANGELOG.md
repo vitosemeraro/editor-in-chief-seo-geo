@@ -7,6 +7,23 @@ change to the database schema bumps the minor version, a fix bumps the patch.
 Every change comes from the private dashboard the author uses daily on 4 real sites, generalized before
 it lands here.
 
+## [0.30.0] - 2026-11-21
+
+### Added
+- More experiments when the AI plan has spare quota. The continuous cycle now alternates tip, tip,
+  experiment: new request types `esperimento` (one change on a page with clicks or 100+ impressions at
+  position 1-15, any day, including a map or table option) and `campagna` (a content campaign for one target
+  audience: research, one new page in that audience's languages, a link from the closest page, a ready
+  business-profile post as a manual tip, measured after a window). No paid ads unless the owner writes a budget.
+- Weekly quota margin: `editor/stato.quota_settimana_pct` slows the cycle to 8 requests a day above 80% and
+  stops it above 90%.
+
+### Schema
+- `editor/stato`: `ciclo_tetto_giorno`, `esperimenti_tetto_giorno`, `quota_settimana_pct`, `quota_letta_il`.
+- Config: `editor.experiments.cycle_daily_cap`, `editor.quota_slowdown_pct`, `editor.quota_stop_pct`,
+  `sites[].campaigns` (`audiences`, `max_credits`, `window_days`).
+- `esperimenti`: `tipo`, `pubblico`, `keyword`.
+
 ## [0.29.0] - 2026-11-20
 
 ### Changed
@@ -421,6 +438,7 @@ it lands here.
   schema, dashboard that starts empty, modular data sources (Search Console required), deploy examples
   for Firebase, Netlify, Vercel and FTPS, link checker, secret scan and config validator in CI.
 
+[0.30.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.29.0...v0.30.0
 [0.29.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.28.0...v0.29.0
 [0.28.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.27.0...v0.28.0
 [0.27.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.26.0...v0.27.0

@@ -21,6 +21,8 @@ editor:
     window_days: 14                  # how long an experiment runs before it is kept or rolled back
     cycle_daily_cap: 0               # experiments/campaigns the continuous cycle may start per day (0 = only on
                                      # results days); can be overridden from editor/stato.esperimenti_tetto_giorno
+    focus: {}                        # optional: {sites: [my-site], pages: ["/apartment-a/", "monthly"]} = cycle
+                                     # experiments and campaigns only there, to push the offers you care about most
   spare_capacity:                    # optional nightly routine (prompts/spare-capacity.md)
     max_per_night: 3                 # automatic tips applied per night; the nightly caps are your reserve
     max_per_week: 15                 # weekly cap across all sites

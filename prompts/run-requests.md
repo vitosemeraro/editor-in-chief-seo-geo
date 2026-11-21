@@ -238,7 +238,11 @@ schedule and found nothing queued), before the final message:
 3b. Experiments and campaigns (only if `editor.experiments.enabled`). If today's cycle requests of tipo
    `esperimento` or `campagna` are fewer than `editor/stato.esperimenti_tetto_giorno` (otherwise
    `editor.experiments.cycle_daily_cap`, default 0) and neither of the last 2 cycle requests was one of them
-   (so the cycle alternates: tip, tip, experiment), create ONE of these instead of a tip:
+   (so the cycle alternates: tip, tip, experiment), create ONE of these instead of a tip. If
+   `editor.experiments.focus` is set, cycle experiments and campaigns go only to those sites and to pages
+   matching its `pages` patterns (the offers the owner wants to sell first, e.g. two specific apartments);
+   the other sites keep only the results-day experiment, and candidate pages need only 1 click or 30
+   impressions:
    a. A campaign, for a site with `campaigns.audiences`, if it has none `In corso` started less than 3 days
       ago: doc_id `<site>-<YYYYMMDD>-campagna-<n>`, tipo `campagna`, testo = the audience whose last
       campaign is oldest (never run comes first).

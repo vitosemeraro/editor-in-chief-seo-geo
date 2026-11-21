@@ -7,6 +7,13 @@ change to the database schema bumps the minor version, a fix bumps the patch.
 Every change comes from the private dashboard the author uses daily on 4 real sites, generalized before
 it lands here.
 
+## [0.31.0] - 2026-11-21
+
+### Added
+- `editor.experiments.focus` (`sites`, `pages`): the cycle's experiments and campaigns go only to the offers
+  the owner wants to sell first; other sites keep the results-day experiment. Lower thresholds for focus
+  pages (1 click or 30 impressions).
+
 ## [0.30.0] - 2026-11-21
 
 ### Added
@@ -438,6 +445,7 @@ it lands here.
   schema, dashboard that starts empty, modular data sources (Search Console required), deploy examples
   for Firebase, Netlify, Vercel and FTPS, link checker, secret scan and config validator in CI.
 
+[0.31.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.30.0...v0.31.0
 [0.30.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.29.0...v0.30.0
 [0.29.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.28.0...v0.29.0
 [0.28.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.27.0...v0.28.0

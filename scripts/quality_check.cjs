@@ -20,6 +20,7 @@
  *   node quality_check.cjs <https://url> [<https://url> ...]
  * Options: --domain https://site.com (absolute URLs of the site are served from the local folder), --out <screenshot folder> (default ./qa-screenshot),
  *          --all (every HTML page in --dir), --no-screenshot (fast pass: automatic checks only)
+ * Also catches the site's own JavaScript errors (pageerror): a broken quote form or booking widget is an ERROR.
  * Exits with 1 on ERRORS (they block the push), 0 with warnings only or nothing.
  */
 const { chromium } = require('playwright');
@@ -221,6 +222,9 @@ async function analizza(vw) {
       });
       const rotte = [];
       page.on('response', r => { if (r.status() >= 400 && r.request().resourceType() === 'image') rotte.push(r.url()); });
+      // the site's own JavaScript errors (since 0.32.0: a variable clash broke a quote form and no check saw it)
+      const jsErr = [];
+      page.on('pageerror', e => { const st = String(e.stack || ''); if (!base || st.includes(base) || !/https?:\/\//.test(st)) jsErr.push(String(e.message).split('\n')[0].slice(0, 160)); });
       let res;
       try { res = await page.goto(url, { waitUntil: base ? 'load' : 'networkidle', timeout: 45000 }); }
       catch (e) { console.log(`  [${nome}] ERROR: page did not load (${e.message.split('\n')[0]})`); totErr++; await ctx.close(); continue; }
@@ -230,6 +234,7 @@ async function analizza(vw) {
       await page.waitForTimeout(400);
       const r = await page.evaluate(analizza, vw);
       for (const u of rotte) r.errori.push(`Image not found (HTTP 4xx): ${u.split('/').pop()}`);
+      for (const m of jsErr) r.errori.push(`JavaScript error on the page: ${m}`);
       const file = path.join(out, `${t.replace(/^https?:\/\//, '').replace(/[^a-z0-9]+/gi, '_').replace(/^_|_$/g, '') || 'home'}-${nome}.png`);
       if (foto) { await page.screenshot({ path: file, fullPage: true }); console.log(`  [${nome} ${vw}px] screenshot: ${file}`); }
       for (const e of [...new Set(r.errori)]) console.log(`    ERROR: ${e}`);

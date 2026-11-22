@@ -7,6 +7,14 @@ change to the database schema bumps the minor version, a fix bumps the patch.
 Every change comes from the private dashboard the author uses daily on 4 real sites, generalized before
 it lands here.
 
+## [0.32.0] - 2026-11-22
+
+### Added
+- `scripts/quality_check.cjs` flags the site's own JavaScript errors (`pageerror`) as an ERROR, so a script
+  bug that breaks a quote form or booking widget blocks the push. Errors thrown by third-party scripts on
+  other domains are ignored. Born from a variable clash that broke a live quote form for about 30 minutes
+  while every other check was green.
+
 ## [0.31.0] - 2026-11-21
 
 ### Added
@@ -445,6 +453,7 @@ it lands here.
   schema, dashboard that starts empty, modular data sources (Search Console required), deploy examples
   for Firebase, Netlify, Vercel and FTPS, link checker, secret scan and config validator in CI.
 
+[0.32.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.31.0...v0.32.0
 [0.31.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.30.0...v0.31.0
 [0.30.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.29.0...v0.30.0
 [0.29.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.28.0...v0.29.0

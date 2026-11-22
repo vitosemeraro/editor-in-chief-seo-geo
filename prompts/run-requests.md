@@ -32,7 +32,8 @@ For each site in the config:
    pages you touched. Add `--domain <sites[].url>` if pages use absolute URLs to their own site. It renders
    each page at 390 px and 1280 px, saves full-page screenshots and flags duplicated headings or boxes,
    more than one H1, placeholder text, broken, blurry (upscaled), stretched or rotated images, horizontal
-   scroll and elements that overflow the screen. It exits with 1 on errors. Then open the screenshots and
+   scroll, elements that overflow the screen and the site's own JavaScript errors (a broken quote form or
+   booking widget is an error). It exits with 1 on errors. Then open the screenshots and
    check by eye what a script cannot see: a crooked, badly cropped or off-topic photo (wrong season or
    subject), repeated boxes, stacked blocks, buttons in different styles, untranslated text, broken menus.
    If anything is wrong, fix it and run steps 3-4b again until it is clean. Never push with errors. If a

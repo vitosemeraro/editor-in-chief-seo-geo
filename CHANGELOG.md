@@ -7,6 +7,21 @@ change to the database schema bumps the minor version, a fix bumps the patch.
 Every change comes from the private dashboard the author uses daily on 4 real sites, generalized before
 it lands here.
 
+## [0.33.0] - 2026-11-22
+
+### Fixed
+- "AI critics" no longer makes a check that never ran look like a result. Each "no" now shows the date it was
+  read, the empty state no longer promises a first check on a fixed date, and the section intro no longer
+  claims a weekly check runs for every site.
+
+### Added
+- A status line per site above the table (checked on date / never run, and why / not set up), with credits
+  left and credits needed per week. Born from four weekly trackers that skipped every run for three weeks
+  for lack of credits while the dashboard kept showing "no".
+
+### Schema
+- New document `editor/geo`; `aeo` rows document the `data` field.
+
 ## [0.32.0] - 2026-11-22
 
 ### Added
@@ -453,6 +468,7 @@ it lands here.
   schema, dashboard that starts empty, modular data sources (Search Console required), deploy examples
   for Firebase, Netlify, Vercel and FTPS, link checker, secret scan and config validator in CI.
 
+[0.33.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.32.0...v0.33.0
 [0.32.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.31.0...v0.32.0
 [0.31.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.30.0...v0.31.0
 [0.30.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.29.0...v0.30.0

@@ -130,7 +130,12 @@
     ['trips', 'AI Overview', 'Cosa vedere a Porto in 2 giorni', 1, 'slow-trips.example'],
     ['saas', 'ChatGPT', 'Miglior software di fatturazione per forfettari', 0, 'compare-tools.example'],
   ];
-  ai.forEach(([p, motore, domanda, citato, citati], i) => put('aeo', p + '-' + i, { progetto: p, motore, domanda, citato, citati }));
+  ai.forEach(([p, motore, domanda, citato, citati], i) => put('aeo', p + '-' + i, { progetto: p, motore, domanda, citato, citati, data: new Date(now - 4 * 864e5).toISOString().slice(0, 10) }));
+  const atG = (h) => new Date(now + h * 36e5).toISOString();
+  put('editor', 'geo', { verificato_il: atG(-2), crediti: 1840, crediti_servono_settimana: 120, siti: {
+    bakery: { tracker: true, ultimo_controllo: atG(-24 * 4), motori: 'ChatGPT, Gemini, AI Overview, AI Mode', costo_crediti: 40, prossimo: atG(24 * 3) },
+    trips: { tracker: true, ultimo_controllo: atG(-24 * 4), motori: 'ChatGPT, Gemini, AI Overview, AI Mode', costo_crediti: 40, prossimo: atG(24 * 3) },
+    saas: { tracker: true, ultimo_controllo: null, motivo: 'Saltato: crediti insufficienti', costo_crediti: 40, prossimo: atG(24 * 3) } } });
 
   const log = [
     [26, 'bakery', 'Pubblicata: Pizza in teglia in forno di casa', 1.12, 0],

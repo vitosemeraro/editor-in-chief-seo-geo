@@ -133,6 +133,17 @@ Keyword market: `progetto`, `keyword`, `volume`, `nostra_posizione`, `fonte_posi
 
 GEO rows, one per question and engine: `progetto`, `motore`, `domanda`, `citato` (1/0), optional
 `chi_citano`, `consiglio`.
+`data` (YYYY-MM-DD) is the day the answer was read: the table shows it next to "no", so an old one-off check
+never reads as this week's result.
+
+## editor/geo: is the AI visibility check really running?
+
+One document, written by whoever reads the AI visibility tracker (weekly job or a manual check):
+`verificato_il`, `crediti` (balance left), `crediti_servono_settimana`, `nota`, and `siti.{site_id}` with
+`tracker` (true if questions are set up), `ultimo_controllo` (ISO date of the last finished check, null if never),
+`motivo` (why it did not run, e.g. not enough credits), `motori`, `costo_crediti` (per check), `prossimo`,
+optional `segnale` (other evidence, e.g. visits from AI assistants). "AI critics" shows one line per site:
+checked on date / never run / not set up.
 
 ## idee/{site_id}-{YYYYMMDD}-{n}
 

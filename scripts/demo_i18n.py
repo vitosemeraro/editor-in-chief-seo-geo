@@ -3,6 +3,19 @@
 # Status values are translated consistently in code and data, so the demo keeps working in every language.
 
 T = {
+    # ---------- Stato del controllo AI (0.33.0) ----------
+    'Controllato il ': ('Checked on ', 'Controlado el ', 'Contrôlé le '),
+    'Mai eseguito': ('Never run', 'Nunca ejecutado', 'Jamais lancé'),
+    'Saltato: crediti insufficienti': ('Skipped: not enough credits', 'Omitido: créditos insuficientes', 'Sauté : crédits insuffisants'),
+    'Nessun controllo impostato': ('No check set up', 'Ningún control configurado', 'Aucun contrôle configuré'),
+    'Crediti OpenSEO: ': ('OpenSEO credits: ', 'Créditos OpenSEO: ', 'Crédits OpenSEO : '),
+    ', ne servono ': (', needed ', ', se necesitan ', ', il en faut '),
+    ' a settimana per tutti i siti': (' a week for all sites', ' por semana para todos los sitios', ' par semaine pour tous les sites'),
+    'verificato il ': ('checked on ', 'verificado el ', 'vérifié le '),
+    'motori: ': ('engines: ', 'motores: ', 'moteurs : '),
+    ' crediti a controllo': (' credits per check', ' créditos por control', ' crédits par contrôle'),
+    'prossimo tentativo ': ('next try ', 'próximo intento ', 'prochain essai '),
+    'Nessuna risposta AI misurata per questo sito: guarda lo stato del controllo qui sopra.': ('No AI answer measured for this site: see the check status above.', 'Ninguna respuesta de IA medida para este sitio: mira el estado del control arriba.', 'Aucune réponse IA mesurée pour ce site : voir l\'état du contrôle ci-dessus.'),
     # ---------- Cartellone collegato alle note (0.29.0) ----------
     'Il tabellone dei risultati.': ('The results board.', 'El tablero de resultados.', 'Le tableau des résultats.'),
     'Da Search Console, le pagine con più impressioni negli ultimi 28 giorni, con il CTR (in rosso se basso per la posizione): qui guardi se il lavoro fatto rende. Le modifiche si fanno in': ('From Search Console, the pages with the most impressions in the last 28 days, with CTR (red if low for the position): here you see whether the work done pays off. Changes are made in', 'Desde Search Console, las páginas con más impresiones en los últimos 28 días, con el CTR (en rojo si es bajo para la posición): aquí ves si el trabajo hecho rinde. Los cambios se hacen en', 'Depuis Search Console, les pages avec le plus d\'impressions sur les 28 derniers jours, avec le CTR (en rouge s\'il est faible pour la position) : ici on voit si le travail fait rapporte. Les modifications se font dans'),
@@ -505,10 +518,10 @@ T = {
     "Clic": ("Clicks", "Clics", "Clics"),
     "Pos.": ("Pos.", "Pos.", "Pos."),
     "Consiglio": ("Tip", "Consejo", "Conseil"),
-    "Le domande del pubblico ripetute su ChatGPT, Perplexity e simili: \"sì\" vuol dire che il sito viene citato. Accanto, chi citano oggi e cosa fare per entrare. Il controllo gira con la cadenza della routine settimanale.":
-        ("Audience questions asked on ChatGPT, Perplexity and similar: \"yes\" means the site is cited. Next to it, who gets cited today and what to do to get in. The check runs with the weekly routine.",
-         "Preguntas del público repetidas en ChatGPT, Perplexity y similares: \"sí\" significa que el sitio aparece citado. Al lado, a quién citan hoy y qué hacer para entrar. El control se ejecuta con la rutina semanal.",
-         "Les questions du public posées sur ChatGPT, Perplexity et autres : « oui » veut dire que le site est cité. À côté, qui est cité aujourd'hui et quoi faire pour y entrer. Le contrôle tourne avec la routine hebdomadaire."),
+    "Le domande del pubblico ripetute su ChatGPT, Perplexity e simili: \"sì\" vuol dire che il sito viene citato. Accanto, chi citano oggi e cosa fare per entrare. Qui sotto, sito per sito, se il controllo settimanale è girato davvero: un \"no\" vale solo per la data scritta accanto.":
+        ("Audience questions asked on ChatGPT, Perplexity and similar: \"yes\" means the site is cited. Next to it, who gets cited today and what to do to get in. Below, site by site, whether the weekly check really ran: a \"no\" only holds for the date shown next to it.",
+         "Preguntas del público repetidas en ChatGPT, Perplexity y similares: \"sí\" significa que el sitio aparece citado. Al lado, a quién citan hoy y qué hacer para entrar. Debajo, sitio por sitio, si el control semanal se ejecutó de verdad: un \"no\" solo vale para la fecha indicada al lado.",
+         "Les questions du public posées sur ChatGPT, Perplexity et autres : « oui » veut dire que le site est cité. À côté, qui est cité aujourd'hui et quoi faire pour y entrer. Ci-dessous, site par site, si le contrôle hebdomadaire a vraiment tourné : un « non » ne vaut que pour la date indiquée à côté."),
     "Motore": ("Engine", "Motor", "Moteur"),
     "Domanda": ("Question", "Pregunta", "Question"),
     "Citato": ("Cited", "Citado", "Cité"),

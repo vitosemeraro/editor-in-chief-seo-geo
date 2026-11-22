@@ -316,6 +316,13 @@
   .btn.tf:disabled { background: transparent; color: var(--muted); border-color: var(--line); }
   .tfbox { border: 1px dashed var(--bad); border-radius: 6px; padding: 8px 10px; display: grid; gap: 6px; font-size: 12.5px; }
   .tfbox .l { color: var(--bad); }
+  /* La critica AI: stato del controllo per sito, cosi un "no" vecchio o mai misurato non sembra un risultato. */
+  .aistato { display: grid; gap: 6px; font-size: 13px; }
+  .aistato .r { display: grid; grid-template-columns: minmax(7em, auto) minmax(0, 1fr); gap: 4px 12px; align-items: baseline; border-left: 3px solid var(--ac, var(--muted)); padding: 4px 10px; border-radius: 4px; background: color-mix(in srgb, var(--ac, var(--muted)) 8%, transparent); }
+  .aistato .r.ok { --ac: var(--ok); } .aistato .r.mai { --ac: var(--bad); } .aistato .r.no { --ac: var(--warn); }
+  .aistato .r b { color: var(--ac); }
+  .aistato .top { font-size: 13px; }
+  @media (max-width: 520px) { .aistato .r { grid-template-columns: minmax(0, 1fr); } }
   .tfbox a, .hacts a { color: var(--accent); }
   .odg .scena .ora.tf-l { color: #ff8a7a; }
   .odg .tagc.tf-t { color: #ff8a7a; border-color: #ff8a7a; }
@@ -625,7 +632,8 @@
   </section>
 
   <section class="card" id="ai">
-    <div class="card-head"><div><h2><span class="tag">GEO</span> La critica AI</h2><p><b>Le citazioni nei motori AI.</b> Le domande del pubblico ripetute su ChatGPT, Perplexity e simili: "sì" vuol dire che il sito viene citato. Accanto, chi citano oggi e cosa fare per entrare. Il controllo gira con la cadenza della routine settimanale.</p></div></div>
+    <div class="card-head"><div><h2><span class="tag">GEO</span> La critica AI</h2><p><b>Le citazioni nei motori AI.</b> Le domande del pubblico ripetute su ChatGPT, Perplexity e simili: "sì" vuol dire che il sito viene citato. Accanto, chi citano oggi e cosa fare per entrare. Qui sotto, sito per sito, se il controllo settimanale è girato davvero: un "no" vale solo per la data scritta accanto.</p></div></div>
+    <div class="aistato" id="ai-stato"></div>
     <div class="toolbar"><label><input type="checkbox" id="ai-fatti"> mostra fatti</label><span class="small muted" id="ai-fatti-n"></span></div>
     <div class="scroll"><table>
       <thead><tr><th>Sito</th><th>Motore</th><th>Domanda</th><th>Citato</th><th>Chi citano</th><th>Consiglio</th></tr></thead>
@@ -2080,12 +2088,30 @@
     }
   }
   $('ai-fatti').addEventListener('change', () => renderAi());
+  /* Stato del controllo GEO per sito: documento geo (scritto da chi legge il tracker di visibilità AI). */
+  function renderAiStato() {
+    const box = $('ai-stato'); box.replaceChildren();
+    const g = state.editor.find((d) => d.id === 'geo'); if (!g) return;
+    const siti = g.siti || {}, dt = (x) => x ? new Date(x).toLocaleDateString('it-IT', { day: 'numeric', month: 'short' }) : '';
+    const testa = [];
+    if (g.crediti != null) testa.push('Crediti OpenSEO: ' + g.crediti + (g.crediti_servono_settimana ? ', ne servono ' + g.crediti_servono_settimana + ' a settimana per tutti i siti' : ''));
+    if (g.verificato_il) testa.push('verificato il ' + dt(g.verificato_il));
+    if (testa.length) box.append(el('div', { className: 'top small', textContent: testa.join(' · ') + '.' }));
+    for (const p of state.progetti.filter((x) => visibile(x.id))) {
+      const s = siti[p.id]; if (!s) continue;
+      const cls = s.ultimo_controllo ? 'ok' : (s.tracker ? 'mai' : 'no');
+      const stato = s.ultimo_controllo ? 'Controllato il ' + dt(s.ultimo_controllo) : (s.tracker ? 'Mai eseguito' : 'Nessun controllo impostato');
+      const det = [s.motivo, s.motori ? 'motori: ' + s.motori : '', s.costo_crediti ? s.costo_crediti + ' crediti a controllo' : '', s.prossimo ? 'prossimo tentativo ' + dt(s.prossimo) : '', s.segnale].filter(Boolean).join(' · ');
+      box.append(el('div', { className: 'r ' + cls, style: '--c:' + (p.colore || 'var(--muted)') }, [el('span', {}, [sito(p)]), el('span', {}, [el('b', { textContent: stato }), document.createTextNode(det ? ' · ' + det : '')])]));
+    }
+  }
   function renderAi() {
+    try { renderAiStato(); } catch (e) {}
     const tb = $('ai-body'); tb.replaceChildren();
     const aiTutte = state.aeo.filter((r) => visibile(r.progetto));
     const rows = aiTutte.filter((r) => $('ai-fatti').checked || !fattaRif('aeo/' + r.id)); nascosti('ai-fatti', aiTutte.length - rows.length);
     rows.sort((a, b) => (Number(a.citato) || 0) - (Number(b.citato) || 0) || String(a.motore).localeCompare(String(b.motore)));
-    if (!rows.length) { tb.append(el('tr', {}, [el('td', { colSpan: 6, className: 'empty', textContent: aiTutte.length ? 'Tutte fatte: spunta "mostra fatti" per rivederle.' : 'Arriva dal primo controllo delle risposte AI, se il modulo ai_visibility è attivo.' })])); return; }
+    if (!rows.length) { tb.append(el('tr', {}, [el('td', { colSpan: 6, className: 'empty', textContent: aiTutte.length ? 'Tutte fatte: spunta "mostra fatti" per rivederle.' : 'Nessuna risposta AI misurata per questo sito: guarda lo stato del controllo qui sopra.' })])); return; }
     for (const r of rows) {
       const p = prog(r.progetto); const si = Number(r.citato) > 0;
       const c = r.consiglio || (si ? 'Già citato: tieni aggiornata la pagina citata.' : 'Pubblica una risposta diretta a questa domanda, con dati reali, nella pagina più vicina del sito.');
@@ -2095,7 +2121,7 @@
         el('td', {}, [sito(p)]),
         el('td', { style: 'white-space:nowrap', textContent: r.motore || '' }),
         el('td', { className: 'wrap-text', textContent: r.domanda || '' }),
-        el('td', { className: si ? 'ok' : 'bad', textContent: si ? 'sì' : 'no' }),
+        el('td', { className: si ? 'ok' : 'bad', style: 'white-space:nowrap', textContent: (si ? 'sì' : 'no') + (r.data ? ' · ' + new Date(r.data).toLocaleDateString('it-IT', { day: 'numeric', month: 'short' }) : '') }),
         el('td', { className: 'small', textContent: r.citati || '' }),
         cell
       ]));

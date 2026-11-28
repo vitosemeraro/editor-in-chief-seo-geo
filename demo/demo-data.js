@@ -67,7 +67,10 @@
     // Conversion forecast: what counts as a conversion, whether it is measured, and an industry benchmark range (%).
     const conv = {
       bakery: { obiettivo: 'richieste di preventivo', misurato: true, rif_min: 1, rif_max: 3, fonte_rif: 'Esempio: benchmark di settore della tua fonte preferita' },
-      trips: { obiettivo: 'richieste di viaggio', misurato: false, rif_min: 0.5, rif_max: 2, fonte_rif: 'Esempio: benchmark di settore della tua fonte preferita' },
+      trips: { obiettivo: 'richieste di viaggio', misurato: false, rif_min: 0.5, rif_max: 2, fonte_rif: 'Esempio: benchmark di settore della tua fonte preferita',
+        // Real leads counted by hand (email, chat, booking portals; spam and tests left out): they replace GA4 in the forecast.
+        richieste_vere_28g: 3, prenotazioni_vere_28g: 1, richieste_vere_verificate_il: new Date(now - 2 * DAY).toISOString(),
+        nota: 'Le richieste arrivano soprattutto in chat: le contiamo a mano ogni settimana.' },
       saas: { obiettivo: 'prove gratuite', misurato: true, rif_min: 2, rif_max: 7, fonte_rif: 'Esempio: benchmark di settore della tua fonte preferita' },
     }[s.id];
     put('conversioni', s.id, Object.assign({ progetto: s.id }, conv));

@@ -7,6 +7,20 @@ change to the database schema bumps the minor version, a fix bumps the patch.
 Every change comes from the private dashboard the author uses daily on 4 real sites, generalized before
 it lands here.
 
+## [0.34.0] - 2026-11-28
+
+### Added
+- "Expected conversions" can use real leads counted by hand. When `conversioni.richieste_vere_28g` is set, the
+  rate starts from those leads (email, chat, form, booking portals; spam and tests left out) instead of GA4 key
+  events, over the Cloudflare visits of the last 4 weeks, so both numbers come from the same source. The card
+  adds the line "Lead veri 28 gg" with the bookings (`prenotazioni_vere_28g`) and the date of the count. Born
+  from a site where GA4 counted button clicks, mostly bots and tests, while the one real lead of the month came
+  through chat.
+
+### Schema
+- `conversioni/{site_id}`: new optional fields `richieste_vere_28g`, `prenotazioni_vere_28g`,
+  `richieste_vere_verificate_il`.
+
 ## [0.33.0] - 2026-11-22
 
 ### Fixed
@@ -468,6 +482,7 @@ it lands here.
   schema, dashboard that starts empty, modular data sources (Search Console required), deploy examples
   for Firebase, Netlify, Vercel and FTPS, link checker, secret scan and config validator in CI.
 
+[0.34.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.33.0...v0.34.0
 [0.33.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.32.0...v0.33.0
 [0.32.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.31.0...v0.32.0
 [0.31.0]: https://github.com/vitosemeraro/editor-in-chief-seo-geo/compare/v0.30.0...v0.31.0

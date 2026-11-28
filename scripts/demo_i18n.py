@@ -3,6 +3,17 @@
 # Status values are translated consistently in code and data, so the demo keeps working in every language.
 
 T = {
+    # ---------- Lead veri nella previsione (0.34.0) ----------
+    'lead veri verificati (': ('verified real leads (', 'leads reales verificados (', 'vrais leads vérifiés ('),
+    ' su circa ': (' out of about ', ' de unas ', ' sur environ '),
+    ' visite Cloudflare in 28 gg, spam e test esclusi) corretti col riferimento di settore': (' Cloudflare visits in 28 days, spam and tests excluded) adjusted with the industry benchmark', ' visitas Cloudflare en 28 días, sin spam ni pruebas) corregidos con la referencia del sector', ' visites Cloudflare sur 28 j, spam et tests exclus) corrigés avec la référence sectorielle'),
+    'lead veri + settore': ('real leads + industry', 'leads reales + sector', 'vrais leads + secteur'),
+    'Lead veri 28 gg: ': ('Real leads 28 days: ', 'Leads reales 28 días: ', 'Vrais leads 28 j : '),
+    ' prenotazione': (' booking', ' reserva', ' réservation'),
+    ' prenotazioni': (' bookings', ' reservas', ' réservations'),
+    ' · nessuna prenotazione': (' · no bookings', ' · ninguna reserva', ' · aucune réservation'),
+    ' · contati il ': (' · counted on ', ' · contados el ', ' · comptés le '),
+    'Le richieste arrivano soprattutto in chat: le contiamo a mano ogni settimana.': ('Requests come mostly through chat: we count them by hand every week.', 'Las solicitudes llegan sobre todo por chat: las contamos a mano cada semana.', 'Les demandes arrivent surtout par chat : nous les comptons à la main chaque semaine.'),
     # ---------- Stato del controllo AI (0.33.0) ----------
     'Controllato il ': ('Checked on ', 'Controlado el ', 'Contrôlé le '),
     'Mai eseguito': ('Never run', 'Nunca ejecutado', 'Jamais lancé'),
@@ -372,10 +383,10 @@ T = {
     "riferimento di settore corretto con i dati reali (0 su ": ("industry benchmark adjusted with real data (0 out of ", "referencia del sector corregida con datos reales (0 de ", "référence sectorielle corrigée avec les données réelles (0 sur "),
     " sessioni GA4 in 28 gg)": (" GA4 sessions in 28 days)", " sesiones GA4 en 28 días)", " sessions GA4 sur 28 j)"),
     "Riferimento di settore: ": ("Industry benchmark: ", "Referencia del sector: ", "Référence sectorielle : "),
-    "\"Conversioni previste\" su ogni sito è una stima per i prossimi 30 giorni: visite previste da Cloudflare per un tasso di conversione. Dove il sito non misura ancora le conversioni il tasso è un riferimento di settore dichiarato; quando arrivano dati reali da Google Analytics pesano sempre di più. È sempre un intervallo, con l'affidabilità accanto.":
-        ("\"Expected conversions\" on each site is an estimate for the next 30 days: expected visits from Cloudflare times a conversion rate. Where the site does not measure conversions yet, the rate is a stated industry benchmark; as real data arrives from Google Analytics it weighs more and more. It is always a range, with its reliability next to it.",
-         "\"Conversiones previstas\" en cada sitio es una estimación para los próximos 30 días: visitas previstas de Cloudflare por una tasa de conversión. Donde el sitio aún no mide conversiones, la tasa es una referencia del sector declarada; cuando llegan datos reales de Google Analytics pesan cada vez más. Siempre es un intervalo, con la fiabilidad al lado.",
-         "« Conversions prévues » sur chaque site est une estimation pour les 30 prochains jours : visites prévues par Cloudflare multipliées par un taux de conversion. Là où le site ne mesure pas encore les conversions, le taux est une référence sectorielle déclarée ; quand les données réelles de Google Analytics arrivent, elles pèsent de plus en plus. C'est toujours une fourchette, avec sa fiabilité à côté."),
+    "\"Conversioni previste\" su ogni sito è una stima per i prossimi 30 giorni: visite previste da Cloudflare per un tasso di conversione. Dove il sito non misura ancora le conversioni il tasso è un riferimento di settore dichiarato; quando arrivano dati reali da Google Analytics pesano sempre di più. Dove ci sono i lead veri contati a mano (WhatsApp, modulo, portali, senza spam e test) il tasso parte da quelli e non dai clic sui pulsanti, con sotto la riga \"Lead veri 28 gg\" e le prenotazioni. È sempre un intervallo, con l'affidabilità accanto.":
+        ("\"Expected conversions\" on each site is an estimate for the next 30 days: expected visits from Cloudflare times a conversion rate. Where the site does not measure conversions yet, the rate is a stated industry benchmark; as real data arrives from Google Analytics it weighs more and more. Where real leads are counted by hand (WhatsApp, form, portals, without spam and tests) the rate starts from those and not from button clicks, with the line \"Real leads 28 days\" and the bookings below. It is always a range, with its reliability next to it.",
+         "\"Conversiones previstas\" en cada sitio es una estimación para los próximos 30 días: visitas previstas de Cloudflare por una tasa de conversión. Donde el sitio aún no mide conversiones, la tasa es una referencia del sector declarada; cuando llegan datos reales de Google Analytics pesan cada vez más. Donde hay leads reales contados a mano (WhatsApp, formulario, portales, sin spam ni pruebas) la tasa parte de ellos y no de los clics en los botones, con debajo la línea \"Leads reales 28 días\" y las reservas. Siempre es un intervalo, con la fiabilidad al lado.",
+         "« Conversions prévues » sur chaque site est une estimation pour les 30 prochains jours : visites prévues par Cloudflare multipliées par un taux de conversion. Là où le site ne mesure pas encore les conversions, le taux est une référence sectorielle déclarée ; quand les données réelles de Google Analytics arrivent, elles pèsent de plus en plus. Là où les vrais leads sont comptés à la main (WhatsApp, formulaire, portails, sans spam ni tests) le taux part de ceux-ci et non des clics sur les boutons, avec en dessous la ligne « Vrais leads 28 j » et les réservations. C'est toujours une fourchette, avec sa fiabilité à côté."),
     "richieste di preventivo": ("quote requests", "solicitudes de presupuesto", "demandes de devis"),
     "richieste di viaggio": ("trip enquiries", "consultas de viaje", "demandes de voyage"),
     "prove gratuite": ("free trials", "pruebas gratuitas", "essais gratuits"),

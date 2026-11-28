@@ -668,7 +668,7 @@
       <li>"Avvia task force" (sulle schede dei siti in Attenzione o Critico, e in fondo a ogni scheda del Polso) segnala un problema grave: Claude apre una sessione dedicata con i numeri della scheda, cerca la causa nei dati, applica subito le correzioni che si fanno dal sito e lascia il resto come consigli. Stato ed esito sono in cima all'Ordine del giorno; le task force chiuse compaiono solo con "mostra fatti". Una sola task force alla volta per sito.</li>
       <li>Note di redazione e Cartellone: le Note di redazione sono la lista di cosa fare (con "Applica ora", e il ciclo continuo le applica da sole); il Cartellone è il tabellone dei risultati pagina per pagina e dice in che stato è ognuna. Quando una pagina ha bisogno di una mossa, la routine la scrive come nota di redazione e il Cartellone la collega; "Applica" nel Cartellone resta solo per le mosse che non sono ancora diventate una nota.</li>
       <li>Per spostare un'uscita cambia la data; per fermarla metti "In pausa". Per cambiarne molte insieme selezionale.</li>
-      <li>"Conversioni previste" su ogni sito è una stima per i prossimi 30 giorni: visite previste da Cloudflare per un tasso di conversione. Dove il sito non misura ancora le conversioni il tasso è un riferimento di settore dichiarato; quando arrivano dati reali da Google Analytics pesano sempre di più. È sempre un intervallo, con l'affidabilità accanto.</li>
+      <li>"Conversioni previste" su ogni sito è una stima per i prossimi 30 giorni: visite previste da Cloudflare per un tasso di conversione. Dove il sito non misura ancora le conversioni il tasso è un riferimento di settore dichiarato; quando arrivano dati reali da Google Analytics pesano sempre di più. Dove ci sono i lead veri contati a mano (WhatsApp, modulo, portali, senza spam e test) il tasso parte da quelli e non dai clic sui pulsanti, con sotto la riga "Lead veri 28 gg" e le prenotazioni. È sempre un intervallo, con l'affidabilità accanto.</li>
       <li>CTR = clic diviso impressioni su Google negli ultimi 28 giorni, sempre "contro" i 28 giorni prima (verde se migliora, rosso se peggiora). Nel Polso c'è anche la lettura: se il CTR è basso per la posizione vanno riscritti title e description; se scende perché la posizione è peggiorata conta salire, non i titoli. Nel Cartellone il CTR in rosso segna le pagine in prima pagina che prendono pochi clic. Dove la routine li scrive compaiono anche il "CTR senza USA" (impressioni USA tolte: sono traffico di tool con 0 clic) e il "CTR in prima pagina" (solo pagine in posizione 1-10); se gli USA superano il 30% delle impressioni la scheda lo dice.</li>
       <li>Stato di salute, parole chiave e idee si aggiornano dalle fonti dati attive in configurazione (Search Console come base; Analytics, Cloudflare, visibilità AI opzionali). Le idee e i consigli che scarti non tornano.</li>
     </ul>
@@ -1009,15 +1009,19 @@
     const vLo = wLo * 30 / 7, vHi = wHi * 30 / 7;
     const rmin = Number(cfg.rif_min) / 100, rmax = Number(cfg.rif_max) / 100;
     if (!(rmin >= 0) || !(rmax >= rmin)) return null;
-    const misurato = cfg.misurato !== false;
-    const c = misurato ? Number(sal.conversioni_28g != null ? sal.conversioni_28g : cfg.conversioni_28g) || 0 : 0;
-    const n = misurato ? Number(sal.sessioni_28g) || 0 : 0;
+    /* Lead veri (dal 28/11/2026): se conversioni.richieste_vere_28g c'è, la stima usa le richieste vere contate a mano (WhatsApp, modulo, portali; spam e test esclusi)
+       al posto degli eventi chiave GA4, e come base le visite Cloudflare delle ultime 4 settimane, così numeratore e denominatore vengono dalla stessa fonte. */
+    const veri = cfg.richieste_vere_28g != null && !isNaN(cfg.richieste_vere_28g);
+    const misurato = veri || cfg.misurato !== false;
+    const cf28 = serie.length ? serie.slice(-4).reduce((a, m) => a + Number(m.visite_7g), 0) * 4 / Math.min(4, serie.length) : v7 * 4;
+    const c = veri ? Number(cfg.richieste_vere_28g) : misurato ? Number(sal.conversioni_28g != null ? sal.conversioni_28g : cfg.conversioni_28g) || 0 : 0;
+    const n = veri ? Math.round(cf28) : misurato ? Number(sal.sessioni_28g) || 0 : 0;
     const tLo = (c + PESO_RIF * rmin) / (n + PESO_RIF), tHi = (c + PESO_RIF * rmax) / (n + PESO_RIF);
     let lo = vLo * tLo; const hi = vHi * tHi;
     if (misurato && c > 0) lo = Math.min(lo, c * 30 / 28);
     const aff = misurato && c >= 10 && n >= 300 ? 'alta' : misurato && c >= 3 ? 'media' : 'bassa';
-    const base = !misurato ? 'solo riferimento di settore: la conversione non è ancora misurata' : c ? 'dati reali (' + c + ' su ' + n + ' sessioni GA4 in 28 gg) corretti col riferimento di settore' : 'riferimento di settore corretto con i dati reali (0 su ' + n + ' sessioni GA4 in 28 gg)';
-    return { cfg, lo, hi, vLo, vHi, tLo, tHi, c, n, misurato, aff, base, una: serie.length < 2 };
+    const base = veri ? 'lead veri verificati (' + c + ' su circa ' + fmt(n) + ' visite Cloudflare in 28 gg, spam e test esclusi) corretti col riferimento di settore' : !misurato ? 'solo riferimento di settore: la conversione non è ancora misurata' : c ? 'dati reali (' + c + ' su ' + n + ' sessioni GA4 in 28 gg) corretti col riferimento di settore' : 'riferimento di settore corretto con i dati reali (0 su ' + n + ' sessioni GA4 in 28 gg)';
+    return { cfg, lo, hi, vLo, vHi, tLo, tHi, c, n, misurato, aff, base, veri, una: serie.length < 2 };
   }
   const pct = (v) => (v * 100).toLocaleString('it-IT', { maximumFractionDigits: 1 }) + '%';
   function boxPrevisione(pid) {
@@ -1026,7 +1030,8 @@
     const lo = Math.floor(f.lo), hi = Math.max(1, Math.ceil(f.hi));
     const box = el('div', { className: 'next prev' }, [el('div', { className: 'l', textContent: 'Conversioni previste · 30 gg' })]);
     box.append(el('div', { className: 'v' }, [document.createTextNode(lo === hi ? String(lo) : lo + '–' + hi), el('small', { textContent: ' ' + (f.cfg.obiettivo || 'conversioni') })]));
-    box.append(el('div', { className: 'why' }, [el('span', { className: 'pill ' + (f.aff === 'alta' ? 'ok' : f.aff === 'media' ? 'warn' : 'muted'), textContent: 'affidabilità ' + f.aff }), document.createTextNode(' ' + (f.misurato && f.c ? 'dati reali + settore' : 'stima di settore'))]));
+    box.append(el('div', { className: 'why' }, [el('span', { className: 'pill ' + (f.aff === 'alta' ? 'ok' : f.aff === 'media' ? 'warn' : 'muted'), textContent: 'affidabilità ' + f.aff }), document.createTextNode(' ' + (f.veri ? 'lead veri + settore' : f.misurato && f.c ? 'dati reali + settore' : 'stima di settore'))]));
+    if (f.veri) { const pv = Number(f.cfg.prenotazioni_vere_28g) || 0; box.append(el('div', { className: 'why' }, [el('b', { textContent: 'Lead veri 28 gg: ' + f.c }), document.createTextNode((pv ? ' · ' + pv + (pv === 1 ? ' prenotazione' : ' prenotazioni') : ' · nessuna prenotazione') + (f.cfg.richieste_vere_verificate_il ? ' · contati il ' + quando(f.cfg.richieste_vere_verificate_il) : ''))])); }
     const det = el('details', {}, [el('summary', { textContent: 'Come è calcolata' })]);
     det.append(
       el('p', { textContent: 'Visite previste: ' + fmt(Math.round(f.vLo)) + '–' + fmt(Math.round(f.vHi)) + ' (Cloudflare, ' + (f.una ? 'una sola settimana di dati, ±30%' : 'ultime due settimane') + ').' }),

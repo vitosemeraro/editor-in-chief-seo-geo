@@ -100,6 +100,9 @@ Turns on the "Expected conversions · 30 days" box on the site card. Written onc
 | rif_min, rif_max | industry benchmark range in % (visits to conversions) |
 | fonte_rif | where the benchmark comes from: name, year, URL. Shown on the card |
 | nota | optional: what is or is not tracked |
+| richieste_vere_28g | optional: real leads of the last 28 days counted by hand (email, chat, form, booking portals; spam and tests left out). When set, it replaces GA4 in the forecast |
+| prenotazioni_vere_28g | optional: how many of those leads became a booking or a sale. Shown on the card, not used in the rate |
+| richieste_vere_verificate_il | optional: ISO date of the last hand count, shown as "counted on" |
 
 How the page computes it: expected visits for 30 days from the last two `metriche.visite_7g` (the lower and
 higher of last week and the two-week average; ±30% with only one week). Rate = (`salute.conversioni_28g` +
@@ -107,6 +110,12 @@ higher of last week and the two-week average; ±30% with only one week). Rate = 
 benchmark counts like 100 sessions and real data weighs more as it grows; with `misurato: false` only the
 benchmark is used. The low end never exceeds the real conversions of the last 28 days. Reliability: high
 with at least 10 real conversions over 300 sessions, medium from 3, low otherwise. It is always a range.
+
+With `richieste_vere_28g` the rate uses the real leads instead of GA4 key events, over the Cloudflare visits
+of the last 4 weeks (sum of the last four `metriche.visite_7g`, scaled up when fewer weeks exist), so the
+numerator and the denominator come from the same source; the conversion counts as measured even with
+`misurato: false`. The card then shows the line "Lead veri 28 gg" with `prenotazioni_vere_28g` and the count date.
+Born from a site where GA4 counted button clicks (mostly bots and tests) while the real leads came from chat.
 
 ## serie/{site_id}
 
